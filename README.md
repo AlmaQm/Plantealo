@@ -1,59 +1,49 @@
-# PlantealoApp
+# 🌱 Plantealo
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.6.
+**Plantealo** es una aplicación web en **Angular** para gestionar tu huerto. Permite controlar tus plantas, planificar tareas de riego y cosecha, descubrir recetas saludables y compartir tu experiencia con la comunidad.
 
-## Development server
+---
 
-To start a local development server, run:
+## 📝 Características principales
 
-```bash
-ng serve
-```
+### General
+- Visualización del **día actual** con temperatura, humedad y condiciones meteorológicas.
+- **Calendario semanal** para planificar riegos según el clima.
+- **Listado de tareas**: regar tomates, recoger pimientos, revisar plagas, etc.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Plantas
+- Inventario completo de tus plantas en el huerto.
+- Información de progreso, riego, horas de sol y cosecha estimada.
+- Alertas sobre cuándo una planta está lista para cosechar.
 
-## Code scaffolding
+### Recetas
+- Recetas adaptadas a tu tipo de dieta: vegana, vegetariana o carnívora.
+- Muestra el **porcentaje de disponibilidad** según los ingredientes que tengas en tu huerto.
+- Indica dificultad y tiempo estimado de preparación.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Comunidad
+- Comparte fotos de tu huerto.
+- Da “me gusta” y comenta publicaciones de otros usuarios.
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🚀 Tecnologías utilizadas
+- **Angular** – framework de la aplicación.
+- **TypeScript** – lógica y componentes.
+- **CSS / SCSS** – estilos y diseño responsivo.
+- **API de clima** – para mostrar previsión meteorológica.
+- **NVM (Node Version Manager)** – gestión de versiones de Node.js.
+- **Node.js y npm** – dependencias y scripts de Angular.
 
-```bash
-ng generate --help
-```
+---
 
-## Building
+## 🏗 Instalación y ejecución
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### Prerrequisitos
+- Tener **NVM** instalado y Node.js configurado:
 
 ```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+nvm install lts
+nvm use lts
+node -v
+npm -v
