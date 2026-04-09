@@ -29,9 +29,9 @@
 
 ## 🛠️ Stack Tecnológico
 
-* **Frontend:** Angular (v17+)
+* **Frontend:** Angular 
 * **Lenguaje:** TypeScript
-* **Estilos:** SCSS / CSS3 con diseño responsivo.
+* **Estilos:** SCSS / CSS3 
 * **Servicios:** Integración con API de clima para datos meteorológicos reales.
 * **Gestión de Versiones:** NVM (Node Version Manager).
 
