@@ -1,1 +1,33 @@
-<H1>MIS RECETAS</H1>
+<div class="recetas-page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1>Recetas</h1>
+    <p>Basadas en tu huerto y preferencias vegetarianas</p>
+    <div class="icono-usuario">
+      <!-- aquí va tu icono o componente -->
+      <i class="icon-user"></i>
+    </div>
+  </header>
+
+  <!-- BLOQUE DESTACADO -->
+  <section class="bloque-destacado">
+    <div class="icono">
+      <!-- icono de receta -->
+      🍳
+    </div>
+    <div>
+      <h2>Recetas Personalizadas</h2>
+      <p>Te mostramos recetas que puedes preparar con lo que tienes en tu huerto</p>
+    </div>
+  </section>
+
+  <!-- LISTA DE RECETAS -->
+  <div *ngFor="let meal of meals">
+  <app-receta-card
+    [title]="meal.strMeal"
+    [image]="meal.strMealThumb">
+  </app-receta-card>
+</div>
+
+</div>
