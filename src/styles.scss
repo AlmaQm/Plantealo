@@ -1,1 +1,41 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+// ==========================================================================
+// PALETA DE COLORES 
+// ==========================================================================
+
+// 1. Escala de Verdes (Base)
+$green-1: #E9F5DB;
+$green-2: #CFE1B9;
+$green-3: #B5C99A;
+$green-4: #97A97C;
+$green-5: #87986A;
+$green-6: #718355;
+$green-7: #354024;
+
+// 2. Tonos Tierra (Base)
+$earth-1: #E5D7C4;
+$earth-2: #CFBB99;
+$earth-9: #4C3D19;
+
+// ==========================================================================
+// otros de otro pinterest
+// ==========================================================================
+
+
+$color-primary:       $green-600;
+$color-primary-light: $green-300;
+$color-primary-dark:  $green-700;
+$color-accent:        $earth-200;
+
+
+$color-bg:            $green-100; 
+$color-surface:       $earth-100;
+
+
+$color-text-main:     $earth-900;
+$color-text-muted:    $green-500;
+
