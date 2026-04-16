@@ -1,59 +1,63 @@
-# PlantealoApp
+# 🌱 Plantealo - Tu Huerto Inteligente
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.6.
+**Plantealo** es una plataforma integral desarrollada en **Angular** diseñada para transformar la experiencia de cultivar en casa. Desde el control climático hasta la mesa, esta app te ayuda a gestionar los tiempos de vida de tus plantas, optimizar recursos y conectar con otros agricultores urbanos.
 
-## Development server
+---
 
-To start a local development server, run:
+## 🌟 Funcionalidades Destacadas
 
-```bash
-ng serve
-```
+### 🌦️ Panel de Control (Dashboard)
+- **Monitoreo en Tiempo Real:** Visualización de temperatura, humedad y condiciones actuales.
+- **Previsión Inteligente:** Calendario semanal meteorológico para planificar riegos y evitar sorpresas con la lluvia.
+- **Smart To-Do List:** Listado dinámico de tareas (regar tomates, recoger pimientos, revisar plagas).
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 🌿 Gestión del Huerto (Plantas)
+- **Inventario Digital:** Seguimiento individualizado de cada cultivo en tu huerto.
+- **Algoritmo de Cosecha:** Barra de progreso basada en el tiempo de crecimiento. La app te avisa cuando está al 100% y lista para cosechar.
+- **Ficha Técnica:** Datos específicos por planta: frecuencia de riego, horas de sol necesarias y cosecha estimada.
 
-## Code scaffolding
+### 🥗 Recetario Saludable
+- **Filtros Dietéticos:** Elige entre dieta vegana, vegetariana o carnívora.
+- **Aprovechamiento Real:** La app calcula qué porcentaje de la receta puedes cubrir con lo que tienes listo en tu huerto.
+- **Detalles:** Indica dificultad, tiempo estimado y pasos a seguir.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### 📸 Comunidad
+- **Social Feed:** Estilo Instagram para publicar las mejores fotos de tus cosechas.
+- **Interacción:** Sistema de "Me gusta" y comentarios para compartir consejos con otros usuarios.
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🛠️ Stack Tecnológico
 
-```bash
-ng generate --help
-```
+* **Frontend:** Angular 
+* **Lenguaje:** TypeScript
+* **Estilos:** SCSS / CSS3 
+* **Servicios:** Integración con API de clima para datos meteorológicos reales.
+* **Gestión de Versiones:** NVM (Node Version Manager).
 
-## Building
+---
 
-To build the project run:
+## 🏗️ Instalación y Ejecución
 
-```bash
-ng build
-```
+Sigue estos pasos para levantar el proyecto en tu entorno local:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### 1. Clonar el repositorio
+git clone [https://github.com/AlmaQm/Plantealo.git](https://github.com/AlmaQm/Plantealo.git)
+cd plantealo
 
-## Running unit tests
+### 2. Configuración del entorno (NVM)
+Se recomienda usar la versión LTS de Node.js:
+nvm install lts
+nvm use lts
+node -v
+npm -v
+pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### 3. Instalar dependencias
+npm install
 
-```bash
-ng test
-```
+### 4. Ejecutar la aplicación
+Para lanzar el servidor de desarrollo y ver la app en http://localhost:4200/:
+npx ng serve
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
