@@ -1,0 +1,25 @@
+<!-- <div class="weather-box" *ngIf="weather$ | async as weather">
+   <div class="temp-header">
+      <span class="temp">{{ weather.temp }}°C</span>
+      <p>{{ weather.condition }}</p>
+      <p>Humedad: {{ weather.humidity }}%</p>
+   </div>
+   <div class="advice">
+      <small>{{ weather.advice }}</small>
+   </div>
+</div> -->
+<div *ngIf="weather$ | async as weather">
+
+   <h2>{{ weather[0].nombre }}</h2>
+
+   <p>
+      Temp máxima:
+      {{ weather[0].prediccion.dia[0].temperatura.maxima }}°C
+   </p>
+
+   <p>
+      Temp mínima:
+      {{ weather[0].prediccion.dia[0].temperatura.minima }}°C
+   </p>
+
+</div>

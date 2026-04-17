@@ -1,0 +1,17 @@
+@use '../../styles/variables.scss' as *;
+
+.weather-box {
+   background-color: $green-7; // Verde oscuro
+   color: white;
+   border-radius: 20px;
+   padding: 10px;
+   display: flex;
+   flex-direction: column;
+   gap: 5px;
+
+
+   .temp {
+      font-size: 2rem;
+      font-weight: bold;
+   }
+}

@@ -1,0 +1,7 @@
+<div class="calendar-strip">
+   <div class="day" *ngFor="let day of week" [class.active]="day.isToday">
+      <span class="day-name">{{ day.name }}</span>
+      <strong class="day-date">{{ day.date }}</strong>
+      <div class="weather-icon" *ngIf="day.isToday">☀️</div>
+   </div>
+</div>

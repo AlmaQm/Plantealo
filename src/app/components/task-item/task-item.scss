@@ -1,0 +1,61 @@
+@use '../../styles/variables.scss' as *;
+
+.task-card {
+   background: rgb(164, 208, 137);
+   border-radius: 12px;
+   width: 320px;
+   height: 60px;
+
+   padding: 8px 10px;
+   margin-bottom: 6px;
+
+   display: flex;
+   align-items: center;
+
+   border-left: 4px solid $green-3;
+
+   transition: all 0.2s ease;
+
+   font-size: 0.85rem;
+}
+
+.task-card:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.task-card.completed {
+   opacity: 0.6;
+}
+
+.task-card.completed h3 {
+   text-decoration: line-through;
+}
+
+/* ICONO */
+.task-card .icon {
+   font-size: 1rem;
+}
+
+/* INFO */
+.task-card .info {
+   margin-left: 10px;
+   flex-grow: 1;
+}
+
+.task-card .info h3 {
+   margin: 0;
+   font-size: 0.95rem;
+   color: $green-7;
+}
+
+.task-card .info p {
+   margin: 0;
+   font-size: 0.75rem;
+   color: $earth-9;
+}
+
+/* CHECKBOX */
+.task-card input[type="checkbox"] {
+   transform: scale(0.9);
+}

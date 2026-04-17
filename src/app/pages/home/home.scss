@@ -1,0 +1,21 @@
+@use '../../styles/variables.scss' as *;
+
+// Importa tus variables aquí
+$bg-color: #f3efe9; // El tono crema de tu app
+
+body {
+   background-color: $bg-color;
+   color: $green-7;
+   font-family: 'Inter', sans-serif;
+   margin: 0;
+   padding: 0;
+}
+
+// Clases de utilidad
+.text-green-dark {
+   color: $green-7;
+}
+
+.bg-earth {
+   background-color: $earth-1;
+}

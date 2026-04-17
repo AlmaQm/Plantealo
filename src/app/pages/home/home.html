@@ -1,2 +1,22 @@
-<h1>MI HUERTO</h1>
+<main class="container">
+   <header>
+      <h1>Mi Huerto</h1>
+      <i class="profile-icon"></i>
+   </header>
 
+   <app-weather-card></app-weather-card>
+
+   <section>
+      <h3>Esta Semana</h3>
+      <app-calendar-week></app-calendar-week>
+   </section>
+
+   <section>
+      <h3>Tareas de Hoy</h3>
+      <div class="tasks-list">
+         <app-task-item *ngFor="let t of tasks" [task]="t"></app-task-item>
+      </div>
+   </section>
+
+   <app-summary-card></app-summary-card>
+</main>
