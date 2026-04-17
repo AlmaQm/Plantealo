@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Receta } from '../../../models/interfaces';
 
 @Component({
   selector: 'app-receta-card',
@@ -8,6 +9,7 @@ import { Component, Input } from '@angular/core';
 })
 export class RecetaCardComponent {
 
-  @Input() title!: string;
-  @Input() image!: string;
+  @Input() receta!: Receta;
+  @Input() compatibilidad!: number;
+
 }

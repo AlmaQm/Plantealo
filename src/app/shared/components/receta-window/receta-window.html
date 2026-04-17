@@ -1,1 +1,24 @@
-<p>receta-window works!</p>
+<div class="window">
+
+  <img class="header-img" [src]="receta.imagen">
+
+  <h2>{{ receta.titulo }}</h2>
+
+  <p class="author">Per {{ receta.autorNombre }}</p>
+
+  <h3>Ingredients</h3>
+  <ul>
+    <li *ngFor="let ing of receta.ingredientes">
+      {{ ing.nombre }} — {{ ing.cantidad }}
+      <span *ngIf="ing.esDeHuerto" class="from-garden">🌱</span>
+    </li>
+  </ul>
+
+  <h3>Instruccions</h3>
+  <ol>
+    <li *ngFor="let paso of receta.instrucciones">
+      {{ paso }}
+    </li>
+  </ol>
+
+</div>

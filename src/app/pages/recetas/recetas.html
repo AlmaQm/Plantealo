@@ -1,33 +1,17 @@
-<div class="recetas-page">
+<ion-header translucent="true">
+  <ion-toolbar color="light">
+    <ion-title>Receptes</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <!-- HEADER -->
-  <header class="header">
-    <h1>Recetas</h1>
-    <p>Basadas en tu huerto y preferencias vegetarianas</p>
-    <div class="icono-usuario">
-      <!-- aquí va tu icono o componente -->
-      <i class="icon-user"></i>
-    </div>
-  </header>
+<ion-content [fullscreen]="true" class="page-container">
 
-  <!-- BLOQUE DESTACADO -->
-  <section class="bloque-destacado">
-    <div class="icono">
-      <!-- icono de receta -->
-      🍳
-    </div>
-    <div>
-      <h2>Recetas Personalizadas</h2>
-      <p>Te mostramos recetas que puedes preparar con lo que tienes en tu huerto</p>
-    </div>
-  </section>
+  <div class="recipes-grid">
+    <app-receta-card
+      *ngFor="let receta of recipes"
+      [receta]="receta"
+      (click)="openRecipe(receta)">
+    </app-receta-card>
+  </div>
 
-  <!-- LISTA DE RECETAS -->
-  <div *ngFor="let meal of meals">
-  <app-receta-card
-    [title]="meal.strMeal"
-    [image]="meal.strMealThumb">
-  </app-receta-card>
-</div>
-
-</div>
+</ion-content>

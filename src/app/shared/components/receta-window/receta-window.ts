@@ -1,9 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Receta } from '../../../models/interfaces';
 
 @Component({
   selector: 'app-receta-window',
-  imports: [],
+  standalone: true,
   templateUrl: './receta-window.html',
-  styleUrl: './receta-window.scss',
+  styleUrls: ['./receta-window.scss']
 })
-export class RecetaWindow {}
+export class RecetaWindowComponent {
+
+  @Input() receta!: Receta;
+  @Input() disponibles: any[] = [];
+  @Input() necesarios: any[] = [];
+  @Input() compatibilidad!: number;
+
+}

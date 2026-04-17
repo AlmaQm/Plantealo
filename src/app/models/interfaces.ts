@@ -29,6 +29,7 @@ export interface Post {
 }
 
 export interface Receta {
+  id:number;  
   titulo: string;
   autorUser: string;
   autorNombre: string;
@@ -36,4 +37,14 @@ export interface Receta {
   instrucciones: string[];
   tiempoPrep: number;
   imagen: string;
+}
+// per que tenim el nom del user qui? 
+
+export interface UserGarden {
+  ingredients: string[]; 
+}
+
+export interface Ingredient {
+  name: string;
+  quantity?: string;
 }

@@ -1,4 +1,9 @@
 <div class="card">
-  <img [src]="image" alt="receta" />
-  <h3>{{ title }}</h3>
+  <img [src]="receta.imagen" alt="{{ receta.titulo }}" class="card-img">
+
+  <div class="card-info">
+    <h3>{{ receta.titulo }}</h3>
+    <p class="author">Per {{ receta.autorNombre }}</p>
+    <p class="time">{{ receta.tiempoPrep }} min</p>
+  </div>
 </div>

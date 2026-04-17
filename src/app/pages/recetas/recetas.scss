@@ -1,0 +1,13 @@
+@use '../../styles/variables.scss' as *;
+
+
+.page-container {
+  padding: 1rem;
+  background: $green-1;
+}
+
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1rem;
+}

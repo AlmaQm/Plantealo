@@ -1,21 +1,25 @@
 import { Component } from '@angular/core';
-import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 
-export interface Meal {
-  idMeal: string;
-  strMeal: string;
-  strMealThumb: string;
-}
+import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
 
 @Component({
   selector: 'app-recetas',
   standalone: true,
+  imports: [
+    CommonModule,
+    IonicModule,
+    RecetaCardComponent
+  ],
   templateUrl: './recetas.html',
-  styleUrls: ['./recetas.scss'],
-  imports: [RecetaCardComponent]
+  styleUrls: ['./recetas.scss']
 })
 export class RecetasComponent {
 
-  meals: Meal[] = []; // 👈 AQUÍ VA
+  recipes: any[] = [];
 
+  openRecipe(receta: any) {
+    console.log('open', receta);
+  }
 }
