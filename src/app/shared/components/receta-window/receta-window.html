@@ -1,24 +1,41 @@
-<div class="window">
+<ion-content class="modal-content">
+  <ion-fab vertical="top" horizontal="end" slot="fixed">
+    <ion-fab-button size="small" color="light" (click)="cerrar()">
+      <ion-icon name="close"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
   <img class="header-img" [src]="receta.imagen">
 
-  <h2>{{ receta.titulo }}</h2>
+  <div class="main-container">
+    <h2>{{ receta.titulo }}</h2>
+    <p class="time-meta">⏱ 20 min | 👥 2 personas</p>
 
-  <p class="author">Per {{ receta.autorNombre }}</p>
+    <h3 class="section-title">Ingredientes de tu huerto</h3>
+    <div class="ingredient-list">
+      <div class="ingredient-item available" *ngFor="let ing of disponibles">
+        <ion-icon name="checkmark-outline" color="success"></ion-icon>
+        <span>{{ ing.nombre }}</span>
+      </div>
+    </div>
 
-  <h3>Ingredients</h3>
-  <ul>
-    <li *ngFor="let ing of receta.ingredientes">
-      {{ ing.nombre }} — {{ ing.cantidad }}
-      <span *ngIf="ing.esDeHuerto" class="from-garden">🌱</span>
-    </li>
-  </ul>
+    <h3 class="section-title">Ingredientes que necesitas</h3>
+    <div class="ingredient-list">
+      <div class="ingredient-item missing" *ngFor="let ing of necesarios">
+        <ion-icon name="close-outline" color="medium"></ion-icon>
+        <span>{{ ing.nombre }}</span>
+      </div>
+    </div>
 
-  <h3>Instruccions</h3>
-  <ol>
-    <li *ngFor="let paso of receta.instrucciones">
-      {{ paso }}
-    </li>
-  </ol>
+    <div class="compatibilidad-footer">
+      <p>Compatibilidad: {{ compatibilidad }}%</p>
+      <ion-progress-bar [value]="compatibilidad / 100" color="dark"></ion-progress-bar>
+      <p class="feedback-text">¡Excelente! Tienes la mayoría de los ingredientes.</p>
+    </div>
 
-</div>
+    <h3>Instrucciones</h3>
+    <ol class="instructions">
+      <li *ngFor="let paso of receta.instrucciones">{{ paso }}</li>
+    </ol>
+  </div>
+</ion-content>

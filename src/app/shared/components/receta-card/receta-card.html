@@ -1,9 +1,16 @@
 <div class="card">
-  <img [src]="receta.imagen" alt="{{ receta.titulo }}" class="card-img">
+  <img [src]="receta.imagen" class="card-img">
 
   <div class="card-info">
     <h3>{{ receta.titulo }}</h3>
-    <p class="author">Per {{ receta.autorNombre }}</p>
-    <p class="time">{{ receta.tiempoPrep }} min</p>
+    <p class="time">20 min • 2 personas</p>
+    
+    <div class="progress-container">
+      <div class="progress-text">
+        <span>Disponible</span>
+        <span>{{ compatibilidad }}%</span>
+      </div>
+      <ion-progress-bar [value]="compatibilidad / 100" color="dark"></ion-progress-bar>
+    </div>
   </div>
 </div>

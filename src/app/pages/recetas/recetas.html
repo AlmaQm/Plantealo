@@ -1,17 +1,19 @@
-<ion-header translucent="true">
+<ion-header [translucent]="true">
   <ion-toolbar color="light">
     <ion-title>Receptes</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="page-container">
-
-  <div class="recipes-grid">
-    <app-receta-card
-      *ngFor="let receta of recipes"
-      [receta]="receta"
-      (click)="openRecipe(receta)">
-    </app-receta-card>
-  </div>
-
+<ion-content class="ion-padding page-container">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" size-md="6" *ngFor="let receta of recipes">
+        <app-receta-card
+          [receta]="receta"
+          [compatibilidad]="receta.compatibilidad"
+          (click)="openRecipe(receta)">
+        </app-receta-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
