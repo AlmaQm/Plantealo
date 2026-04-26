@@ -1,7 +1,19 @@
 <div class="recetas-page">
-  <div class="recetas-page__header">
+   <div class="recetas-page__header">
     <h1>🍳 Recetas Personalizadas</h1>
-    <p>Basadas en tu huerto y preferencias vegetarianas</p>
+    <p>Basadas en tu huerto y preferencias {{ getDietaText() }}</p>
+  </div>
+  
+  <div class="recetas-page__search">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Buscar recetas por nombre o ingredientes..."
+        class="search-input">
+      <span class="search-icon">🔍</span>
+    </div>
   </div>
   
   <div class="recetas-page__filters">
@@ -14,13 +26,7 @@
         class="search-input">
     </div>
     
-    <label class="filter-checkbox">
-      <input 
-        type="checkbox" 
-        [(ngModel)]="vegetarianOnly" 
-        (ngModelChange)="onVegetarianFilterChange()">
-      <span>🌱 Solo vegetarianas</span>
-    </label>
+    
   </div>
   
   <div class="recetas-page__grid" *ngIf="!loading; else loadingTemplate">

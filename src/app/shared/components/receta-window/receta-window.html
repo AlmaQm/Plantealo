@@ -1,16 +1,20 @@
+
 <div class="receta-window" (click)="handleOutsideClick($event)" *ngIf="recipe">
   <div class="receta-window__container">
     <button class="receta-window__close" (click)="onClose()">✕</button>
     
     <div class="receta-window__header">
-      <img [src]="recipe.imageUrl" [alt]="recipe.name">
+      <img [src]="recipe.imageUrl" [alt]="recipe.name" 
+           (error)="recipe.imageUrl = 'assets/images/placeholder-receta.jpg'">
       <div class="header-overlay"></div>
       <div class="header-content">
         <h1>{{ recipe.name }}</h1>
         <div class="header-meta">
-          <span>{{ recipe.category }}</span>
+          <span>{{ getCategoryText() }}</span>
           <span>•</span>
-          <span>{{ recipe.area }}</span>
+          <span>{{ getDietaText() }}</span>
+          <span>•</span>
+          <span>{{ recipe.prepTime }} min</span>
         </div>
         <div class="compatibility-badge" [class]="'compatibility--' + compatibilityPercentage">
           Compatibilidad: {{ compatibilityPercentage }}%
@@ -26,6 +30,12 @@
             <span class="ingredient-check">✅</span>
             <span class="ingredient-name">{{ ingredient.name }}</span>
             <span class="ingredient-measure">{{ ingredient.measure }}</span>
+            <span *ngIf="ingredient.gardenPlantMatch" class="ingredient-source">
+              (de tu {{ ingredient.gardenPlantMatch }})
+            </span>
+          </div>
+          <div *ngIf="ingredientsBySource.fromGarden.length === 0" class="no-ingredients">
+            <p>No tienes ingredientes de tu huerto para esta receta</p>
           </div>
         </div>
         
@@ -42,15 +52,21 @@
       <div class="content-section">
         <h2>📝 Instrucciones</h2>
         <div class="instructions">
-          <p>{{ recipe.instructions }}</p>
+          <div *ngFor="let instruction of recipe.instructions; let i = index" class="instruction-step">
+            <span class="step-number">{{ i + 1 }}</span>
+            <p>{{ instruction }}</p>
+          </div>
         </div>
       </div>
       
-      <div class="content-section" *ngIf="recipe.youtubeUrl">
-        <h2>🎥 Video Tutorial</h2>
-        <a [href]="recipe.youtubeUrl" target="_blank" class="youtube-link">
-          Ver receta en YouTube
-        </a>
+      <div class="content-section" *ngIf="recipe.tips && recipe.tips.length > 0">
+        <h2>💡 Tips y Consejos</h2>
+        <div class="tips">
+          <div *ngFor="let tip of recipe.tips" class="tip">
+            <span class="tip-icon">✨</span>
+            <p>{{ tip }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

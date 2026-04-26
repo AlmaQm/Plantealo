@@ -1,3 +1,4 @@
+// src/app/shared/components/receta-window/receta-window.component.ts
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Recipe, GardenPlant } from '../../../models/interfaces';
@@ -39,6 +40,28 @@ export class RecetaWindowComponent implements OnInit {
       fromGarden: this.recipe.ingredients.filter(i => i.isFromGarden),
       missing: this.recipe.ingredients.filter(i => !i.isFromGarden)
     };
+  }
+
+  getCategoryText(): string {
+    const categories = {
+      'entrante': '🥗 Entrante',
+      'principal': '🍽️ Principal',
+      'postre': '🍰 Postre',
+      'bebida': '🥤 Bebida',
+      'salsa': '🥫 Salsa'
+    };
+    return categories[this.recipe?.category || 'principal'] || '🍽️ Principal';
+  }
+
+  getDietaText(): string {
+    if (!this.recipe) return '';
+    if (this.recipe.type_dieta.includes('vegana')) {
+      return '🌱 Vegana';
+    }
+    if (this.recipe.type_dieta.includes('vegetariana')) {
+      return '🥬 Vegetariana';
+    }
+    return '🍖 Omnívora';
   }
 
   onClose(): void {

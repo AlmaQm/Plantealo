@@ -1,4 +1,4 @@
-@use 'styles/variables.scss' as *;
+//@use 'styles/variables.scss' as *;
 
 @import '../../../../styles/variables';
 
@@ -196,3 +196,71 @@
 .compatibility--41-60 { background: #eab308; }
 .compatibility--61-80 { background: $green-5; }
 .compatibility--81-100 { background: $green-3; }
+
+// Añadir al final de receta-window.component.scss
+
+.instruction-step {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+  
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    background: $green-2;
+    color: $green-7;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  p {
+    flex: 1;
+    margin: 0;
+    line-height: 1.5;
+    color: #374151;
+  }
+}
+
+.tips {
+  display: grid;
+  gap: 12px;
+  
+  .tip {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: $earth-1;
+    border-radius: 8px;
+    
+    .tip-icon {
+      font-size: 18px;
+    }
+    
+    p {
+      flex: 1;
+      margin: 0;
+      color: $earth-9;
+    }
+  }
+}
+
+.no-ingredients {
+  padding: 24px;
+  text-align: center;
+  background: $green-1;
+  border-radius: 8px;
+  color: $green-6;
+}
+
+.ingredient-source {
+  font-size: 11px;
+  color: $green-7;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 2px 6px;
+  border-radius: 12px;
+}

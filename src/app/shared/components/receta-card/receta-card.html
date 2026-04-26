@@ -1,6 +1,8 @@
+<!-- src/app/shared/components/receta-card/receta-card.component.html -->
 <div class="receta-card" (click)="onCardClick()">
   <div class="receta-card__image">
-    <img [src]="recipe.imageUrl" [alt]="recipe.name">
+    <img [src]="recipe.imageUrl" [alt]="recipe.name" 
+         (error)="recipe.imageUrl = 'assets/images/placeholder-receta.jpg'">
     <div class="receta-card__compatibility" [class]="'compatibility--' + compatibilityPercentage">
       <span>{{ compatibilityPercentage }}%</span>
     </div>
@@ -25,9 +27,21 @@
     </div>
     
     <div class="receta-card__badges">
-      <span *ngIf="recipe.isVegetarian" class="badge badge--vegetarian">🌱 Vegetariana</span>
-      <span class="badge badge--category">{{ recipe.category || 'General' }}</span>
+      <!-- Mostrar el tipo de dieta de la receta -->
+      <span *ngIf="recipe.type_dieta.includes('vegana')" class="badge badge--vegana">
+        🌱 Vegana
+      </span>
+      <span *ngIf="recipe.type_dieta.includes('vegetariana') && !recipe.type_dieta.includes('vegana')" 
+            class="badge badge--vegetariana">
+        🥬 Vegetariana
+      </span>
+      <span class="badge badge--category">{{ getCategoryText() }}</span>
+      <span *ngIf="recipe.season && recipe.season.length > 0" class="badge badge--season">
+        📅 {{ getSeasonText() }}
+      </span>
     </div>
+    
+    <p class="receta-card__description">{{ recipe.description }}</p>
     
     <div class="receta-card__compatibility-bar">
       <div class="compatibility-bar__fill" [style.width.%]="compatibilityPercentage"></div>

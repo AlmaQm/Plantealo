@@ -1,3 +1,4 @@
+// src/app/shared/components/receta-card/receta-card.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Recipe } from '../../../models/interfaces';
@@ -15,24 +16,56 @@ export class RecetaCardComponent {
   @Output() recipeClick = new EventEmitter<Recipe>();
 
   getDifficulty(): string {
-    // Lógica simple para determinar dificultad basada en ingredientes
-    if (this.recipe.ingredients.length <= 5) return 'Fácil';
-    if (this.recipe.ingredients.length <= 8) return 'Medio';
-    return 'Avanzado';
+    const difficulties = {
+      'facil': 'Fácil',
+      'media': 'Medio',
+      'dificil': 'Difícil'
+    };
+    return difficulties[this.recipe.difficulty] || 'Media';
   }
 
   getEstimatedTime(): string {
-    // Estimación basada en cantidad de ingredientes y complejidad
-    const baseTime = Math.max(15, Math.min(60, this.recipe.ingredients.length * 3));
-    return `${baseTime} min`;
+    return `${this.recipe.prepTime} min`;
   }
 
   getServings(): number {
-    // Estimación por defecto, la API no siempre da porciones
-    return Math.max(2, Math.min(6, Math.floor(this.recipe.ingredients.length / 3)));
+    return this.recipe.servings;
+  }
+
+  // Nuevo método para verificar si es vegetariana/vegana según el usuario
+  getDietaBadge(currentUserDiet: string): string | null {
+    if (this.recipe.type_dieta.includes('vegana')) {
+      return '🌱 Vegana';
+    }
+    if (this.recipe.type_dieta.includes('vegetariana')) {
+      return '🥬 Vegetariana';
+    }
+    return null;
   }
 
   onCardClick(): void {
     this.recipeClick.emit(this.recipe);
+  }
+
+   getCategoryText(): string {
+    const categories = {
+      'entrante': '🥗 Entrante',
+      'principal': '🍽️ Principal',
+      'postre': '🍰 Postre',
+      'bebida': '🥤 Bebida',
+      'salsa': '🥫 Salsa'
+    };
+    return categories[this.recipe.category] || this.recipe.category;
+  }
+
+  getSeasonText(): string {
+    if (!this.recipe.season) return '';
+    const seasons = {
+      'primavera': '🌼 Primavera',
+      'verano': '☀️ Verano',
+      'otoño': '🍂 Otoño',
+      'invierno': '❄️ Invierno'
+    };
+    return this.recipe.season.map(s => seasons[s]).join(', ');
   }
 }
