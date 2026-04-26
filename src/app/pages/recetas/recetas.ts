@@ -1,86 +1,101 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
-import { RecipesService } from '../../services/recipes'; // 👈 Revisa que el nombre del archivo sea correcto
+import { FormsModule } from '@angular/forms';
+import { RecipesService } from '../../services/recipes';
 import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
-import { Receta } from '../../models/interfaces';
+import { Recipe, GardenPlant } from '../../models/interfaces';
 
 @Component({
   selector: 'app-recetas',
   standalone: true,
-  imports: [
-    CommonModule, 
-    IonicModule, 
-    RecetaCardComponent
-  ],
+  imports: [CommonModule, FormsModule, RecetaCardComponent, RecetaWindowComponent],
   templateUrl: './recetas.html',
   styleUrls: ['./recetas.scss']
 })
 export class RecetasComponent implements OnInit {
+  recipes: Recipe[] = [];
+  filteredRecipes: Recipe[] = [];
+  selectedRecipe: Recipe | null = null;
+  loading: boolean = true;
   
-  recipes: any[] = [];
+  // Filtros
+  vegetarianOnly: boolean = false;
+  searchTerm: string = '';
   
-  // Estos son los ingredientes que compararemos con la API (en inglés para MealDB)
-  misPlantasDelHuerto = ['Tomato', 'Basil', 'Lettuce', 'Onion', 'Garlic', 'Potato']; 
+  // Datos del huerto (ejemplo - reemplazar con servicio real)
+  gardenPlants: GardenPlant[] = [
+    { id: '1', name: 'tomate', quantity: 5, unit: 'plantas' },
+    { id: '2', name: 'lechuga', quantity: 10, unit: 'plantas' },
+    { id: '3', name: 'albahaca', quantity: 3, unit: 'plantas' },
+    { id: '4', name: 'menta', quantity: 2, unit: 'plantas' },
+    { id: '5', name: 'pepino', quantity: 4, unit: 'plantas' }
+  ];
 
-  constructor(
-    private recipesService: RecipesService,
-    private modalCtrl: ModalController
-  ) {}
+  constructor(private recipesService: RecipesService) {}
 
-  ngOnInit() {
-    this.cargarRecetas();
+  ngOnInit(): void {
+    this.loadRecipes();
   }
 
-  cargarRecetas() {
-    // Usamos el servicio que ya mapea 'titulo' e 'imagen'
-    this.recipesService.getRecetasPorDieta('vegetariana').subscribe({
-      next: (data) => {
-        console.log('Recetas cargadas con éxito:', data);
-        this.recipes = data;
+  loadRecipes(): void {
+    this.loading = true;
+    this.recipesService.getRecipes().subscribe({
+      next: (recipes) => {
+        // Actualizar compatibilidad con el huerto
+        this.recipes = recipes.map(recipe => 
+          this.recipesService.updateGardenCompatibility(recipe, this.gardenPlants)
+        );
+        this.applyFilters();
+        this.loading = false;
       },
-      error: (err) => {
-        console.error('Error al conectar con la API de recetas:', err);
+      error: (error) => {
+        console.error('Error loading recipes:', error);
+        this.loading = false;
       }
     });
   }
 
-  async openRecipe(recetaSimple: any) {
-    // 1. Obtenemos el detalle completo de la receta pulsada
-    // Usamos el id que viene de la API (mapeado en el servicio)
-    const idBusqueda = recetaSimple.id; 
-
-    this.recipesService.getDetalleReceta(idBusqueda).subscribe({
-      next: async (recetaCompleta: Receta) => {
-        
-        // 2. Lógica de comparación con el huerto
-        const disponibles = recetaCompleta.ingredientes.filter(ing => 
-          this.misPlantasDelHuerto.some(planta => 
-            ing.nombre.toLowerCase().includes(planta.toLowerCase())
-          )
-        );
-
-        const necesarios = recetaCompleta.ingredientes.filter(ing => 
-          !disponibles.some(d => d.nombre === ing.nombre)
-        );
-
-        const porcentaje = Math.round((disponibles.length / recetaCompleta.ingredientes.length) * 100);
-
-        // 3. Abrir el modal con los datos procesados
-        const modal = await this.modalCtrl.create({
-          component: RecetaWindowComponent,
-          componentProps: {
-            receta: recetaCompleta,
-            disponibles: disponibles,
-            necesarios: necesarios,
-            compatibilidad: porcentaje
-          }
-        });
-        
-        await modal.present();
-      },
-      error: (err) => console.error('Error al cargar detalle:', err)
+  applyFilters(): void {
+    this.filteredRecipes = this.recipes.filter(recipe => {
+      // Filtro vegetariano
+      if (this.vegetarianOnly && !recipe.isVegetarian) {
+        return false;
+      }
+      
+      // Filtro búsqueda
+      if (this.searchTerm && !recipe.name.toLowerCase().includes(this.searchTerm.toLowerCase())) {
+        return false;
+      }
+      
+      return true;
     });
+    
+    // Ordenar por compatibilidad (mayor primero)
+    this.filteredRecipes.sort((a, b) => {
+      const compatA = this.recipesService.calculateCompatibility(a);
+      const compatB = this.recipesService.calculateCompatibility(b);
+      return compatB - compatA;
+    });
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  onVegetarianFilterChange(): void {
+    this.applyFilters();
+  }
+
+  openRecipeDetail(recipe: Recipe): void {
+    this.selectedRecipe = recipe;
+  }
+
+  closeRecipeDetail(): void {
+    this.selectedRecipe = null;
+  }
+
+  getCompatibility(recipe: Recipe): number {
+    return this.recipesService.calculateCompatibility(recipe);
   }
 }

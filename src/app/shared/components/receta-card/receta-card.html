@@ -1,16 +1,36 @@
-<div class="card">
-  <img [src]="receta.imagen" class="card-img">
-
-  <div class="card-info">
-    <h3>{{ receta.titulo }}</h3>
-    <p class="time">20 min • 2 personas</p>
+<div class="receta-card" (click)="onCardClick()">
+  <div class="receta-card__image">
+    <img [src]="recipe.imageUrl" [alt]="recipe.name">
+    <div class="receta-card__compatibility" [class]="'compatibility--' + compatibilityPercentage">
+      <span>{{ compatibilityPercentage }}%</span>
+    </div>
+  </div>
+  
+  <div class="receta-card__content">
+    <h3 class="receta-card__title">{{ recipe.name }}</h3>
     
-    <div class="progress-container">
-      <div class="progress-text">
-        <span>Disponible</span>
-        <span>{{ compatibilidad }}%</span>
+    <div class="receta-card__meta">
+      <div class="meta-item">
+        <span class="meta-icon">⏱️</span>
+        <span>{{ getEstimatedTime() }}</span>
       </div>
-      <ion-progress-bar [value]="compatibilidad / 100" color="dark"></ion-progress-bar>
+      <div class="meta-item">
+        <span class="meta-icon">👥</span>
+        <span>{{ getServings() }} personas</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-icon">📊</span>
+        <span>{{ getDifficulty() }}</span>
+      </div>
+    </div>
+    
+    <div class="receta-card__badges">
+      <span *ngIf="recipe.isVegetarian" class="badge badge--vegetarian">🌱 Vegetariana</span>
+      <span class="badge badge--category">{{ recipe.category || 'General' }}</span>
+    </div>
+    
+    <div class="receta-card__compatibility-bar">
+      <div class="compatibility-bar__fill" [style.width.%]="compatibilityPercentage"></div>
     </div>
   </div>
 </div>

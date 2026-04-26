@@ -1,19 +1,52 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="light">
-    <ion-title>Receptes</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="recetas-page">
+  <div class="recetas-page__header">
+    <h1>🍳 Recetas Personalizadas</h1>
+    <p>Basadas en tu huerto y preferencias vegetarianas</p>
+  </div>
+  
+  <div class="recetas-page__filters">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Buscar recetas..."
+        class="search-input">
+    </div>
+    
+    <label class="filter-checkbox">
+      <input 
+        type="checkbox" 
+        [(ngModel)]="vegetarianOnly" 
+        (ngModelChange)="onVegetarianFilterChange()">
+      <span>🌱 Solo vegetarianas</span>
+    </label>
+  </div>
+  
+  <div class="recetas-page__grid" *ngIf="!loading; else loadingTemplate">
+    <app-receta-card 
+      *ngFor="let recipe of filteredRecipes"
+      [recipe]="recipe"
+      [compatibilityPercentage]="getCompatibility(recipe)"
+      (recipeClick)="openRecipeDetail($event)">
+    </app-receta-card>
+    
+    <div *ngIf="filteredRecipes.length === 0" class="no-results">
+      <p>No se encontraron recetas con estos filtros</p>
+    </div>
+  </div>
+  
+  <app-receta-window 
+    *ngIf="selectedRecipe"
+    [recipe]="selectedRecipe"
+    [gardenPlants]="gardenPlants"
+    (close)="closeRecipeDetail()">
+  </app-receta-window>
+</div>
 
-<ion-content class="ion-padding page-container">
-  <ion-grid>
-    <ion-row>
-      <ion-col size="12" size-md="6" *ngFor="let receta of recipes">
-        <app-receta-card
-          [receta]="receta"
-          [compatibilidad]="receta.compatibilidad"
-          (click)="openRecipe(receta)">
-        </app-receta-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
+<ng-template #loadingTemplate>
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Cargando recetas...</p>
+  </div>
+</ng-template>
