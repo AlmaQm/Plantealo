@@ -1,12 +1,16 @@
- export interface Planta {
-  nombre: string;
-  fecha_inicio: Date;
-  fecha_siembra: Date;
-  clima_ideal: string;
-  imagen: string;
-  estado: 'plantado' | 'creciendo' | 'listo' | 'enfermo'; // Estados fijos
-  tipo: 'interior' | 'exterior' | 'todas';
-  notificaciones: boolean;
+export interface Planta {
+  planta_id: number;
+  usuario_id: number;
+  nombre_planta: string;
+  imagen_url: string;
+  f_siembra: Date;
+  f_recogida: Date;
+  tipo_planta: 'INTERIOR' | 'EXTERIOR' | 'TODAS';
+  estado_crecimiento: 'PLANTADA' | 'CRECIENDO' | 'LISTA';
+  freq_riego: number;
+  h_luzsolar: number;
+  caracteristicas: string[];
+  progreso: number;
 }
 
 export interface Usuario {

@@ -1,0 +1,61 @@
+@import '../../../styles/variables';
+
+.plantas-page {
+  min-height: 100vh;
+  background-color: $earth-1;
+  padding: 24px 16px 80px;
+
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  &__titulo {
+    font-size: 28px;
+    font-weight: 700;
+    color: $green-7;
+    margin: 0 0 2px 0;
+  }
+
+  &__contador {
+    font-size: 13px;
+    color: $green-5;
+    margin: 0;
+  }
+
+  &__filtros {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  &__lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.filtro-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid $green-3;
+  background: transparent;
+  color: $green-6;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: $green-6;
+    border-color: $green-6;
+    color: white;
+  }
+
+  &:not(.active):hover {
+    background: $green-1;
+  }
+}
