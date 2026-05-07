@@ -23,7 +23,6 @@ export class PlantasComponent {
   filtroActivo = signal<Filtro>('TODAS');
   modalAbierto = signal(false);
   plantaIdSeleccionada = signal<number | null>(null);
-  tipoSeleccionado = signal<'INTERIOR' | 'EXTERIOR'>('EXTERIOR');
   fechaSiembra = signal<string>(this.hoy);
 
   plantasFiltradas = computed(() => {
@@ -39,7 +38,6 @@ export class PlantasComponent {
 
   abrirModal(): void {
     this.plantaIdSeleccionada.set(null);
-    this.tipoSeleccionado.set('EXTERIOR');
     this.fechaSiembra.set(this.hoy);
     this.modalAbierto.set(true);
   }
@@ -56,7 +54,6 @@ export class PlantasComponent {
     if (planta) {
       this.plantasService.addPlanta({
         ...planta,
-        tipo_planta: this.tipoSeleccionado(),
         f_siembra: new Date(this.fechaSiembra())
       });
       this.cerrarModal();

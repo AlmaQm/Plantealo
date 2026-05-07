@@ -55,23 +55,8 @@
         }
       </select>
 
-      <label class="campo-label" style="margin-top:16px">Tipo de ubicación</label>
-      <div class="tipo-toggle">
-        <label class="tipo-opcion" [class.selected]="tipoSeleccionado() === 'EXTERIOR'">
-          <input type="radio" name="tipo" value="EXTERIOR"
-            [ngModel]="tipoSeleccionado()"
-            (ngModelChange)="tipoSeleccionado.set($event)">
-          🌿 Exterior
-        </label>
-        <label class="tipo-opcion" [class.selected]="tipoSeleccionado() === 'INTERIOR'">
-          <input type="radio" name="tipo" value="INTERIOR"
-            [ngModel]="tipoSeleccionado()"
-            (ngModelChange)="tipoSeleccionado.set($event)">
-          🪴 Interior
-        </label>
-      </div>
 
-      <label class="campo-label" for="fechaSiembra" style="margin-top:16px">¿Cuándo la plantaste?</label>
+<label class="campo-label" for="fechaSiembra" style="margin-top:16px">¿Cuándo la plantaste?</label>
       <input
         id="fechaSiembra"
         type="date"
