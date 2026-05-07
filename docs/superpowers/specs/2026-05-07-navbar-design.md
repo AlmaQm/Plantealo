@@ -63,8 +63,8 @@ Estructura de cada ítem:
 - `color: var(--mat-sys-on-surface-variant)` (gris por defecto)
 
 ### Círculo del icono (`.icon-wrap`)
-- `border-radius: 50%`
-- `padding: 4px 16px`
+- `width: 40px; height: 40px; border-radius: 50%` — círculo perfecto
+- `display: flex; align-items: center; justify-content: center`
 - `transition: background-color 0.2s`
 
 ### Estado activo (`.active`)
