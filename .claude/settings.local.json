@@ -7,7 +7,15 @@
       "Bash(pkill -f \"npm test\")",
       "Bash(ng test *)",
       "Bash(ng build *)",
-      "Bash(npx sass *)"
+      "Bash(npx sass *)",
+      "Bash(npx tsc *)",
+      "Bash(dir \"C:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\models\")",
+      "Bash(dir \"C:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\shared\\\\components\")",
+      "Bash(dir \"C:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\styles\")",
+      "Bash(grep -E '$green-|earth-' src/styles/variables.scss)",
+      "Bash(grep '$green-' src/styles/variables.scss)",
+      "Bash(xargs cat)",
+      "Bash(npm run *)"
     ],
     "additionalDirectories": [
       "c:\\Estudis\\FundeSplai\\angular\\Plantealo\\docs\\superpowers"
