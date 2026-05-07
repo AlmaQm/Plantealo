@@ -7,7 +7,12 @@ import { PLANTAS_DATA } from '../data/plantas.data';
 })
 export class PlantasService {
 
-  private plantasSignal = signal<Planta[]>(PLANTAS_DATA);
+  readonly catalogo: Planta[] = PLANTAS_DATA;
 
-  readonly plantas = this.plantasSignal.asReadonly();
+  private inventarioSignal = signal<Planta[]>([]);
+  readonly inventario = this.inventarioSignal.asReadonly();
+
+  addPlanta(planta: Planta): void {
+    this.inventarioSignal.update(current => [...current, planta]);
+  }
 }
