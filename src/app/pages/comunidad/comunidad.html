@@ -1,1 +1,73 @@
-<p>comunidad works!</p>
+<div class="comunidad-page">
+
+  <header class="comunidad-page__header">
+    <div>
+      <h1 class="comunidad-page__titulo">Comunidad</h1>
+      <p class="comunidad-page__subtitulo">Comparte y descubre con otros jardineros</p>
+    </div>
+  </header>
+
+  <div class="comunidad-page__feed">
+    @for (pub of feed(); track pub.publicacion_id) {
+      <app-publicacion-card [publicacion]="pub" />
+    }
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button class="fab" (click)="abrirModal()" aria-label="Nueva publicación">+</button>
+
+<!-- Overlay + Bottomsheet -->
+@if (modalAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModal()"></div>
+  <div class="bottomsheet">
+    <div class="bottomsheet__handle"></div>
+
+    <div class="bottomsheet__header">
+      <h3 class="bottomsheet__titulo">Nueva publicación</h3>
+      <button class="bottomsheet__cerrar" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <div class="bottomsheet__body">
+
+      <label class="campo-label">Categoría</label>
+      <div class="categoria-toggle">
+        @for (cat of categorias; track cat) {
+          <button
+            class="cat-btn"
+            [class.active]="nuevaCategoria() === cat"
+            (click)="nuevaCategoria.set(cat)">
+            {{ cat === 'HUERTO' ? '🌿' : cat === 'RECETA' ? '🍳' : cat === 'CONSEJO' ? '💡' : '🌾' }}
+            {{ cat | titlecase }}
+          </button>
+        }
+      </div>
+
+      <label class="campo-label" style="margin-top:14px">Descripción</label>
+      <textarea
+        class="campo-textarea"
+        placeholder="¿Qué quieres compartir?"
+        rows="3"
+        [ngModel]="nuevaDesc()"
+        (ngModelChange)="nuevaDesc.set($event)">
+      </textarea>
+
+      <label class="campo-label" style="margin-top:14px">URL de imagen (opcional)</label>
+      <input
+        type="url"
+        class="campo-input"
+        placeholder="https://..."
+        [ngModel]="nuevaImagenUrl()"
+        (ngModelChange)="nuevaImagenUrl.set($event)">
+
+    </div>
+
+    <div class="bottomsheet__footer">
+      <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn-publicar" [disabled]="!nuevaDesc().trim()" (click)="publicar()">
+        Publicar
+      </button>
+    </div>
+  </div>
+}

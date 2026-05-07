@@ -1,0 +1,199 @@
+@import '../../../styles/variables';
+
+.comunidad-page {
+  min-height: 100vh;
+  background-color: $earth-1;
+  padding: 0 0 80px;
+
+  &__header {
+    padding: 24px 16px 16px;
+  }
+
+  &__titulo {
+    font-size: 28px;
+    font-weight: 700;
+    color: $green-7;
+    margin: 0 0 2px;
+  }
+
+  &__subtitulo {
+    font-size: 13px;
+    color: $green-5;
+    margin: 0;
+  }
+
+  &__feed {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 16px;
+  }
+}
+
+// FAB
+.fab {
+  position: fixed;
+  bottom: 124px;
+  right: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: $green-6;
+  color: white;
+  font-size: 28px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  &:hover  { background: $green-7; transform: scale(1.08); }
+  &:active { transform: scale(0.95); }
+}
+
+// Overlay
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  animation: fadeIn 0.2s ease;
+}
+
+// Bottomsheet
+.bottomsheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  z-index: 201;
+  padding: 12px 20px 32px;
+  animation: slideUp 0.28s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  &__handle {
+    width: 40px;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  &__titulo {
+    font-size: 17px;
+    font-weight: 700;
+    color: $green-7;
+    margin: 0;
+  }
+
+  &__cerrar {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: $green-5;
+    cursor: pointer;
+  }
+
+  &__body { margin-bottom: 20px; }
+
+  &__footer {
+    display: flex;
+    gap: 10px;
+  }
+}
+
+.campo-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: $green-6;
+  margin-bottom: 8px;
+}
+
+.campo-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid $green-3;
+  border-radius: 12px;
+  font-size: 14px;
+  color: $green-7;
+  resize: none;
+  font-family: inherit;
+
+  &:focus { outline: none; border-color: $green-5; }
+}
+
+.campo-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid $green-3;
+  border-radius: 12px;
+  font-size: 14px;
+  color: $green-7;
+
+  &:focus { outline: none; border-color: $green-5; }
+}
+
+.categoria-toggle {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cat-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1.5px solid $green-3;
+  background: transparent;
+  color: $green-6;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &.active  { background: $green-6; border-color: $green-6; color: white; }
+  &:hover:not(.active) { background: $green-1; }
+}
+
+.btn-cancelar {
+  flex: 1;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1.5px solid $green-3;
+  background: transparent;
+  color: $green-6;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-publicar {
+  flex: 2;
+  padding: 13px;
+  border-radius: 12px;
+  border: none;
+  background: $green-6;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:disabled { background: $green-3; cursor: not-allowed; }
+  &:not(:disabled):hover { background: $green-7; }
+}
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
