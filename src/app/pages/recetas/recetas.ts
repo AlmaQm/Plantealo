@@ -7,6 +7,7 @@ import { RecipesService } from '../../services/recipes';
 import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
 import { Recipe, Usuario, GardenPlant } from '../../models/interfaces';
+import { RECETAS_LOCALES } from '../../data/recetas-locales';
 
 @Component({
   selector: 'app-recetas',
@@ -19,7 +20,7 @@ export class RecetasComponent implements OnInit {
   recipes: Recipe[] = [];
   filteredRecipes: Recipe[] = [];
   selectedRecipe: Recipe | null = null;
-  loading: boolean = true;
+  loading: boolean = false;
   
   // Búsqueda
   searchTerm: string = '';
@@ -47,25 +48,10 @@ export class RecetasComponent implements OnInit {
   constructor(private recipesService: RecipesService) {}
 
   ngOnInit(): void {
-    this.loadRecipes();
-  }
-
-  loadRecipes(): void {
-    this.loading = true;
-    this.recipesService.getRecipesByUserDiet(this.currentUser).subscribe({
-      next: (recipes) => {
-        // Actualizar compatibilidad con el huerto
-        this.recipes = recipes.map(recipe => 
-          this.recipesService.updateGardenCompatibility(recipe, this.gardenPlants)
-        );
-        this.applySearch();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading recipes:', error);
-        this.loading = false;
-      }
-    });
+    this.recipes = RECETAS_LOCALES.map(recipe =>
+      this.recipesService.updateGardenCompatibility(recipe, this.gardenPlants)
+    );
+    this.filteredRecipes = [...this.recipes];
   }
 
   applySearch(): void {
