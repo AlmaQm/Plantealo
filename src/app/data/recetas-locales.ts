@@ -12,7 +12,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 20,
     difficulty: 'facil',
     servings: 2,
-    imageUrl: 'assets/images/recetas/bowl-vegetariano.jpg', // o URL de placeholder
+    imageUrl: 'assets/images/bowl-vegetariano.jpg', // o URL de placeholder
     instructions: [
       'Lava y corta las lechugas en trozos pequeños',
       'Pica finamente las hierbas frescas (perejil, cilantro, albahaca)',
@@ -46,7 +46,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 15,
     difficulty: 'facil',
     servings: 2,
-    imageUrl: 'assets/images/recetas/caprese.jpg',
+    imageUrl: 'assets/images/ensalada-carpese.jpg',
     instructions: [
       'Lava y corta los tomates en rodajas de 1cm',
       'Corta la mozzarella en rodajas del mismo grosor',
@@ -79,7 +79,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 8,
     difficulty: 'facil',
     servings: 6,
-    imageUrl: 'assets/images/recetas/salsa-verde.jpg',
+    imageUrl: 'assets/images/salsa-verde.jpg',
     instructions: [
       'Lava bien todas las hierbas',
       'Pela los dientes de ajo',
@@ -112,7 +112,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 15,
     difficulty: 'facil',
     servings: 4,
-    imageUrl: 'assets/images/recetas/gazpacho.jpg',
+    imageUrl: 'assets/images/gazpachoç.jpg',
     instructions: [
       'Lava bien todas las verduras',
       'Corta en trozos grandes: tomates, pepino, pimiento y cebolla',
@@ -146,7 +146,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 5,
     difficulty: 'facil',
     servings: 4,
-    imageUrl: 'assets/images/recetas/agua-menta.jpg',
+    imageUrl: 'assets/images/agua-pepino.jpg',
     instructions: [
       'Lava bien el pepino y la menta',
       'Corta el pepino en rodajas finas',
@@ -177,7 +177,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 10,
     difficulty: 'facil',
     servings: 4,
-    imageUrl: 'assets/images/recetas/pesto.jpg',
+    imageUrl: 'assets/images/pesto.jpg',
     instructions: [
       'Lava y seca bien las hojas de albahaca',
       'En un mortero o procesador, machaca los piñones y el ajo',
