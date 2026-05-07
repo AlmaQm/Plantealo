@@ -243,7 +243,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 20,
     difficulty: 'facil',
     servings: 2,
-    imageUrl: 'assets/images/ternera-espinacas.jpg',
+    imageUrl: 'assets/images/ternera-salteada.jpg',
     instructions: [
       'Corta la ternera en tiras finas',
       'Dora el ajo laminado en aceite de oliva',
@@ -275,7 +275,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 50,
     difficulty: 'media',
     servings: 4,
-    imageUrl: 'assets/images/pimientos-rellenos.jpg',
+    imageUrl: 'assets/images/pimiento-relleno.jpg',
     instructions: [
       'Corta la tapa de los pimientos y vacíalos',
       'Sofríe cebolla y ajo hasta dorar',
@@ -372,7 +372,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 15,
     difficulty: 'facil',
     servings: 3,
-    imageUrl: 'assets/images/judias-salteadas.jpg',
+    imageUrl: 'assets/images/salterado-judias-ajo-perejil.jpg',
     instructions: [
       'Lava y despunta las judías verdes',
       'Escáldalas en agua con sal 5 minutos, luego enfría en agua fría',
@@ -434,7 +434,7 @@ export const RECETAS_LOCALES: Recipe[] = [
     prepTime: 20,
     difficulty: 'facil',
     servings: 3,
-    imageUrl: 'assets/images/acelgas-zanahoria.jpg',
+    imageUrl: 'assets/images/acelga-zanahoria.jpg',
     instructions: [
       'Lava las acelgas y separa hojas de tallos',
       'Corta los tallos en trozos y las zanahorias en rodajas',
