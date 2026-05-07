@@ -19,12 +19,16 @@
     position: relative;
     width: 110px;
     flex-shrink: 0;
+    align-self: stretch;
     overflow: hidden;
 
     img {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center;
       transition: transform 0.3s ease;
     }
 
