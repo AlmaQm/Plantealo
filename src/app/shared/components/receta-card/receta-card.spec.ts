@@ -3,17 +3,17 @@ import { RecetaCardComponent } from './receta-card';
 import { Recipe } from '../../../models/interfaces';
 
 const mockRecipe: Recipe = {
-  id: '1',
-  name: 'Test Recipe',
-  description: 'A test recipe',
-  category: 'principal',
-  type_dieta: ['omnivora'],
-  prepTime: 30,
-  difficulty: 'facil',
-  servings: 2,
-  imageUrl: 'https://example.com/img.jpg',
-  instructions: ['Step 1'],
-  ingredients: [{ name: 'Salt', measure: '1 tsp', isFromGarden: false }]
+  id_receta: 1,
+  nombre_receta: 'Test Recipe',
+  descripcion: 'A test recipe',
+  categoria: 'PRINCIPAL',
+  tipo_dieta: 'VEGANA',
+  tiempo_preparacion: 30,
+  dificultad: 'FACIL',
+  num_comensales: 2,
+  imagen_url: 'assets/images/test.jpg',
+  instrucciones: ['Paso 1'],
+  ingredientes: [{ nombre_ingrediente: 'sal', cantidad: '1 pizca' }]
 };
 
 describe('RecetaCardComponent', () => {

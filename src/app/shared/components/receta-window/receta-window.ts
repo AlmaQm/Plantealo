@@ -1,4 +1,3 @@
-// src/app/shared/components/receta-window/receta-window.component.ts
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Recipe, GardenPlant } from '../../../models/interfaces';
@@ -15,58 +14,40 @@ export class RecetaWindowComponent implements OnInit {
   @Input() recipe: Recipe | null = null;
   @Input() gardenPlants: GardenPlant[] = [];
   @Output() close = new EventEmitter<void>();
-  
-  compatibilityPercentage: number = 0;
-  ingredientsBySource: { fromGarden: any[], missing: any[] } = { fromGarden: [], missing: [] };
+
+  compatibilityPercentage = 0;
+  ingredientsBySource: { fromGarden: any[]; missing: any[] } = { fromGarden: [], missing: [] };
 
   constructor(private recipesService: RecipesService) {}
 
   ngOnInit(): void {
-    if (this.recipe && this.gardenPlants.length > 0) {
-      const updatedRecipe = this.recipesService.updateGardenCompatibility(this.recipe, this.gardenPlants);
-      this.recipe = updatedRecipe;
-      this.compatibilityPercentage = this.recipesService.calculateCompatibility(updatedRecipe);
-      this.separateIngredients();
-    } else if (this.recipe) {
-      this.compatibilityPercentage = 0;
-      this.separateIngredients();
+    if (this.recipe) {
+      const updated = this.recipesService.updateGardenCompatibility(this.recipe, this.gardenPlants);
+      this.recipe = updated;
+      this.compatibilityPercentage = this.recipesService.calculateCompatibility(updated);
+      this.ingredientsBySource = {
+        fromGarden: updated.ingredientes.filter(i => i.isFromGarden),
+        missing:    updated.ingredientes.filter(i => !i.isFromGarden)
+      };
     }
   }
 
-  separateIngredients(): void {
-    if (!this.recipe) return;
-    
-    this.ingredientsBySource = {
-      fromGarden: this.recipe.ingredients.filter(i => i.isFromGarden),
-      missing: this.recipe.ingredients.filter(i => !i.isFromGarden)
+  getCategoriaText(): string {
+    const map: Record<string, string> = {
+      'ENTRANTE': '🥗 Entrante', 'PRINCIPAL': '🍽️ Principal',
+      'POSTRE': '🍰 Postre',    'BEBIDA': '🥤 Bebida'
     };
-  }
-
-  getCategoryText(): string {
-    const categories = {
-      'entrante': '🥗 Entrante',
-      'principal': '🍽️ Principal',
-      'postre': '🍰 Postre',
-      'bebida': '🥤 Bebida',
-      'salsa': '🥫 Salsa'
-    };
-    return categories[this.recipe?.category || 'principal'] || '🍽️ Principal';
+    return map[this.recipe?.categoria ?? ''] ?? '';
   }
 
   getDietaText(): string {
-    if (!this.recipe) return '';
-    if (this.recipe.type_dieta.includes('vegana')) {
-      return '🌱 Vegana';
-    }
-    if (this.recipe.type_dieta.includes('vegetariana')) {
-      return '🥬 Vegetariana';
-    }
-    return '🍖 Omnívora';
+    const map: Record<string, string> = {
+      'VEGANA': '🌱 Vegana', 'VEGETARIANA': '🥬 Vegetariana', 'OMNIVORA': '🍖 Omnívora'
+    };
+    return map[this.recipe?.tipo_dieta ?? ''] ?? '';
   }
 
-  onClose(): void {
-    this.close.emit();
-  }
+  onClose(): void { this.close.emit(); }
 
   handleOutsideClick(event: MouseEvent): void {
     if ((event.target as HTMLElement).classList.contains('receta-window')) {

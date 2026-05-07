@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { RecipesService } from '../../services/recipes';
 import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
-import { Recipe, Usuario, GardenPlant } from '../../models/interfaces';
+import { Recipe, GardenPlant } from '../../models/interfaces';
 import { RECETAS_LOCALES } from '../../data/recetas-locales';
 
-type TipoDieta = 'vegetariana' | 'vegana' | 'omnivora';
+type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
 
 @Component({
   selector: 'app-recetas',
@@ -20,27 +20,17 @@ export class RecetasComponent implements OnInit {
   recipes: Recipe[] = [];
   filteredRecipes: Recipe[] = [];
   selectedRecipe: Recipe | null = null;
-  loading: boolean = false;
-  searchTerm: string = '';
+  searchTerm = '';
 
-  // Dieta simulada del usuario registrado
-  readonly dietaUsuario: TipoDieta = 'vegetariana';
+  readonly dietaUsuario: TipoDieta = 'VEGETARIANA';
 
   readonly dietaChips: { value: TipoDieta; label: string }[] = [
-    { value: 'vegetariana', label: '🥬 Vegetariana' },
-    { value: 'vegana',      label: '🌱 Vegana'      },
-    { value: 'omnivora',    label: '🍖 Omnívora'    }
+    { value: 'VEGETARIANA', label: '🥬 Vegetariana' },
+    { value: 'VEGANA',      label: '🌱 Vegana'      },
+    { value: 'OMNIVORA',    label: '🍖 Omnívora'    }
   ];
 
   dietasActivas = new Set<TipoDieta>([this.dietaUsuario]);
-
-  currentUser: Usuario = {
-    usuarioid: '1',
-    nombre: 'Usuario Test',
-    email: 'test@example.com',
-    tipo_dieta: this.dietaUsuario,
-    recetasGuardadasIds: []
-  };
 
   gardenPlants: GardenPlant[] = [
     { id: '1', name: 'tomate',   quantity: 5,  unit: 'plantas' },
@@ -55,8 +45,8 @@ export class RecetasComponent implements OnInit {
   constructor(private recipesService: RecipesService) {}
 
   ngOnInit(): void {
-    this.recipes = RECETAS_LOCALES.map(recipe =>
-      this.recipesService.updateGardenCompatibility(recipe, this.gardenPlants)
+    this.recipes = RECETAS_LOCALES.map(r =>
+      this.recipesService.updateGardenCompatibility(r, this.gardenPlants)
     );
     this.applyFilters();
   }
@@ -67,7 +57,6 @@ export class RecetasComponent implements OnInit {
     } else {
       this.dietasActivas.add(dieta);
     }
-    // Forzar detección de cambios en el Set
     this.dietasActivas = new Set(this.dietasActivas);
     this.applyFilters();
   }
@@ -82,15 +71,13 @@ export class RecetasComponent implements OnInit {
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       result = result.filter(r =>
-        r.name.toLowerCase().includes(term) ||
-        r.description.toLowerCase().includes(term)
+        r.nombre_receta.toLowerCase().includes(term) ||
+        r.descripcion.toLowerCase().includes(term)
       );
     }
 
     if (this.dietasActivas.size > 0) {
-      result = result.filter(r =>
-        r.type_dieta.some(d => this.dietasActivas.has(d as TipoDieta))
-      );
+      result = result.filter(r => this.dietasActivas.has(r.tipo_dieta));
     }
 
     result.sort((a, b) =>
@@ -101,24 +88,16 @@ export class RecetasComponent implements OnInit {
     this.filteredRecipes = result;
   }
 
-  openRecipeDetail(recipe: Recipe): void {
-    this.selectedRecipe = recipe;
-  }
-
-  closeRecipeDetail(): void {
-    this.selectedRecipe = null;
-  }
-
+  openRecipeDetail(recipe: Recipe): void { this.selectedRecipe = recipe; }
+  closeRecipeDetail(): void { this.selectedRecipe = null; }
   getCompatibility(recipe: Recipe): number {
     return this.recipesService.calculateCompatibility(recipe);
   }
 
   getDietaText(): string {
-    const dietas: Record<TipoDieta, string> = {
-      'vegana': '🌱 Vegana',
-      'vegetariana': '🥬 Vegetariana',
-      'omnivora': '🍖 Omnívora'
+    const map: Record<TipoDieta, string> = {
+      'VEGANA': '🌱 Vegana', 'VEGETARIANA': '🥬 Vegetariana', 'OMNIVORA': '🍖 Omnívora'
     };
-    return dietas[this.dietaUsuario];
+    return map[this.dietaUsuario];
   }
 }

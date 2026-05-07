@@ -19,18 +19,30 @@ export class PlantaCardComponent {
   }
 
   getEstadoLabel(): string {
-    const labels: Record<Planta['estado_crecimiento'], string> = {
+    const labels: Record<Planta['estado'], string> = {
       'PLANTADA': 'Plantada',
       'CRECIENDO': 'Creciendo',
-      'LISTA': 'Lista'
+      'LISTA': 'Lista',
+      'ENFERMA': 'Enferma'
     };
-    return labels[this.planta.estado_crecimiento];
+    return labels[this.planta.estado];
+  }
+
+  getProgreso(): number {
+    const today = new Date();
+    const start = new Date(this.planta.f_siembra);
+    const end = new Date(this.planta.f_recogida);
+    const total = end.getTime() - start.getTime();
+    const elapsed = today.getTime() - start.getTime();
+    return Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)));
   }
 
   getProgresoMensaje(): string {
-    if (this.planta.progreso < 30) return 'Recién plantada, ¡dale tiempo!';
-    if (this.planta.progreso < 70) return 'Creciendo bien, sigue cuidándola';
-    if (this.planta.progreso < 100) return 'Casi lista para cosechar';
+    const p = this.getProgreso();
+    if (this.planta.estado === 'ENFERMA') return 'Necesita atención urgente';
+    if (p < 30) return 'Recién plantada, ¡dale tiempo!';
+    if (p < 70) return 'Creciendo bien, sigue cuidándola';
+    if (p < 100) return 'Casi lista para cosechar';
     return '¡Lista para cosechar!';
   }
 

@@ -6,11 +6,11 @@
 
     <div class="planta-card__info">
       <span class="planta-card__nombre">{{ planta.nombre_planta }}</span>
-      <span class="planta-card__estado estado--{{ planta.estado_crecimiento | lowercase }}">
+      <span class="planta-card__estado estado--{{ planta.estado | lowercase }}">
         {{ getEstadoLabel() }}
       </span>
       <div class="planta-card__progreso-mini">
-        <div class="progreso-mini__fill" [style.width.%]="planta.progreso"></div>
+        <div class="progreso-mini__fill" [style.width.%]="getProgreso()"></div>
       </div>
     </div>
 
@@ -22,36 +22,29 @@
     <div class="detalle-seccion">
       <h4 class="detalle-seccion__titulo">Cuidados</h4>
       <div class="detalle-seccion__items">
-        <div class="cuidado-item">
-          <span class="cuidado-item__icon">💧</span>
-          <span>Riego cada <strong>{{ planta.freq_riego }} día{{ planta.freq_riego > 1 ? 's' : '' }}</strong></span>
-        </div>
-        <div class="cuidado-item">
-          <span class="cuidado-item__icon">☀️</span>
-          <span><strong>{{ planta.h_luzsolar }}h</strong> de luz solar</span>
-        </div>
+        @if (planta.clima) {
+          <div class="cuidado-item">
+            <span class="cuidado-item__icon">🌡️</span>
+            <span>Clima <strong>{{ planta.clima }}</strong></span>
+          </div>
+        }
         <div class="cuidado-item">
           <span class="cuidado-item__icon">🌿</span>
           <span>Cosecha: <strong>{{ formatFecha(planta.f_recogida) }}</strong></span>
         </div>
-      </div>
-    </div>
-
-    <div class="detalle-seccion">
-      <h4 class="detalle-seccion__titulo">Características</h4>
-      <div class="caracteristicas">
-        @for (c of planta.caracteristicas; track c) {
-          <span class="caracteristica-chip">{{ c }}</span>
-        }
+        <div class="cuidado-item">
+          <span class="cuidado-item__icon">📅</span>
+          <span>Plantada: <strong>{{ formatFecha(planta.f_siembra) }}</strong></span>
+        </div>
       </div>
     </div>
 
     <div class="detalle-seccion">
       <h4 class="detalle-seccion__titulo">Etapa de crecimiento</h4>
       <div class="progreso-barra">
-        <div class="progreso-barra__fill" [style.width.%]="planta.progreso"></div>
+        <div class="progreso-barra__fill" [style.width.%]="getProgreso()"></div>
       </div>
-      <p class="progreso-mensaje">{{ getProgresoMensaje() }} ({{ planta.progreso }}%)</p>
+      <p class="progreso-mensaje">{{ getProgresoMensaje() }} ({{ getProgreso() }}%)</p>
     </div>
 
   </div>

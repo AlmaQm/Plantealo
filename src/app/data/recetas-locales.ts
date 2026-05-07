@@ -1,216 +1,186 @@
-// src/app/data/recetas-locales.ts
-
 import { Recipe } from '../models/interfaces';
 
 export const RECETAS_LOCALES: Recipe[] = [
   {
-    id: '1',
-    name: 'Bowl Vegetariano con Lechugas y Hierbas',
-    description: 'Un bowl fresco y nutritivo con ingredientes directos de tu huerto',
-    category: 'principal',
-    type_dieta: ['vegana', 'vegetariana'],
-    prepTime: 20,
-    difficulty: 'facil',
-    servings: 2,
-    imageUrl: 'assets/images/bowl-vegetariano.jpg', // o URL de placeholder
-    instructions: [
+    id_receta: 1,
+    nombre_receta: 'Bowl Vegetariano',
+    descripcion: 'Un bowl fresco y nutritivo con ingredientes directos de tu huerto',
+    categoria: 'PRINCIPAL',
+    tipo_dieta: 'VEGANA',
+    tiempo_preparacion: 20,
+    dificultad: 'FACIL',
+    num_comensales: 2,
+    imagen_url: 'assets/images/bowl-vegetariano.jpg',
+    instrucciones: [
       'Lava y corta las lechugas en trozos pequeños',
       'Pica finamente las hierbas frescas (perejil, cilantro, albahaca)',
-      'Cocina la quinoa o arroz según instrucciones del paquete',
+      'Cocina la quinoa según instrucciones del paquete',
       'En un bowl, coloca la base de lechugas',
-      'Añade la quinoa, los tomates cherry cortados por la mitad',
+      'Añade la quinoa y los tomates cherry cortados por la mitad',
       'Decora con las hierbas y aliña al gusto'
     ],
-    ingredients: [
-      { name: 'lechuga', measure: '2 tazas', isFromGarden: false },
-      { name: 'tomate cherry', measure: '10 unidades', isFromGarden: false },
-      { name: 'pepino', measure: '1/2 unidad', isFromGarden: false },
-      { name: 'albahaca', measure: 'al gusto', isFromGarden: false },
-      { name: 'perejil', measure: 'al gusto', isFromGarden: false },
-      { name: 'quinoa', measure: '1 taza', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '2 cucharadas', isFromGarden: false },
-      { name: 'limón', measure: '1 unidad', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'lechuga',        cantidad: '2 tazas' },
+      { nombre_ingrediente: 'tomate cherry',  cantidad: '10 unidades' },
+      { nombre_ingrediente: 'pepino',         cantidad: '1/2 unidad' },
+      { nombre_ingrediente: 'albahaca',       cantidad: 'al gusto' },
+      { nombre_ingrediente: 'perejil',        cantidad: 'al gusto' },
+      { nombre_ingrediente: 'quinoa',         cantidad: '1 taza' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '2 cucharadas' },
+      { nombre_ingrediente: 'limón',          cantidad: '1 unidad' }
     ],
-    tips: [
-      'Puedes añadir aguacate para hacerlo más cremoso',
-      'Si tienes rábanos en el huerto, quedan genial'
-    ],
-    season: ['primavera', 'verano']
+    tips: 'Añade aguacate para hacerlo más cremoso',
+    estacion: 'PRIMAVERA'
   },
   {
-    id: '2',
-    name: 'Ensalada Caprese con Tomates del Huerto',
-    description: 'La clásica ensalada italiana, perfecta cuando tus tomates están en su punto',
-    category: 'entrante',
-    type_dieta: ['vegetariana'],
-    prepTime: 15,
-    difficulty: 'facil',
-    servings: 2,
-    imageUrl: 'assets/images/ensalada-carpese.jpg',
-    instructions: [
+    id_receta: 2,
+    nombre_receta: 'Ensalada Caprese',
+    descripcion: 'La clásica ensalada italiana, perfecta cuando tus tomates están en su punto',
+    categoria: 'ENTRANTE',
+    tipo_dieta: 'VEGETARIANA',
+    tiempo_preparacion: 15,
+    dificultad: 'FACIL',
+    num_comensales: 2,
+    imagen_url: 'assets/images/ensalada-carpese.jpg',
+    instrucciones: [
       'Lava y corta los tomates en rodajas de 1cm',
       'Corta la mozzarella en rodajas del mismo grosor',
       'Alterna rodajas de tomate y mozzarella en un plato',
       'Espolvorea hojas de albahaca fresca',
-      'Aliña con aceite de oliva, sal y pimienta al gusto',
-      'Añade un chorrito de vinagre balsámico si deseas'
+      'Aliña con aceite de oliva, sal y pimienta al gusto'
     ],
-    ingredients: [
-      { name: 'tomate', measure: '3 unidades grandes', isFromGarden: false },
-      { name: 'albahaca', measure: '1 puñado', isFromGarden: false },
-      { name: 'mozzarella', measure: '200g', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '3 cucharadas', isFromGarden: false },
-      { name: 'vinagre balsámico', measure: '1 cucharada', isFromGarden: false },
-      { name: 'sal', measure: 'al gusto', isFromGarden: false },
-      { name: 'pimienta', measure: 'al gusto', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'tomate',           cantidad: '3 unidades' },
+      { nombre_ingrediente: 'albahaca',          cantidad: '1 puñado' },
+      { nombre_ingrediente: 'mozzarella',        cantidad: '200g' },
+      { nombre_ingrediente: 'aceite de oliva',   cantidad: '3 cucharadas' },
+      { nombre_ingrediente: 'vinagre balsámico', cantidad: '1 cucharada' }
     ],
-    tips: [
-      'Usa tomates recién cogidos del huerto, marcan la diferencia',
-      'La mozzarella de búfala es la mejor opción'
-    ],
-    season: ['verano']
+    tips: 'Usa tomates recién cogidos del huerto, marcan la diferencia',
+    estacion: 'VERANO'
   },
   {
-    id: '3',
-    name: 'Salsa Verde con Hierbas Frescas',
-    description: 'Salsa versátil para acompañar pastas, carnes o vegetales',
-    category: 'salsa',
-    type_dieta: ['vegana', 'vegetariana'],
-    prepTime: 8,
-    difficulty: 'facil',
-    servings: 6,
-    imageUrl: 'assets/images/salsa-verde.jpg',
-    instructions: [
+    id_receta: 3,
+    nombre_receta: 'Salsa Verde',
+    descripcion: 'Salsa versátil para acompañar pastas, carnes o vegetales',
+    categoria: 'ENTRANTE',
+    tipo_dieta: 'VEGANA',
+    tiempo_preparacion: 8,
+    dificultad: 'FACIL',
+    num_comensales: 6,
+    imagen_url: 'assets/images/salsa-verde.jpg',
+    instrucciones: [
       'Lava bien todas las hierbas',
       'Pela los dientes de ajo',
       'En una licuadora, coloca todas las hierbas, los ajos y el aceite',
       'Añade el jugo de limón y sal al gusto',
-      'Licúa hasta obtener una salsa homogénea',
-      'Ajusta la consistencia con más aceite si es necesario'
+      'Licúa hasta obtener una salsa homogénea'
     ],
-    ingredients: [
-      { name: 'perejil', measure: '1 taza', isFromGarden: false },
-      { name: 'cilantro', measure: '1/2 taza', isFromGarden: false },
-      { name: 'albahaca', measure: '1/2 taza', isFromGarden: false },
-      { name: 'menta', measure: '1/4 taza', isFromGarden: false },
-      { name: 'ajo', measure: '2 dientes', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '1/2 taza', isFromGarden: false },
-      { name: 'limón', measure: '1 unidad', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'perejil',       cantidad: '1 taza' },
+      { nombre_ingrediente: 'cilantro',      cantidad: '1/2 taza' },
+      { nombre_ingrediente: 'albahaca',      cantidad: '1/2 taza' },
+      { nombre_ingrediente: 'menta',         cantidad: '1/4 taza' },
+      { nombre_ingrediente: 'ajo',           cantidad: '2 dientes' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '1/2 taza' },
+      { nombre_ingrediente: 'limón',         cantidad: '1 unidad' }
     ],
-    tips: [
-      'Conserva en frasco de vidrio en la nevera hasta 1 semana',
-      'Ideal para adobar carnes a la parrilla'
-    ],
-    season: ['primavera', 'verano', 'otoño']
+    tips: 'Conserva en frasco de vidrio en la nevera hasta 1 semana',
+    estacion: 'PRIMAVERA'
   },
   {
-    id: '4',
-    name: 'Gazpacho Andaluz',
-    description: 'Sopa fría perfecta para los calurosos días de verano',
-    category: 'entrante',
-    type_dieta: ['vegana', 'vegetariana'],
-    prepTime: 15,
-    difficulty: 'facil',
-    servings: 4,
-    imageUrl: 'assets/images/gazpachoç.jpg',
-    instructions: [
+    id_receta: 4,
+    nombre_receta: 'Gazpacho Andaluz',
+    descripcion: 'Sopa fría perfecta para los calurosos días de verano',
+    categoria: 'ENTRANTE',
+    tipo_dieta: 'VEGANA',
+    tiempo_preparacion: 15,
+    dificultad: 'FACIL',
+    num_comensales: 4,
+    imagen_url: 'assets/images/gazpachoç.jpg',
+    instrucciones: [
       'Lava bien todas las verduras',
       'Corta en trozos grandes: tomates, pepino, pimiento y cebolla',
-      'Pela los dientes de ajo',
       'Coloca todo en la batidora junto con el aceite, vinagre y sal',
       'Bate hasta obtener una textura fina',
-      'Pasa por un colador si quieres más fino',
       'Enfría en la nevera al menos 2 horas antes de servir'
     ],
-    ingredients: [
-      { name: 'tomate', measure: '1kg', isFromGarden: false },
-      { name: 'pepino', measure: '1 unidad', isFromGarden: false },
-      { name: 'pimiento verde', measure: '1 unidad', isFromGarden: false },
-      { name: 'cebolla', measure: '1/2 unidad', isFromGarden: false },
-      { name: 'ajo', measure: '2 dientes', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '100ml', isFromGarden: false },
-      { name: 'vinagre de vino', measure: '2 cucharadas', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'tomate',          cantidad: '1kg' },
+      { nombre_ingrediente: 'pepino',          cantidad: '1 unidad' },
+      { nombre_ingrediente: 'pimiento verde',  cantidad: '1 unidad' },
+      { nombre_ingrediente: 'cebolla',         cantidad: '1/2 unidad' },
+      { nombre_ingrediente: 'ajo',             cantidad: '2 dientes' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '100ml' },
+      { nombre_ingrediente: 'vinagre de vino', cantidad: '2 cucharadas' }
     ],
-    tips: [
-      'Cuanto más maduros los tomates, mejor sabor',
-      'Tradicionalmente se sirve con taquitos de jamón y huevo duro'
-    ],
-    season: ['verano']
+    tips: 'Cuanto más maduros los tomates, mejor sabor',
+    estacion: 'VERANO'
   },
   {
-    id: '5',
-    name: 'Agua Refrescante de Menta y Pepino',
-    description: 'Bebida hidratante y refrescante con ingredientes del huerto',
-    category: 'bebida',
-    type_dieta: ['vegana', 'vegetariana'],
-    prepTime: 5,
-    difficulty: 'facil',
-    servings: 4,
-    imageUrl: 'assets/images/agua-pepino.jpg',
-    instructions: [
+    id_receta: 5,
+    nombre_receta: 'Agua de Menta y Pepino',
+    descripcion: 'Bebida hidratante y refrescante con ingredientes del huerto',
+    categoria: 'BEBIDA',
+    tipo_dieta: 'VEGANA',
+    tiempo_preparacion: 5,
+    dificultad: 'FACIL',
+    num_comensales: 4,
+    imagen_url: 'assets/images/agua-pepino.jpg',
+    instrucciones: [
       'Lava bien el pepino y la menta',
       'Corta el pepino en rodajas finas',
-      'En una jarra grande, añade el pepino y las hojas de menta',
+      'En una jarra, añade el pepino y las hojas de menta',
       'Añade el jugo de limón y el agua',
-      'Endulza si deseas con miel o azúcar',
-      'Deja reposar en nevera 30 minutos para que se integren los sabores'
+      'Deja reposar en nevera 30 minutos'
     ],
-    ingredients: [
-      { name: 'pepino', measure: '1 unidad', isFromGarden: false },
-      { name: 'menta', measure: '10 hojas', isFromGarden: false },
-      { name: 'limón', measure: '2 unidades', isFromGarden: false },
-      { name: 'agua', measure: '2 litros', isFromGarden: false },
-      { name: 'miel', measure: 'opcional', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'pepino', cantidad: '1 unidad' },
+      { nombre_ingrediente: 'menta',  cantidad: '10 hojas' },
+      { nombre_ingrediente: 'limón',  cantidad: '2 unidades' },
+      { nombre_ingrediente: 'agua',   cantidad: '2 litros' }
     ],
-    tips: [
-      'Puedes añadir jengibre para un toque picante',
-      'Ideal para servir en una jarra de vidrio con hielo'
-    ],
-    season: ['primavera', 'verano']
+    tips: 'Ideal para servir en una jarra de vidrio con hielo',
+    estacion: 'VERANO'
   },
   {
-    id: '6',
-    name: 'Pesto de Albahaca Casero',
-    description: 'Salsa italiana clásica, perfecta para pastas',
-    category: 'salsa',
-    type_dieta: ['vegetariana'],
-    prepTime: 10,
-    difficulty: 'facil',
-    servings: 4,
-    imageUrl: 'assets/images/pesto.jpg',
-    instructions: [
+    id_receta: 6,
+    nombre_receta: 'Pesto de Albahaca',
+    descripcion: 'Salsa italiana clásica, perfecta para pastas',
+    categoria: 'ENTRANTE',
+    tipo_dieta: 'VEGETARIANA',
+    tiempo_preparacion: 10,
+    dificultad: 'FACIL',
+    num_comensales: 4,
+    imagen_url: 'assets/images/pesto.jpg',
+    instrucciones: [
       'Lava y seca bien las hojas de albahaca',
-      'En un mortero o procesador, machaca los piñones y el ajo',
+      'En un mortero, machaca los piñones y el ajo',
       'Añade la albahaca y sigue machacando',
       'Incorpora el queso parmesano rallado',
-      'Añade el aceite de oliva poco a poco mientras mezclas',
-      'Salpimienta al gusto'
+      'Añade el aceite de oliva poco a poco'
     ],
-    ingredients: [
-      { name: 'albahaca', measure: '2 tazas', isFromGarden: false },
-      { name: 'piñones', measure: '50g', isFromGarden: false },
-      { name: 'queso parmesano', measure: '50g', isFromGarden: false },
-      { name: 'ajo', measure: '2 dientes', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '1/2 taza', isFromGarden: false },
-      { name: 'sal', measure: 'al gusto', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'albahaca',         cantidad: '2 tazas' },
+      { nombre_ingrediente: 'piñones',          cantidad: '50g' },
+      { nombre_ingrediente: 'queso parmesano',  cantidad: '50g' },
+      { nombre_ingrediente: 'ajo',              cantidad: '2 dientes' },
+      { nombre_ingrediente: 'aceite de oliva',  cantidad: '1/2 taza' }
     ],
-    tips: [
-      'El mortero tradicional da mejor textura que la batidora',
-      'Congela el pesto en cubiteras para porciones pequeñas'
-    ],
-    season: ['primavera', 'verano']
+    tips: 'El mortero tradicional da mejor textura que la batidora',
+    estacion: 'PRIMAVERA'
   },
   {
-    id: '7',
-    name: 'Pollo al Romero con Verduras del Huerto',
-    description: 'Pollo jugoso marinado con romero fresco y acompañado de pimientos y zanahoria',
-    category: 'principal',
-    type_dieta: ['omnivora'],
-    prepTime: 45,
-    difficulty: 'media',
-    servings: 4,
-    imageUrl: 'assets/images/pollo-romero.jpg',
-    instructions: [
+    id_receta: 7,
+    nombre_receta: 'Pollo al Romero',
+    descripcion: 'Pollo marinado con romero fresco y verduras del huerto',
+    categoria: 'PRINCIPAL',
+    tipo_dieta: 'OMNIVORA',
+    tiempo_preparacion: 45,
+    dificultad: 'MEDIA',
+    num_comensales: 4,
+    imagen_url: 'assets/images/pollo-romero.jpg',
+    instrucciones: [
       'Mezcla aceite, romero picado, tomillo, ajo y sal para la marinada',
       'Marina el pollo al menos 30 minutos',
       'Corta pimientos y zanahoria en trozos medianos',
@@ -218,243 +188,213 @@ export const RECETAS_LOCALES: Recipe[] = [
       'Añade las verduras y hornea a 200°C durante 25 minutos',
       'Espolvorea perejil fresco antes de servir'
     ],
-    ingredients: [
-      { name: 'pollo', measure: '4 muslos', isFromGarden: false },
-      { name: 'romero', measure: '3 ramas', isFromGarden: false },
-      { name: 'tomillo', measure: '2 ramas', isFromGarden: false },
-      { name: 'pimiento', measure: '2 unidades', isFromGarden: false },
-      { name: 'zanahoria', measure: '3 unidades', isFromGarden: false },
-      { name: 'ajo', measure: '4 dientes', isFromGarden: false },
-      { name: 'perejil', measure: 'al gusto', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '4 cucharadas', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'pollo',           cantidad: '4 muslos' },
+      { nombre_ingrediente: 'romero',          cantidad: '3 ramas' },
+      { nombre_ingrediente: 'tomillo',         cantidad: '2 ramas' },
+      { nombre_ingrediente: 'pimiento',        cantidad: '2 unidades' },
+      { nombre_ingrediente: 'zanahoria',       cantidad: '3 unidades' },
+      { nombre_ingrediente: 'ajo',             cantidad: '4 dientes' },
+      { nombre_ingrediente: 'perejil',         cantidad: 'al gusto' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '4 cucharadas' }
     ],
-    tips: [
-      'Cuanto más tiempo marine el pollo, más sabor tendrá',
-      'Puedes añadir patatas al horno para completar el plato'
-    ],
-    season: ['primavera', 'verano', 'otoño']
+    tips: 'Cuanto más tiempo marine el pollo, más sabor tendrá',
+    estacion: 'PRIMAVERA'
   },
   {
-    id: '8',
-    name: 'Ternera Salteada con Espinacas y Ajo',
-    description: 'Salteado rápido de ternera tierna con espinacas frescas y ajos dorados',
-    category: 'principal',
-    type_dieta: ['omnivora'],
-    prepTime: 20,
-    difficulty: 'facil',
-    servings: 2,
-    imageUrl: 'assets/images/ternera-salteada.jpg',
-    instructions: [
+    id_receta: 8,
+    nombre_receta: 'Ternera con Espinacas',
+    descripcion: 'Salteado rápido de ternera tierna con espinacas frescas y ajos dorados',
+    categoria: 'PRINCIPAL',
+    tipo_dieta: 'OMNIVORA',
+    tiempo_preparacion: 20,
+    dificultad: 'FACIL',
+    num_comensales: 2,
+    imagen_url: 'assets/images/ternera-salteada.jpg',
+    instrucciones: [
       'Corta la ternera en tiras finas',
       'Dora el ajo laminado en aceite de oliva',
       'Sella la ternera a fuego fuerte 2 minutos',
       'Añade las espinacas frescas y saltea 2 minutos más',
-      'Sazona con sal, pimienta y un chorrito de limón',
-      'Decora con cebollino picado'
+      'Sazona con sal, pimienta y un chorrito de limón'
     ],
-    ingredients: [
-      { name: 'ternera', measure: '300g', isFromGarden: false },
-      { name: 'espinacas', measure: '200g', isFromGarden: false },
-      { name: 'ajo', measure: '3 dientes', isFromGarden: false },
-      { name: 'cebollino', measure: 'al gusto', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '2 cucharadas', isFromGarden: false },
-      { name: 'limón', measure: '1/2 unidad', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'ternera',         cantidad: '300g' },
+      { nombre_ingrediente: 'espinacas',       cantidad: '200g' },
+      { nombre_ingrediente: 'ajo',             cantidad: '3 dientes' },
+      { nombre_ingrediente: 'cebollino',       cantidad: 'al gusto' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '2 cucharadas' },
+      { nombre_ingrediente: 'limón',           cantidad: '1/2 unidad' }
     ],
-    tips: [
-      'El fuego alto es clave para sellar bien la carne',
-      'Las espinacas reducen mucho, añade más de lo que parece'
-    ],
-    season: ['primavera', 'otoño', 'invierno']
+    tips: 'El fuego alto es clave para sellar bien la carne',
+    estacion: 'OTOÑO'
   },
   {
-    id: '9',
-    name: 'Pimientos Rellenos de Carne y Hierbas',
-    description: 'Pimientos del huerto rellenos de carne picada con tomate, orégano y cilantro',
-    category: 'principal',
-    type_dieta: ['omnivora'],
-    prepTime: 50,
-    difficulty: 'media',
-    servings: 4,
-    imageUrl: 'assets/images/pimiento-relleno.jpg',
-    instructions: [
+    id_receta: 9,
+    nombre_receta: 'Pimientos Rellenos',
+    descripcion: 'Pimientos del huerto rellenos de carne picada con tomate y hierbas',
+    categoria: 'PRINCIPAL',
+    tipo_dieta: 'OMNIVORA',
+    tiempo_preparacion: 50,
+    dificultad: 'MEDIA',
+    num_comensales: 4,
+    imagen_url: 'assets/images/pimiento-relleno.jpg',
+    instrucciones: [
       'Corta la tapa de los pimientos y vacíalos',
       'Sofríe cebolla y ajo hasta dorar',
       'Añade la carne picada y cocina hasta que pierda el color',
       'Incorpora el tomate triturado, orégano y cilantro; cocina 10 min',
-      'Rellena los pimientos con la mezcla',
-      'Hornea a 180°C durante 30 minutos'
+      'Rellena los pimientos y hornea a 180°C durante 30 minutos'
     ],
-    ingredients: [
-      { name: 'pimiento', measure: '4 unidades grandes', isFromGarden: false },
-      { name: 'carne picada', measure: '400g', isFromGarden: false },
-      { name: 'tomate', measure: '2 unidades', isFromGarden: false },
-      { name: 'orégano', measure: '1 cucharadita', isFromGarden: false },
-      { name: 'cilantro', measure: 'al gusto', isFromGarden: false },
-      { name: 'cebolla', measure: '1 unidad', isFromGarden: false },
-      { name: 'ajo', measure: '2 dientes', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'pimiento',      cantidad: '4 unidades' },
+      { nombre_ingrediente: 'carne picada',  cantidad: '400g' },
+      { nombre_ingrediente: 'tomate',        cantidad: '2 unidades' },
+      { nombre_ingrediente: 'orégano',       cantidad: '1 cucharadita' },
+      { nombre_ingrediente: 'cilantro',      cantidad: 'al gusto' },
+      { nombre_ingrediente: 'cebolla',       cantidad: '1 unidad' },
+      { nombre_ingrediente: 'ajo',           cantidad: '2 dientes' }
     ],
-    tips: [
-      'Puedes usar pimientos de colores para una presentación más vistosa',
-      'Si sobra relleno, úsalo para pasta o arroz'
-    ],
-    season: ['verano', 'otoño']
+    tips: 'Si sobra relleno, úsalo para pasta o arroz',
+    estacion: 'VERANO'
   },
   {
-    id: '10',
-    name: 'Crema de Calabacín con Menta',
-    description: 'Crema suave de calabacín del huerto con un toque fresco de menta',
-    category: 'entrante',
-    type_dieta: ['vegana', 'vegetariana'],
-    prepTime: 25,
-    difficulty: 'facil',
-    servings: 4,
-    imageUrl: 'assets/images/crema-calabacin.jpg',
-    instructions: [
+    id_receta: 10,
+    nombre_receta: 'Crema de Calabacín',
+    descripcion: 'Crema suave de calabacín con un toque fresco de menta',
+    categoria: 'ENTRANTE',
+    tipo_dieta: 'VEGANA',
+    tiempo_preparacion: 25,
+    dificultad: 'FACIL',
+    num_comensales: 4,
+    imagen_url: 'assets/images/crema-calabacin.jpg',
+    instrucciones: [
       'Trocea el calabacín y la cebolla',
       'Sofríe la cebolla con ajo en aceite de oliva 5 minutos',
       'Añade el calabacín y caldo vegetal',
       'Cocina a fuego medio 15 minutos hasta que esté tierno',
       'Tritura hasta obtener una crema fina',
-      'Sirve con hojas de menta fresca y un hilo de aceite'
+      'Sirve con hojas de menta fresca'
     ],
-    ingredients: [
-      { name: 'calabacín', measure: '3 unidades', isFromGarden: false },
-      { name: 'menta', measure: '6 hojas', isFromGarden: false },
-      { name: 'cebolla', measure: '1 unidad', isFromGarden: false },
-      { name: 'ajo', measure: '2 dientes', isFromGarden: false },
-      { name: 'caldo vegetal', measure: '600ml', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '2 cucharadas', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'calabacín',       cantidad: '3 unidades' },
+      { nombre_ingrediente: 'menta',           cantidad: '6 hojas' },
+      { nombre_ingrediente: 'cebolla',         cantidad: '1 unidad' },
+      { nombre_ingrediente: 'ajo',             cantidad: '2 dientes' },
+      { nombre_ingrediente: 'caldo vegetal',   cantidad: '600ml' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '2 cucharadas' }
     ],
-    tips: [
-      'Para más cremosidad añade una cucharada de yogur vegetal',
-      'Deliciosa tanto caliente como fría en verano'
-    ],
-    season: ['verano', 'otoño']
+    tips: 'Deliciosa tanto caliente como fría en verano',
+    estacion: 'VERANO'
   },
   {
-    id: '11',
-    name: 'Ensalada de Rúcula con Tomates Cherry y Rábanos',
-    description: 'Ensalada fresca y crujiente con rúcula picante, rábanos y tomates del huerto',
-    category: 'entrante',
-    type_dieta: ['vegana', 'vegetariana'],
-    prepTime: 10,
-    difficulty: 'facil',
-    servings: 2,
-    imageUrl: 'assets/images/ensalada-rucula.jpg',
-    instructions: [
+    id_receta: 11,
+    nombre_receta: 'Ensalada de Rúcula',
+    descripcion: 'Ensalada fresca con rúcula, rábanos y tomates del huerto',
+    categoria: 'ENTRANTE',
+    tipo_dieta: 'VEGANA',
+    tiempo_preparacion: 10,
+    dificultad: 'FACIL',
+    num_comensales: 2,
+    imagen_url: 'assets/images/ensalada-rucula.jpg',
+    instrucciones: [
       'Lava y seca la rúcula y los rábanos',
       'Corta los rábanos en rodajas finas',
       'Parte los tomates cherry por la mitad',
       'Mezcla todos los ingredientes en un bol',
-      'Aliña con aceite, limón, sal y cebollino picado',
-      'Sirve inmediatamente para que la rúcula no se ablande'
+      'Aliña con aceite, limón y cebollino picado'
     ],
-    ingredients: [
-      { name: 'rúcula', measure: '80g', isFromGarden: false },
-      { name: 'tomate cherry', measure: '12 unidades', isFromGarden: false },
-      { name: 'rábanos', measure: '6 unidades', isFromGarden: false },
-      { name: 'cebollino', measure: '1 cucharada', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '2 cucharadas', isFromGarden: false },
-      { name: 'limón', measure: '1/2 unidad', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'rúcula',          cantidad: '80g' },
+      { nombre_ingrediente: 'tomate cherry',   cantidad: '12 unidades' },
+      { nombre_ingrediente: 'rábanos',         cantidad: '6 unidades' },
+      { nombre_ingrediente: 'cebollino',       cantidad: '1 cucharada' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '2 cucharadas' },
+      { nombre_ingrediente: 'limón',           cantidad: '1/2 unidad' }
     ],
-    tips: [
-      'Añade piñones tostados para darle más textura',
-      'Un poco de queso parmesano la convierte en vegetariana con más sabor'
-    ],
-    season: ['primavera', 'verano']
+    tips: 'Sirve inmediatamente para que la rúcula no se ablande',
+    estacion: 'PRIMAVERA'
   },
   {
-    id: '12',
-    name: 'Salteado de Judías Verdes con Ajo y Perejil',
-    description: 'Judías verdes crujientes salteadas con ajo dorado y perejil fresco',
-    category: 'principal',
-    type_dieta: ['vegana', 'vegetariana'],
-    prepTime: 15,
-    difficulty: 'facil',
-    servings: 3,
-    imageUrl: 'assets/images/salterado-judias-ajo-perejil.jpg',
-    instructions: [
+    id_receta: 12,
+    nombre_receta: 'Judías Verdes al Ajo',
+    descripcion: 'Judías verdes crujientes salteadas con ajo dorado y perejil fresco',
+    categoria: 'PRINCIPAL',
+    tipo_dieta: 'VEGANA',
+    tiempo_preparacion: 15,
+    dificultad: 'FACIL',
+    num_comensales: 3,
+    imagen_url: 'assets/images/salterado-judias-ajo-perejil.jpg',
+    instrucciones: [
       'Lava y despunta las judías verdes',
-      'Escáldalas en agua con sal 5 minutos, luego enfría en agua fría',
+      'Escáldalas en agua con sal 5 minutos, enfría en agua fría',
       'Lamina el ajo y dóralo en aceite de oliva',
       'Añade las judías y saltea a fuego fuerte 3 minutos',
-      'Sazona con sal, pimienta y espolvorea perejil picado',
-      'Sirve caliente como guarnición o plato principal'
+      'Espolvorea perejil picado y sirve'
     ],
-    ingredients: [
-      { name: 'judías verdes', measure: '400g', isFromGarden: false },
-      { name: 'ajo', measure: '4 dientes', isFromGarden: false },
-      { name: 'perejil', measure: '2 cucharadas', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '3 cucharadas', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'judías verdes',   cantidad: '400g' },
+      { nombre_ingrediente: 'ajo',             cantidad: '4 dientes' },
+      { nombre_ingrediente: 'perejil',         cantidad: '2 cucharadas' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '3 cucharadas' }
     ],
-    tips: [
-      'El truco del agua fría mantiene el color verde brillante',
-      'Puedes añadir almendras laminadas para más textura'
-    ],
-    season: ['verano', 'otoño']
+    tips: 'El agua fría mantiene el color verde brillante',
+    estacion: 'VERANO'
   },
   {
-    id: '13',
-    name: 'Kale con Guisantes y Limón',
-    description: 'Salteado nutritivo de kale y guisantes frescos con un toque cítrico',
-    category: 'principal',
-    type_dieta: ['vegana', 'vegetariana'],
-    prepTime: 15,
-    difficulty: 'facil',
-    servings: 2,
-    imageUrl: 'assets/images/kale-guisantes.jpg',
-    instructions: [
+    id_receta: 13,
+    nombre_receta: 'Kale con Guisantes',
+    descripcion: 'Salteado nutritivo de kale y guisantes frescos con toque cítrico',
+    categoria: 'PRINCIPAL',
+    tipo_dieta: 'VEGANA',
+    tiempo_preparacion: 15,
+    dificultad: 'FACIL',
+    num_comensales: 2,
+    imagen_url: 'assets/images/kale-guisantes.jpg',
+    instrucciones: [
       'Retira los tallos duros del kale y trocea las hojas',
       'Saltea el ajo en aceite de oliva',
-      'Añade el kale y rehoga 4 minutos hasta que se ablande',
+      'Añade el kale y rehoga 4 minutos',
       'Incorpora los guisantes y cocina 3 minutos más',
-      'Exprime el limón por encima y ajusta de sal',
-      'Decora con cebollino picado'
+      'Exprime el limón por encima'
     ],
-    ingredients: [
-      { name: 'kale', measure: '150g', isFromGarden: false },
-      { name: 'guisantes', measure: '150g', isFromGarden: false },
-      { name: 'ajo', measure: '2 dientes', isFromGarden: false },
-      { name: 'cebollino', measure: '1 cucharada', isFromGarden: false },
-      { name: 'limón', measure: '1 unidad', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '2 cucharadas', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'kale',            cantidad: '150g' },
+      { nombre_ingrediente: 'guisantes',       cantidad: '150g' },
+      { nombre_ingrediente: 'ajo',             cantidad: '2 dientes' },
+      { nombre_ingrediente: 'cebollino',       cantidad: '1 cucharada' },
+      { nombre_ingrediente: 'limón',           cantidad: '1 unidad' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '2 cucharadas' }
     ],
-    tips: [
-      'Masajea el kale con sal y limón para ablandarlo antes de cocinar',
-      'Los guisantes frescos del huerto son mucho más dulces que los congelados'
-    ],
-    season: ['primavera', 'verano']
+    tips: 'Los guisantes frescos del huerto son mucho más dulces',
+    estacion: 'PRIMAVERA'
   },
   {
-    id: '14',
-    name: 'Acelgas Rehogadas con Zanahoria',
-    description: 'Acelgas tiernas rehogadas con zanahoria y un sofrito de ajo y orégano',
-    category: 'principal',
-    type_dieta: ['vegana', 'vegetariana'],
-    prepTime: 20,
-    difficulty: 'facil',
-    servings: 3,
-    imageUrl: 'assets/images/acelga-zanahoria.jpg',
-    instructions: [
+    id_receta: 14,
+    nombre_receta: 'Acelgas con Zanahoria',
+    descripcion: 'Acelgas rehogadas con zanahoria y un sofrito de ajo y orégano',
+    categoria: 'PRINCIPAL',
+    tipo_dieta: 'VEGANA',
+    tiempo_preparacion: 20,
+    dificultad: 'FACIL',
+    num_comensales: 3,
+    imagen_url: 'assets/images/acelga-zanahoria.jpg',
+    instrucciones: [
       'Lava las acelgas y separa hojas de tallos',
       'Corta los tallos en trozos y las zanahorias en rodajas',
       'Sofríe ajo y orégano en aceite de oliva',
       'Añade los tallos y zanahoria; cocina 5 minutos',
-      'Incorpora las hojas de acelga y rehoga 3 minutos',
-      'Sazona con sal y un chorrito de limón'
+      'Incorpora las hojas de acelga y rehoga 3 minutos'
     ],
-    ingredients: [
-      { name: 'acelgas', measure: '400g', isFromGarden: false },
-      { name: 'zanahoria', measure: '2 unidades', isFromGarden: false },
-      { name: 'ajo', measure: '3 dientes', isFromGarden: false },
-      { name: 'orégano', measure: '1 cucharadita', isFromGarden: false },
-      { name: 'aceite de oliva', measure: '3 cucharadas', isFromGarden: false },
-      { name: 'limón', measure: '1/2 unidad', isFromGarden: false }
+    ingredientes: [
+      { nombre_ingrediente: 'acelgas',         cantidad: '400g' },
+      { nombre_ingrediente: 'zanahoria',       cantidad: '2 unidades' },
+      { nombre_ingrediente: 'ajo',             cantidad: '3 dientes' },
+      { nombre_ingrediente: 'orégano',         cantidad: '1 cucharadita' },
+      { nombre_ingrediente: 'aceite de oliva', cantidad: '3 cucharadas' },
+      { nombre_ingrediente: 'limón',           cantidad: '1/2 unidad' }
     ],
-    tips: [
-      'Los tallos necesitan más tiempo que las hojas, añádelos antes',
-      'Un huevo escalfado encima lo convierte en un plato completo'
-    ],
-    season: ['otoño', 'invierno', 'primavera']
+    tips: 'Los tallos necesitan más tiempo que las hojas, añádelos antes',
+    estacion: 'OTOÑO'
   }
 ];

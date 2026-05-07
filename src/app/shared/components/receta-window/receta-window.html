@@ -1,73 +1,83 @@
-
-<div class="receta-window" (click)="handleOutsideClick($event)" *ngIf="recipe">
+@if (recipe) {
+<div class="receta-window" (click)="handleOutsideClick($event)">
   <div class="receta-window__container">
     <button class="receta-window__close" (click)="onClose()">✕</button>
-    
+
     <div class="receta-window__header">
-      <img [src]="recipe.imageUrl" [alt]="recipe.name" 
-           (error)="recipe.imageUrl = 'assets/images/placeholder-receta.jpg'">
+      <img [src]="recipe.imagen_url" [alt]="recipe.nombre_receta"
+           (error)="recipe.imagen_url = 'assets/images/placeholder-receta.jpg'">
       <div class="header-overlay"></div>
       <div class="header-content">
-        <h1>{{ recipe.name }}</h1>
+        <h1>{{ recipe.nombre_receta }}</h1>
         <div class="header-meta">
-          <span>{{ getCategoryText() }}</span>
+          <span>{{ getCategoriaText() }}</span>
           <span>•</span>
           <span>{{ getDietaText() }}</span>
           <span>•</span>
-          <span>{{ recipe.prepTime }} min</span>
+          <span>{{ recipe.tiempo_preparacion }} min</span>
         </div>
         <div class="compatibility-badge" [class]="'compatibility--' + compatibilityPercentage">
           Compatibilidad: {{ compatibilityPercentage }}%
         </div>
       </div>
     </div>
-    
+
     <div class="receta-window__content">
       <div class="content-section">
         <h2>🌱 Ingredientes de tu huerto</h2>
         <div class="ingredients-grid">
-          <div *ngFor="let ingredient of ingredientsBySource.fromGarden" class="ingredient ingredient--garden">
-            <span class="ingredient-check">✅</span>
-            <span class="ingredient-name">{{ ingredient.name }}</span>
-            <span class="ingredient-measure">{{ ingredient.measure }}</span>
-            <!-- <span *ngIf="ingredient.gardenPlantMatch" class="ingredient-source">
-              (de tu {{ ingredient.gardenPlantMatch }})
-            </span> -->
-          </div>
-          <div *ngIf="ingredientsBySource.fromGarden.length === 0" class="no-ingredients">
-            <p>No tienes ingredientes de tu huerto para esta receta</p>
-          </div>
+          @for (ing of ingredientsBySource.fromGarden; track ing.nombre_ingrediente) {
+            <div class="ingredient ingredient--garden">
+              <span class="ingredient-check">✅</span>
+              <span class="ingredient-name">{{ ing.nombre_ingrediente }}</span>
+              <span class="ingredient-measure">{{ ing.cantidad }}</span>
+            </div>
+          }
+          @if (ingredientsBySource.fromGarden.length === 0) {
+            <div class="no-ingredients">
+              <p>No tienes ingredientes de tu huerto para esta receta</p>
+            </div>
+          }
         </div>
-        
-        <h2 *ngIf="ingredientsBySource.missing.length > 0">🛒 Ingredientes que necesitas</h2>
-        <div class="ingredients-grid" *ngIf="ingredientsBySource.missing.length > 0">
-          <div *ngFor="let ingredient of ingredientsBySource.missing" class="ingredient ingredient--missing">
-            <span class="ingredient-check">❌</span>
-            <span class="ingredient-name">{{ ingredient.name }}</span>
-            <span class="ingredient-measure">{{ ingredient.measure }}</span>
+
+        @if (ingredientsBySource.missing.length > 0) {
+          <h2>🛒 Ingredientes que necesitas</h2>
+          <div class="ingredients-grid">
+            @for (ing of ingredientsBySource.missing; track ing.nombre_ingrediente) {
+              <div class="ingredient ingredient--missing">
+                <span class="ingredient-check">❌</span>
+                <span class="ingredient-name">{{ ing.nombre_ingrediente }}</span>
+                <span class="ingredient-measure">{{ ing.cantidad }}</span>
+              </div>
+            }
           </div>
-        </div>
+        }
       </div>
-      
+
       <div class="content-section">
         <h2>📝 Instrucciones</h2>
         <div class="instructions">
-          <div *ngFor="let instruction of recipe.instructions; let i = index" class="instruction-step">
-            <span class="step-number">{{ i + 1 }}</span>
-            <p>{{ instruction }}</p>
-          </div>
+          @for (step of recipe.instrucciones; track $index) {
+            <div class="instruction-step">
+              <span class="step-number">{{ $index + 1 }}</span>
+              <p>{{ step }}</p>
+            </div>
+          }
         </div>
       </div>
-      
-      <div class="content-section" *ngIf="recipe.tips && recipe.tips.length > 0">
-        <h2>💡 Tips y Consejos</h2>
-        <div class="tips">
-          <div *ngFor="let tip of recipe.tips" class="tip">
-            <span class="tip-icon">✨</span>
-            <p>{{ tip }}</p>
+
+      @if (recipe.tips) {
+        <div class="content-section">
+          <h2>💡 Tips y Consejos</h2>
+          <div class="tips">
+            <div class="tip">
+              <span class="tip-icon">✨</span>
+              <p>{{ recipe.tips }}</p>
+            </div>
           </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </div>
+}
