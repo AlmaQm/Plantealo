@@ -313,7 +313,7 @@ export const PLANTAS_DATA: Planta[] = [
     planta_id: 23,
     usuario_id: 1,
     nombre_planta: 'Perejil',
-    imagen_url: 'assets/images/perejil.jpg',
+    imagen_url: 'assets/images/peregil.jpg',
     f_siembra: new Date('2026-02-20'),
     f_recogida: new Date('2026-04-15'),
     tipo_planta: 'INTERIOR',
