@@ -42,24 +42,25 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 60px 24px;
+    min-height: calc(100vh - 260px);
     text-align: center;
     color: $green-5;
-    gap: 8px;
+    gap: 16px;
 
     .vacio-icon {
-      font-size: 48px;
+      font-size: 72px;
     }
 
     p {
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 20px;
+      font-weight: 700;
       color: $green-6;
       margin: 0;
     }
 
     span {
-      font-size: 13px;
+      font-size: 14px;
+      line-height: 1.5;
     }
   }
 }
@@ -89,7 +90,7 @@
 // Botón flotante
 .fab {
   position: fixed;
-  bottom: 84px;
+  bottom: 164px;
   right: 20px;
   width: 52px;
   height: 52px;
