@@ -5,7 +5,9 @@
 .recetas-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 16px 16px 80px;
+  min-height: 100vh;
+  background-color: $earth-1;
   
   &__header {
     text-align: center;
@@ -72,8 +74,8 @@
   
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 24px;
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
   
   .no-results {
