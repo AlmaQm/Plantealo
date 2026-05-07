@@ -29,7 +29,7 @@
     
   </div>
   
-  <div class="recetas-page__grid" *ngIf="!loading; else loadingTemplate">
+  <div class="recetas-page__grid">
     <app-receta-card 
       *ngFor="let recipe of filteredRecipes"
       [recipe]="recipe"
@@ -49,10 +49,3 @@
     (close)="closeRecipeDetail()">
   </app-receta-window>
 </div>
-
-<ng-template #loadingTemplate>
-  <div class="loading-spinner">
-    <div class="spinner"></div>
-    <p>Cargando recetas...</p>
-  </div>
-</ng-template>
