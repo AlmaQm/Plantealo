@@ -1,15 +1,22 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
+from dotenv import load_dotenv
 
-# Sustituye con tu URI de Aiven
-SQLALCHEMY_DATABASE_URL = "postgres://avnadmin:<redacted>@pg-26016a8d-almaquesadamartinez-07f6.a.aivencloud.com:14955/defaultdb?sslmode=require"
+load_dotenv() # Esto lee la línea que pusimos en el archivo .env
 
-# El engine es el encargado de la conexión física
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL no está definido. Configura el archivo .env o la variable de entorno.")
 
-# La sesión es lo que usaremos para hacer consultas
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Clase base para crear nuestros modelos (tablas)
 Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
