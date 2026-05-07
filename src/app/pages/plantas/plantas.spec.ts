@@ -1,18 +1,21 @@
-import { TestBed } from '@angular/core/testing';
-import { PlantasService } from './plantas'; // Asegúrate que el nombre del archivo coincida
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { PlantasComponent } from './plantas';
 
-describe('PlantasService', () => {
-  let service: PlantasService;
+describe('PlantasComponent', () => {
+  let component: PlantasComponent;
+  let fixture: ComponentFixture<PlantasComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      // Si en el futuro tu servicio usa HttpClient, aquí deberás añadir:
-      // imports: [HttpClientTestingModule]
-    });
-    service = TestBed.inject(PlantasService);
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [PlantasComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PlantasComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
 });

@@ -1,7 +1,7 @@
-import { RecetasLocales } from './recetas-locales';
+import { RECETAS_LOCALES } from './recetas-locales';
 
-describe('RecetasLocales', () => {
-  it('should create an instance', () => {
-    expect(new RecetasLocales()).toBeTruthy();
+describe('RECETAS_LOCALES', () => {
+  it('should be defined', () => {
+    expect(RECETAS_LOCALES).toBeTruthy();
   });
 });
