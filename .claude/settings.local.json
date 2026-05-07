@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\docs\\\\superpowers\\\\specs\")",
+      "Bash(npx ng *)",
+      "Bash(npm test *)",
+      "Bash(pkill -f \"npm test\")",
+      "Bash(ng test *)",
+      "Bash(ng build *)",
+      "Bash(npx sass *)"
+    ],
+    "additionalDirectories": [
+      "c:\\Estudis\\FundeSplai\\angular\\Plantealo\\docs\\superpowers"
+    ]
+  }
+}
