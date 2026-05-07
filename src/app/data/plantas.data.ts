@@ -187,7 +187,7 @@ export const PLANTAS_DATA: Planta[] = [
     planta_id: 14,
     usuario_id: 1,
     nombre_planta: 'Berenjenas',
-    imagen_url: 'assets/images/berenjena.jpg',
+    imagen_url: 'assets/images/berenjenasç.jpg',
     f_siembra: new Date('2026-02-28'),
     f_recogida: new Date('2026-07-20'),
     tipo_planta: 'EXTERIOR',
