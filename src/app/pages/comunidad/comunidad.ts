@@ -10,7 +10,7 @@ import { COMUNIDAD_DATA } from '../../data/comunidad.data';
   standalone: true,
   imports: [CommonModule, FormsModule, PublicacionCardComponent],
   templateUrl: './comunidad.html',
-  styleUrl: './comunidad.scss'
+  styleUrls: ['./comunidad.scss']
 })
 export class Comunidad {
 
