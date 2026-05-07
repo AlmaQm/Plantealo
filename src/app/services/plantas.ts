@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Planta } from '../models/interfaces';
-import { PLANTAS_DATA } from '../data/plantas.data';
+import { PLANTAS_DATA } from '../data/planta';
 
 @Injectable({
   providedIn: 'root'
