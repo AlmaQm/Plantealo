@@ -242,6 +242,52 @@
   }
 }
 
+.tipo-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.tipo-opcion {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1.5px solid $green-3;
+  font-size: 14px;
+  color: $green-6;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  &.selected {
+    background: $green-1;
+    border-color: $green-5;
+    color: $green-7;
+    font-weight: 600;
+  }
+}
+
+.campo-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid $green-3;
+  border-radius: 12px;
+  font-size: 15px;
+  color: $green-7;
+  background: white;
+
+  &:focus {
+    outline: none;
+    border-color: $green-5;
+  }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }

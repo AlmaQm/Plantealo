@@ -18,10 +18,13 @@ export class PlantasComponent {
   private plantasService = inject(PlantasService);
 
   readonly catalogo = this.plantasService.catalogo;
+  readonly hoy = new Date().toISOString().split('T')[0];
 
   filtroActivo = signal<Filtro>('TODAS');
   modalAbierto = signal(false);
   plantaIdSeleccionada = signal<number | null>(null);
+  tipoSeleccionado = signal<'INTERIOR' | 'EXTERIOR'>('EXTERIOR');
+  fechaSiembra = signal<string>(this.hoy);
 
   plantasFiltradas = computed(() => {
     const filtro = this.filtroActivo();
@@ -36,6 +39,8 @@ export class PlantasComponent {
 
   abrirModal(): void {
     this.plantaIdSeleccionada.set(null);
+    this.tipoSeleccionado.set('EXTERIOR');
+    this.fechaSiembra.set(this.hoy);
     this.modalAbierto.set(true);
   }
 
@@ -49,7 +54,11 @@ export class PlantasComponent {
     if (id === null) return;
     const planta = this.catalogo.find(p => p.planta_id === +id);
     if (planta) {
-      this.plantasService.addPlanta(planta);
+      this.plantasService.addPlanta({
+        ...planta,
+        tipo_planta: this.tipoSeleccionado(),
+        f_siembra: new Date(this.fechaSiembra())
+      });
       this.cerrarModal();
     }
   }
