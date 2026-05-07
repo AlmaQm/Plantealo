@@ -17,7 +17,7 @@
     <img class="pub-card__imagen"
          [src]="publicacion.imagen_url"
          [alt]="publicacion.descripcion"
-         (error)="$any($event.target).src='assets/images/placeholder-receta.jpg'">
+         (error)="onImageError($event)">
     <span class="pub-card__badge categoria--{{ publicacion.categoria | lowercase }}">
       {{ getCategoriaLabel() }}
     </span>

@@ -67,4 +67,8 @@ export class PublicacionCardComponent implements OnInit {
     };
     return map[this.publicacion.categoria];
   }
+
+  onImageError(event: Event): void {
+    (event.target as HTMLImageElement).src = 'assets/images/placeholder-receta.jpg';
+  }
 }
