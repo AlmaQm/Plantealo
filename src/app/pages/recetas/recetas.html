@@ -16,6 +16,17 @@
     </div>
   </div> -->
   
+  <div class="recetas-page__dieta-chips">
+    @for (chip of dietaChips; track chip.value) {
+      <button
+        class="dieta-chip"
+        [class.active]="dietasActivas.has(chip.value)"
+        (click)="toggleDieta(chip.value)">
+        {{ chip.label }}
+      </button>
+    }
+  </div>
+
   <div class="recetas-page__filters">
     <div class="search-box">
       <input 

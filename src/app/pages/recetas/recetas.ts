@@ -1,5 +1,3 @@
-// src/app/pages/recetas/recetas.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +6,8 @@ import { RecetaCardComponent } from '../../shared/components/receta-card/receta-
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
 import { Recipe, Usuario, GardenPlant } from '../../models/interfaces';
 import { RECETAS_LOCALES } from '../../data/recetas-locales';
+
+type TipoDieta = 'vegetariana' | 'vegana' | 'omnivora';
 
 @Component({
   selector: 'app-recetas',
@@ -21,28 +21,35 @@ export class RecetasComponent implements OnInit {
   filteredRecipes: Recipe[] = [];
   selectedRecipe: Recipe | null = null;
   loading: boolean = false;
-  
-  // Búsqueda
   searchTerm: string = '';
-  
-  // Usuario logueado (esto vendría de un servicio de autenticación)
+
+  // Dieta simulada del usuario registrado
+  readonly dietaUsuario: TipoDieta = 'vegetariana';
+
+  readonly dietaChips: { value: TipoDieta; label: string }[] = [
+    { value: 'vegetariana', label: '🥬 Vegetariana' },
+    { value: 'vegana',      label: '🌱 Vegana'      },
+    { value: 'omnivora',    label: '🍖 Omnívora'    }
+  ];
+
+  dietasActivas = new Set<TipoDieta>([this.dietaUsuario]);
+
   currentUser: Usuario = {
     usuarioid: '1',
     nombre: 'Usuario Test',
     email: 'test@example.com',
-    tipo_dieta: 'vegetariana', // esto cambiaría según el usuario
+    tipo_dieta: this.dietaUsuario,
     recetasGuardadasIds: []
   };
-  
-  // Datos del huerto
+
   gardenPlants: GardenPlant[] = [
-    { id: '1', name: 'tomate', quantity: 5, unit: 'plantas' },
-    { id: '2', name: 'lechuga', quantity: 10, unit: 'plantas' },
-    { id: '3', name: 'albahaca', quantity: 3, unit: 'plantas' },
-    { id: '4', name: 'menta', quantity: 2, unit: 'plantas' },
-    { id: '5', name: 'pepino', quantity: 4, unit: 'plantas' },
-    { id: '6', name: 'perejil', quantity: 3, unit: 'plantas' },
-    { id: '7', name: 'cilantro', quantity: 2, unit: 'plantas' }
+    { id: '1', name: 'tomate',   quantity: 5,  unit: 'plantas' },
+    { id: '2', name: 'lechuga',  quantity: 10, unit: 'plantas' },
+    { id: '3', name: 'albahaca', quantity: 3,  unit: 'plantas' },
+    { id: '4', name: 'menta',    quantity: 2,  unit: 'plantas' },
+    { id: '5', name: 'pepino',   quantity: 4,  unit: 'plantas' },
+    { id: '6', name: 'perejil',  quantity: 3,  unit: 'plantas' },
+    { id: '7', name: 'cilantro', quantity: 2,  unit: 'plantas' }
   ];
 
   constructor(private recipesService: RecipesService) {}
@@ -51,30 +58,47 @@ export class RecetasComponent implements OnInit {
     this.recipes = RECETAS_LOCALES.map(recipe =>
       this.recipesService.updateGardenCompatibility(recipe, this.gardenPlants)
     );
-    this.filteredRecipes = [...this.recipes];
+    this.applyFilters();
   }
 
-  applySearch(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredRecipes = [...this.recipes];
+  toggleDieta(dieta: TipoDieta): void {
+    if (this.dietasActivas.has(dieta)) {
+      this.dietasActivas.delete(dieta);
     } else {
-      const term = this.searchTerm.toLowerCase();
-      this.filteredRecipes = this.recipes.filter(recipe =>
-        recipe.name.toLowerCase().includes(term) ||
-        recipe.description.toLowerCase().includes(term)
-      );
+      this.dietasActivas.add(dieta);
     }
-    
-    // Ordenar por compatibilidad
-    this.filteredRecipes.sort((a, b) => {
-      const compatA = this.recipesService.calculateCompatibility(a);
-      const compatB = this.recipesService.calculateCompatibility(b);
-      return compatB - compatA;
-    });
+    // Forzar detección de cambios en el Set
+    this.dietasActivas = new Set(this.dietasActivas);
+    this.applyFilters();
   }
 
   onSearchChange(): void {
-    this.applySearch();
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let result = [...this.recipes];
+
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(r =>
+        r.name.toLowerCase().includes(term) ||
+        r.description.toLowerCase().includes(term)
+      );
+    }
+
+    if (this.dietasActivas.size > 0) {
+      result = result.filter(r =>
+        r.type_dieta.some(d => this.dietasActivas.has(d as TipoDieta))
+      );
+    }
+
+    result.sort((a, b) =>
+      this.recipesService.calculateCompatibility(b) -
+      this.recipesService.calculateCompatibility(a)
+    );
+
+    this.filteredRecipes = result;
   }
 
   openRecipeDetail(recipe: Recipe): void {
@@ -88,14 +112,13 @@ export class RecetasComponent implements OnInit {
   getCompatibility(recipe: Recipe): number {
     return this.recipesService.calculateCompatibility(recipe);
   }
-  
-  // Método para obtener el texto del tipo de dieta
+
   getDietaText(): string {
-    const dietas = {
+    const dietas: Record<TipoDieta, string> = {
       'vegana': '🌱 Vegana',
       'vegetariana': '🥬 Vegetariana',
       'omnivora': '🍖 Omnívora'
     };
-    return dietas[this.currentUser.tipo_dieta];
+    return dietas[this.dietaUsuario];
   }
 }

@@ -25,6 +25,13 @@
     }
   }
   
+  &__dieta-chips {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
   &__filters {
     display: flex;
     justify-content: space-between;
@@ -83,6 +90,28 @@
     text-align: center;
     padding: 48px;
     color: $green-6;
+  }
+}
+
+.dieta-chip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid $green-3;
+  background: transparent;
+  color: $green-6;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: $green-6;
+    border-color: $green-6;
+    color: white;
+  }
+
+  &:not(.active):hover {
+    background: $green-1;
   }
 }
 
