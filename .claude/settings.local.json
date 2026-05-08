@@ -16,7 +16,11 @@
       "Bash(grep '$green-' src/styles/variables.scss)",
       "Bash(xargs cat)",
       "Bash(npm run *)",
-      "Bash(Remove-Item \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\favicon.svg\" -Force)"
+      "Bash(Remove-Item \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\favicon.svg\" -Force)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(node -e \"const p = require\\('./node_modules/@angular/fire/package.json'\\); console.log\\(p.version\\)\")",
+      "Bash(node -e \"require\\('c:/Estudis/FundeSplai/angular/Plantealo/angular.json'\\); console.log\\('JSON valid'\\)\")"
     ],
     "additionalDirectories": [
       "c:\\Estudis\\FundeSplai\\angular\\Plantealo\\docs\\superpowers"
