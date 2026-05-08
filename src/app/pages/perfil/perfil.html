@@ -4,15 +4,15 @@
       <p>Gestiona tu información personal</p>
    </header>
 
-   <main class="profile-content">
+   <div class="profile-content">
       <section class="card card--main">
          <div class="avatar">
             <span class="material-icons">MG</span>
          </div>
-         <h2>{{ user.name }}</h2>
-         <span class="handle">{{ user.handle }}</span>
+         <h2>María García</h2>
+         <span class="handle">@maria_huerto</span>
          <div class="tag">
-            <span class="material-icons">leaf</span> {{ user.preference }}
+            <span class="material-icons">leaf</span> Vegetariano
          </div>
       </section>
 
@@ -21,44 +21,67 @@
             <h3>Información Personal</h3>
             <button class="btn-edit">Editar</button>
          </div>
+
          <div class="field">
             <label>Nombre completo</label>
-            <p>{{ user.name }}</p>
+            <p>María García</p>
          </div>
          <div class="field">
             <label>Nombre de usuario</label>
-            <p>{{ user.handle.replace('@', '') }}</p>
+            <p>maria_huerto</p>
          </div>
          <div class="field">
             <label>Preferencia alimentaria</label>
-            <p>{{ user.preference }}</p>
+            <p>Vegetariano</p>
          </div>
       </section>
 
-      <div class="menu-list">
-         @for (option of menuOptions; track option.title) {
-         <button class="card card--action" (click)="option.action()">
-            <div class="icon-wrapper">
-               <span class="material-icons">{{ option.icon }}</span>
-            </div>
+      <nav class="menu-group">
+         <button class="card card--action">
+            <div class="icon-wrapper"><span class="material-icons">notifications_none</span></div>
             <div class="text-group">
-               <strong>{{ option.title }}</strong>
-               <span>{{ option.subtitle }}</span>
+               <strong>Notificaciones</strong>
+               <span>Gestiona tus alertas de riego y cosecha</span>
             </div>
          </button>
-         }
-      </div>
+
+         <button class="card card--action">
+            <div class="icon-wrapper"><span class="material-icons">lock_open</span></div>
+            <div class="text-group">
+               <strong>Seguridad</strong>
+               <span>Cambiar contraseña y opciones de privacidad</span>
+            </div>
+         </button>
+
+         <button class="card card--action">
+            <div class="icon-wrapper"><span class="material-icons">settings</span></div>
+            <div class="text-group">
+               <strong>Configuración</strong>
+               <span>Ajustes generales de la aplicación</span>
+            </div>
+         </button>
+      </nav>
 
       <section class="card card--stats">
          <h3>Estadísticas del Huerto</h3>
          <div class="stats-grid">
-            @for (stat of user.stats; track stat.label) {
             <div class="stat-item">
-               <span class="stat-value">{{ stat.value }}</span>
-               <span class="stat-label">{{ stat.label }}</span>
+               <span class="stat-value">8</span>
+               <span class="stat-label">Plantas</span>
             </div>
-            }
+            <div class="stat-item">
+               <span class="stat-value">2</span>
+               <span class="stat-label">Listas</span>
+            </div>
+            <div class="stat-item">
+               <span class="stat-value">6</span>
+               <span class="stat-label">Recetas</span>
+            </div>
          </div>
       </section>
-   </main>
+      <button class="btn-logout" (click)="handleAction('logout')">
+         <span class="material-icons"></span>
+         Cerrar Sesión
+      </button>
+   </div>
 </div>

@@ -1,68 +1,63 @@
-// Sistema de diseño (Fácil de mantener)
+@use '../../styles/variables.scss' as *;
+
+
 :host {
-   --primary-color: #5d6d4e; // Verde oscuro de tu imagen
-   --accent-color: #7d8a70;
-   --bg-color: #e5ddd3; // Fondo crema
-   --card-white: #ffffff;
-   --text-dark: #3e3a35;
-   --text-light: #8e847a;
-   --radius: 24px;
+   display: block;
+   width: 100%;
+   min-height: 100vh;
+   background-color: #f1e9db; // Fondo beige general
 }
 
 .view-container {
-   background-color: var(--bg-color);
-   min-height: 100vh;
-   padding: 2rem 1rem;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-
-   .profile-content {
-      width: 100%;
-      max-width: 450px; // Tamaño ideal para simular app en PC
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-   }
+   width: 100%;
+   padding: 30px 20px;
+   box-sizing: border-box;
 }
 
 .view-header {
-   text-align: left;
-   width: 100%;
-   max-width: 450px;
-   margin-bottom: 1.5rem;
+   margin-bottom: 25px;
 
    h1 {
       font-size: 2rem;
+      color: $green-7;
       margin: 0;
-      color: var(--text-dark);
    }
 
    p {
-      color: var(--text-light);
-      margin: 0.2rem 0;
+      color: $earth-9;
+      opacity: 0.7;
+      margin: 5px 0;
    }
 }
 
+.profile-content {
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   width: 100%;
+}
+
 .card {
-   background: var(--card-white);
-   border-radius: var(--radius);
-   padding: 1.5rem;
-   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+   background: white;
+   border-radius: 28px;
+   padding: 24px;
    border: none;
+   width: 100%;
+   box-sizing: border-box;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 
    &--main {
       text-align: center;
 
       .avatar {
-         width: 70px;
-         height: 70px;
-         background: var(--accent-color);
+         width: 80px;
+         height: 80px;
+         background-color: $green-7;
+         color: white;
          border-radius: 50%;
-         margin: 0 auto 1rem;
+         margin: 0 auto 15px;
          display: grid;
          place-items: center;
-         color: white;
 
          .material-icons {
             font-size: 2.5rem;
@@ -70,22 +65,29 @@
       }
 
       h2 {
+         color: $green-7;
          margin: 0;
-         font-size: 1.3rem;
+         font-size: 1.4rem;
       }
 
       .handle {
-         color: var(--text-light);
+         color: $earth-9;
+         opacity: 0.6;
+         font-size: 0.9rem;
       }
 
       .tag {
-         margin-top: 0.8rem;
-         color: #2e7d32;
-         font-weight: 500;
          display: flex;
          align-items: center;
          justify-content: center;
-         gap: 4px;
+         gap: 5px;
+         margin-top: 10px;
+         color: $green-6;
+         font-weight: 500;
+
+         .material-icons {
+            font-size: 1.1rem;
+         }
       }
    }
 
@@ -94,83 +96,80 @@
          display: flex;
          justify-content: space-between;
          align-items: center;
-         margin-bottom: 1rem;
+         margin-bottom: 20px;
 
          h3 {
-            font-size: 1.1rem;
+            color: $green-7;
             margin: 0;
+            font-size: 1.1rem;
          }
 
          .btn-edit {
-            background: #efebe6;
+            background: $earth-1;
+            color: $earth-9;
             border: none;
-            padding: 6px 16px;
+            padding: 6px 18px;
             border-radius: 12px;
-            cursor: pointer;
             font-weight: 500;
          }
       }
 
       .field {
-         margin-bottom: 0.8rem;
+         margin-bottom: 15px;
 
          label {
-            font-size: 0.8rem;
-            color: var(--text-light);
+            font-size: 0.85rem;
+            color: $earth-9;
+            opacity: 0.6;
          }
 
          p {
-            margin: 2px 0 0;
+            margin: 4px 0 0;
+            color: $earth-9;
             font-weight: 500;
          }
       }
    }
 
    &--action {
-      width: 100%;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 15px;
+      margin-bottom: 12px;
+      background: white;
       text-align: left;
-      transition: all 0.2s;
-      cursor: pointer;
-      margin-bottom: 0.8rem;
-
-      &:hover {
-         background: #fafafa;
-         transform: translateY(-2px);
-      }
 
       .icon-wrapper {
-         background: #f4f1ee;
-         padding: 10px;
+         background: $earth-1;
+         padding: 12px;
          border-radius: 15px;
-         color: var(--text-dark);
+         color: $earth-9;
+         display: flex;
       }
 
       .text-group {
-         display: flex;
-         flex-direction: column;
-
          strong {
+            display: block;
+            color: $green-7;
             font-size: 1rem;
          }
 
          span {
-            font-size: 0.8rem;
-            color: var(--text-light);
+            font-size: 0.85rem;
+            color: $earth-9;
+            opacity: 0.6;
          }
       }
    }
 
    &--stats {
-      background-color: var(--primary-color);
+      background: linear-gradient(135deg, $green-6 0%, $green-7 100%);
       color: white;
 
       h3 {
-         font-size: 1rem;
-         margin-bottom: 1.2rem;
-         opacity: 0.9;
+         font-size: 1.1rem;
+         margin: 0 0 25px 0;
+         font-weight: 500;
       }
 
       .stats-grid {
@@ -178,20 +177,59 @@
          grid-template-columns: repeat(3, 1fr);
 
          .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
 
             .stat-value {
-               font-size: 1.5rem;
-               font-weight: bold;
+               font-size: 1.8rem;
+               font-weight: 700;
+               display: block;
             }
 
             .stat-label {
-               font-size: 0.75rem;
+               font-size: 0.8rem;
                opacity: 0.8;
             }
          }
       }
+   }
+}
+
+.menu-group {
+   display: flex;
+   flex-direction: column;
+}
+
+.btn-logout {
+   margin-top: 20px; // Espacio extra arriba para separarlo del resto
+   width: 100%;
+   padding: 18px;
+   border-radius: 24px;
+   border: none;
+
+   // Rojo tierra que combina con $earth-9 y $green-7
+   background-color: #a64d32;
+   color: white;
+
+   font-size: 1.1rem;
+   font-weight: 600;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 12px;
+   cursor: pointer;
+   transition: all 0.2s ease;
+   box-shadow: 0 4px 12px rgba(166, 77, 50, 0.2);
+
+   &:hover {
+      background-color: #8e3e28; // Un tono más oscuro al pasar el mouse
+      transform: translateY(-2px);
+   }
+
+   &:active {
+      transform: scale(0.98);
+   }
+
+   .material-icons {
+      font-size: 1.4rem;
    }
 }

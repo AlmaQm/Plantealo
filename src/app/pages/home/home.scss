@@ -1,21 +1,63 @@
 @use '../../styles/variables.scss' as *;
 
-// Importa tus variables aquí
-$bg-color: #f3efe9; // El tono crema de tu app
+// El selector :host afecta al componente <app-home> directamente
+:host {
+   display: block;
+   min-height: 100vh;
+   width: 100%;
+   // Usamos el color crema exacto de la imagen
+   background-color: #f1e9db;
+   margin: 0;
+   padding: 20px;
+   box-sizing: border-box; // Evita que el padding sume al ancho total
+}
 
-body {
-   background-color: $bg-color;
-   color: $green-7;
-   font-family: 'Inter', sans-serif;
+// Reset para asegurar que no hay márgenes externos (opcional pero recomendado)
+::ng-deep body {
    margin: 0;
    padding: 0;
+   background-color: #f1e9db;
 }
 
-// Clases de utilidad
-.text-green-dark {
+.header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 20px;
+   padding-top: 10px;
    color: $green-7;
+
+   h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+   }
+
+   .user-icon {
+      font-size: 1.5rem;
+      cursor: pointer;
+   }
 }
 
-.bg-earth {
-   background-color: $earth-1;
+// Títulos de sección como "Esta Semana" o "Tareas de Hoy"
+h2,
+.section-title {
+   font-size: 1.1rem;
+   color: $green-7;
+   margin: 25px 0 15px 0;
+   font-weight: 600;
+   display: flex;
+   align-items: center;
+   gap: 8px;
+
+   // Estilo para el icono del calendario si lo tienes
+   i,
+   span {
+      font-size: 1.2rem;
+   }
+}
+
+// Contenedor para separar los componentes
+.component-spacing {
+   margin-bottom: 20px;
 }

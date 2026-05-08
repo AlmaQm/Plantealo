@@ -1,61 +1,63 @@
 @use '../../styles/variables.scss' as *;
 
 .task-card {
-   background: rgb(164, 208, 137);
-   border-radius: 12px;
-   width: 320px;
-   height: 60px;
-
-   padding: 8px 10px;
-   margin-bottom: 6px;
-
+   background: white;
+   border-radius: 18px;
+   padding: 14px 16px;
+   margin-bottom: 12px;
    display: flex;
    align-items: center;
+   border: none;
+   transition: transform 0.2s ease;
 
-   border-left: 4px solid $green-3;
+   &:active {
+      transform: scale(0.98);
+   }
 
-   transition: all 0.2s ease;
+   .icon-wrapper {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: $green-1; // Fondo suave para el icono
+      color: $green-6;
+   }
 
-   font-size: 0.85rem;
-}
+   .info {
+      margin-left: 15px;
+      flex-grow: 1;
 
-.task-card:hover {
-   transform: translateY(-2px);
-   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-}
+      h3 {
+         margin: 0;
+         font-size: 0.95rem;
+         color: $green-7;
+         font-weight: 600;
+      }
 
-.task-card.completed {
-   opacity: 0.6;
-}
+      p {
+         margin: 0;
+         font-size: 0.8rem;
+         color: $earth-9;
+         opacity: 0.8;
+      }
+   }
 
-.task-card.completed h3 {
-   text-decoration: line-through;
-}
+   /* Checkbox circular estilo UI */
+   .custom-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #eee;
+      border-radius: 50%;
+      cursor: pointer;
+   }
 
-/* ICONO */
-.task-card .icon {
-   font-size: 1rem;
-}
+   &.completed {
+      opacity: 0.6;
 
-/* INFO */
-.task-card .info {
-   margin-left: 10px;
-   flex-grow: 1;
-}
-
-.task-card .info h3 {
-   margin: 0;
-   font-size: 0.95rem;
-   color: $green-7;
-}
-
-.task-card .info p {
-   margin: 0;
-   font-size: 0.75rem;
-   color: $earth-9;
-}
-
-/* CHECKBOX */
-.task-card input[type="checkbox"] {
-   transform: scale(0.9);
+      h3 {
+         text-decoration: line-through;
+      }
+   }
 }
