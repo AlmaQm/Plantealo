@@ -1,0 +1,197 @@
+// Sistema de diseño (Fácil de mantener)
+:host {
+   --primary-color: #5d6d4e; // Verde oscuro de tu imagen
+   --accent-color: #7d8a70;
+   --bg-color: #e5ddd3; // Fondo crema
+   --card-white: #ffffff;
+   --text-dark: #3e3a35;
+   --text-light: #8e847a;
+   --radius: 24px;
+}
+
+.view-container {
+   background-color: var(--bg-color);
+   min-height: 100vh;
+   padding: 2rem 1rem;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+
+   .profile-content {
+      width: 100%;
+      max-width: 450px; // Tamaño ideal para simular app en PC
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+   }
+}
+
+.view-header {
+   text-align: left;
+   width: 100%;
+   max-width: 450px;
+   margin-bottom: 1.5rem;
+
+   h1 {
+      font-size: 2rem;
+      margin: 0;
+      color: var(--text-dark);
+   }
+
+   p {
+      color: var(--text-light);
+      margin: 0.2rem 0;
+   }
+}
+
+.card {
+   background: var(--card-white);
+   border-radius: var(--radius);
+   padding: 1.5rem;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+   border: none;
+
+   &--main {
+      text-align: center;
+
+      .avatar {
+         width: 70px;
+         height: 70px;
+         background: var(--accent-color);
+         border-radius: 50%;
+         margin: 0 auto 1rem;
+         display: grid;
+         place-items: center;
+         color: white;
+
+         .material-icons {
+            font-size: 2.5rem;
+         }
+      }
+
+      h2 {
+         margin: 0;
+         font-size: 1.3rem;
+      }
+
+      .handle {
+         color: var(--text-light);
+      }
+
+      .tag {
+         margin-top: 0.8rem;
+         color: #2e7d32;
+         font-weight: 500;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         gap: 4px;
+      }
+   }
+
+   &--info {
+      .card__header {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 1rem;
+
+         h3 {
+            font-size: 1.1rem;
+            margin: 0;
+         }
+
+         .btn-edit {
+            background: #efebe6;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+         }
+      }
+
+      .field {
+         margin-bottom: 0.8rem;
+
+         label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+         }
+
+         p {
+            margin: 2px 0 0;
+            font-weight: 500;
+         }
+      }
+   }
+
+   &--action {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-align: left;
+      transition: all 0.2s;
+      cursor: pointer;
+      margin-bottom: 0.8rem;
+
+      &:hover {
+         background: #fafafa;
+         transform: translateY(-2px);
+      }
+
+      .icon-wrapper {
+         background: #f4f1ee;
+         padding: 10px;
+         border-radius: 15px;
+         color: var(--text-dark);
+      }
+
+      .text-group {
+         display: flex;
+         flex-direction: column;
+
+         strong {
+            font-size: 1rem;
+         }
+
+         span {
+            font-size: 0.8rem;
+            color: var(--text-light);
+         }
+      }
+   }
+
+   &--stats {
+      background-color: var(--primary-color);
+      color: white;
+
+      h3 {
+         font-size: 1rem;
+         margin-bottom: 1.2rem;
+         opacity: 0.9;
+      }
+
+      .stats-grid {
+         display: grid;
+         grid-template-columns: repeat(3, 1fr);
+
+         .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .stat-value {
+               font-size: 1.5rem;
+               font-weight: bold;
+            }
+
+            .stat-label {
+               font-size: 0.75rem;
+               opacity: 0.8;
+            }
+         }
+      }
+   }
+}

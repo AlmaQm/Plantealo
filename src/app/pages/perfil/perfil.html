@@ -1,1 +1,64 @@
-<H1>MI PERFIL</H1>
+<div class="view-container">
+   <header class="view-header">
+      <h1>Perfil</h1>
+      <p>Gestiona tu información personal</p>
+   </header>
+
+   <main class="profile-content">
+      <section class="card card--main">
+         <div class="avatar">
+            <span class="material-icons">MG</span>
+         </div>
+         <h2>{{ user.name }}</h2>
+         <span class="handle">{{ user.handle }}</span>
+         <div class="tag">
+            <span class="material-icons">leaf</span> {{ user.preference }}
+         </div>
+      </section>
+
+      <section class="card card--info">
+         <div class="card__header">
+            <h3>Información Personal</h3>
+            <button class="btn-edit">Editar</button>
+         </div>
+         <div class="field">
+            <label>Nombre completo</label>
+            <p>{{ user.name }}</p>
+         </div>
+         <div class="field">
+            <label>Nombre de usuario</label>
+            <p>{{ user.handle.replace('@', '') }}</p>
+         </div>
+         <div class="field">
+            <label>Preferencia alimentaria</label>
+            <p>{{ user.preference }}</p>
+         </div>
+      </section>
+
+      <div class="menu-list">
+         @for (option of menuOptions; track option.title) {
+         <button class="card card--action" (click)="option.action()">
+            <div class="icon-wrapper">
+               <span class="material-icons">{{ option.icon }}</span>
+            </div>
+            <div class="text-group">
+               <strong>{{ option.title }}</strong>
+               <span>{{ option.subtitle }}</span>
+            </div>
+         </button>
+         }
+      </div>
+
+      <section class="card card--stats">
+         <h3>Estadísticas del Huerto</h3>
+         <div class="stats-grid">
+            @for (stat of user.stats; track stat.label) {
+            <div class="stat-item">
+               <span class="stat-value">{{ stat.value }}</span>
+               <span class="stat-label">{{ stat.label }}</span>
+            </div>
+            }
+         </div>
+      </section>
+   </main>
+</div>
