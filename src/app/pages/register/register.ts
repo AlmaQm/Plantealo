@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
   FormControl,
@@ -7,7 +8,7 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { Usuario } from '../../models/interfaces';
 
@@ -31,7 +32,7 @@ type RegisterForm = {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, RouterModule],
   templateUrl: './register.html',
   styleUrls: ['./register.scss']
 })
