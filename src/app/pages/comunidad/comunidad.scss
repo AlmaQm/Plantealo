@@ -63,37 +63,31 @@
   animation: fadeIn 0.2s ease;
 }
 
-// Bottomsheet
-.bottomsheet {
+// Modal centrado
+.modal-dialog {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  border-radius: 20px 20px 0 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #F5EFE6;
+  border-radius: 20px;
   z-index: 201;
-  padding: 12px 20px 32px;
-  animation: slideUp 0.28s ease;
-  max-height: 90vh;
+  padding: 24px 20px 28px;
+  width: calc(100% - 40px);
+  max-width: 460px;
+  max-height: 88vh;
   overflow-y: auto;
-
-  &__handle {
-    width: 40px;
-    height: 4px;
-    background: #ddd;
-    border-radius: 2px;
-    margin: 0 auto 16px;
-  }
+  animation: zoomIn 0.22s ease;
 
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   &__titulo {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
     color: $green-7;
     margin: 0;
@@ -105,17 +99,16 @@
     font-size: 18px;
     color: $green-5;
     cursor: pointer;
+    line-height: 1;
+    padding: 4px;
   }
 
   &__body { margin-bottom: 20px; }
 
-  &__footer {
-    display: flex;
-    gap: 10px;
-  }
+  &__footer { }
 }
 
-.campo-label--mt { margin-top: 14px; }
+.campo-label--mt { margin-top: 16px; }
 
 .campo-label {
   display: block;
@@ -125,77 +118,93 @@
   margin-bottom: 8px;
 }
 
-.campo-textarea {
+.campo-select {
   width: 100%;
-  padding: 10px 14px;
-  border: 1.5px solid $green-3;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 1.5px solid white;
   border-radius: 12px;
   font-size: 14px;
   color: $green-7;
+  background: white;
+  font-family: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2387986a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+
+  &:focus { outline: none; border-color: $green-4; }
+}
+
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 16px;
+  border: 2px dashed #c8b89a;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover { background: rgba(255, 255, 255, 0.7); border-color: $green-4; }
+
+  &__icono {
+    width: 36px;
+    height: 36px;
+    color: $green-4;
+  }
+
+  &__texto {
+    font-size: 13px;
+    color: $green-5;
+  }
+}
+
+.upload-input { display: none; }
+
+.imagen-preview {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.campo-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 1.5px solid white;
+  border-radius: 12px;
+  font-size: 14px;
+  color: $green-7;
+  background: white;
   resize: none;
   font-family: inherit;
 
-  &:focus { outline: none; border-color: $green-5; }
+  &:focus { outline: none; border-color: $green-4; }
+  &::placeholder { color: $green-4; }
 }
 
-.campo-input {
+.btn-publicar-full {
   width: 100%;
-  padding: 10px 14px;
-  border: 1.5px solid $green-3;
-  border-radius: 12px;
-  font-size: 14px;
-  color: $green-7;
-
-  &:focus { outline: none; border-color: $green-5; }
-}
-
-.categoria-toggle {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.cat-btn {
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1.5px solid $green-3;
-  background: transparent;
-  color: $green-6;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &.active  { background: $green-6; border-color: $green-6; color: white; }
-  &:hover:not(.active) { background: $green-1; }
-}
-
-.btn-cancelar {
-  flex: 1;
-  padding: 13px;
-  border-radius: 12px;
-  border: 1.5px solid $green-3;
-  background: transparent;
-  color: $green-6;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.btn-publicar {
-  flex: 2;
-  padding: 13px;
+  padding: 14px;
   border-radius: 12px;
   border: none;
-  background: $green-6;
+  background: $earth-9;
   color: white;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  font-family: inherit;
   transition: background 0.2s ease;
 
   &:disabled { background: $green-3; cursor: not-allowed; }
-  &:not(:disabled):hover { background: $green-7; }
+  &:not(:disabled):hover { background: darken($earth-9, 6%); }
 }
 
-@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }

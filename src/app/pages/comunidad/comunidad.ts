@@ -20,6 +20,7 @@ export class Comunidad {
   nuevaDesc = signal('');
   nuevaCategoria = signal<Publicacion['categoria']>('HUERTO');
   nuevaImagenUrl = signal('');
+  nuevaImagenPreview = signal('');
 
   readonly categorias: Publicacion['categoria'][] = ['HUERTO', 'RECETA', 'CONSEJO', 'COSECHA'];
 
@@ -27,7 +28,17 @@ export class Comunidad {
     this.nuevaDesc.set('');
     this.nuevaCategoria.set('HUERTO');
     this.nuevaImagenUrl.set('');
+    this.nuevaImagenPreview.set('');
     this.modalAbierto.set(true);
+  }
+
+  onImagenSeleccionada(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      this.nuevaImagenUrl.set(url);
+      this.nuevaImagenPreview.set(url);
+    }
   }
 
   cerrarModal(): void {

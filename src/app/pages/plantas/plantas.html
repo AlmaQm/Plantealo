@@ -17,8 +17,8 @@
     @if (plantasFiltradas().length === 0) {
       <div class="plantas-page__vacio">
         <span class="vacio-icon">🌱</span>
-        <p>Tu inventario está vacío</p>
-        <span>Pulsa <strong>+</strong> para añadir tu primera planta</span>
+        <p>¡Anímate a empezar tu pequeño huerto!</p>
+        <span>Dale al <strong>+</strong> y añade tu primera planta</span>
       </div>
     }
     @for (planta of plantasFiltradas(); track planta.planta_id) {

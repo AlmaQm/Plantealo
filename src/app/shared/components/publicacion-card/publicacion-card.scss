@@ -153,17 +153,29 @@
 }
 
 .accion-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   background: none;
   border: none;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 8px;
-  color: $green-6;
+  color: $green-5;
   transition: background 0.15s;
 
   &:hover { background: $green-1; }
   &.liked { color: #e11d48; }
+
+  &--like .accion-icon { fill: none; }
+  &--like.liked .accion-icon { fill: currentColor; }
+}
+
+.accion-icon {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
 }
 
 .ver-mas {
