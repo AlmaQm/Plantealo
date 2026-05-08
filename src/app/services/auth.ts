@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Observable, of, from, switchMap, map } from 'rxjs';
 
@@ -39,16 +40,19 @@ export class AuthService {
   private readonly firestore = inject(Firestore);
   private readonly storage = inject(Storage);
   private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  readonly currentUser$: Observable<Usuario | null> = authState(this.auth).pipe(
-    switchMap(user => {
-      if (!user) return of(null);
-      const docRef = doc(this.firestore, `usuarios/${user.uid}`);
-      return from(getDoc(docRef)).pipe(
-        map(snap => (snap.exists() ? (snap.data() as Usuario) : null))
-      );
-    })
-  );
+  readonly currentUser$: Observable<Usuario | null> = isPlatformBrowser(this.platformId)
+    ? authState(this.auth).pipe(
+        switchMap(user => {
+          if (!user) return of(null);
+          const docRef = doc(this.firestore, `usuarios/${user.uid}`);
+          return from(getDoc(docRef)).pipe(
+            map(snap => (snap.exists() ? (snap.data() as Usuario) : null))
+          );
+        })
+      )
+    : of(null);
 
   constructor() {
     if (typeof window !== 'undefined') {
