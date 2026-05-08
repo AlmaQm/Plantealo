@@ -24,7 +24,8 @@
       "Bash(node -e \"const f = require\\('./node_modules/firebase/package.json'\\); console.log\\('firebase:', f.version\\)\")",
       "Bash(node -e \"const f = require\\('./node_modules/@angular/fire/package.json'\\); console.log\\('@angular/fire:', f.version\\)\")",
       "Bash(Remove-Item -Recurse -Force .angular/cache -ErrorAction SilentlyContinue)",
-      "Bash(Write-Host \"Cache cleared\")"
+      "Bash(Write-Host \"Cache cleared\")",
+      "Bash(grep -v \"^$\")"
     ],
     "additionalDirectories": [
       "c:\\Estudis\\FundeSplai\\angular\\Plantealo\\docs\\superpowers"

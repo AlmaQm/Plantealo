@@ -42,6 +42,7 @@ export class Register {
 
   readonly loading = signal(false);
   readonly error = signal('');
+  readonly emailExistente = signal(false);
   readonly avatarPreview = signal('');
   private avatarFile: File | undefined;
 
@@ -93,6 +94,7 @@ export class Register {
     if (this.form.invalid || this.loading()) return;
     this.loading.set(true);
     this.error.set('');
+    this.emailExistente.set(false);
 
     const { nombre, nombre_usuario, email, contrasena, tipo_dieta } = this.form.getRawValue();
     const data: Omit<Usuario, 'uid' | 'fechaRegistro'> = {
@@ -106,7 +108,12 @@ export class Register {
       await this.authService.register(data, contrasena, this.avatarFile);
       await this.router.navigate(['/inicio']);
     } catch (e) {
-      this.error.set((e as Error).message);
+      const msg = (e as Error).message;
+      if (msg === 'Este email ya está registrado') {
+        this.emailExistente.set(true);
+      } else {
+        this.error.set(msg);
+      }
     } finally {
       this.loading.set(false);
     }

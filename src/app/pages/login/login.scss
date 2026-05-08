@@ -59,12 +59,13 @@
 
 .error-global {
   font-size: 13px;
-  color: #e11d48;
+  color: $green-7;
   text-align: center;
   margin: 12px 0 0;
   padding: 10px 14px;
-  background: #fef2f2;
+  background: $green-1;
   border-radius: 10px;
+  border-left: 3px solid $green-5;
 }
 
 .btn-primary {

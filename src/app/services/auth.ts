@@ -104,26 +104,38 @@ export class AuthService {
     password: string,
     avatarFile?: File
   ): Promise<void> {
+    // Paso 1: crear usuario en Firebase Auth (único paso que puede lanzar error)
+    let uid: string;
     try {
       const credential = await createUserWithEmailAndPassword(
         this.auth, data.email, password
       );
-      const uid = credential.user.uid;
-      let imagen_url: string | undefined = data.imagen_url;
-      if (avatarFile) {
-        imagen_url = await this.uploadAvatar(avatarFile, uid);
-      }
-      const usuario: Usuario = {
-        uid, nombre: data.nombre, nombre_usuario: data.nombre_usuario,
-        email: data.email, tipo_dieta: data.tipo_dieta,
-        ...(imagen_url ? { imagen_url } : {}),
-        fechaRegistro: new Date(),
-      };
-      await setDoc(doc(this.firestore, `usuarios/${uid}`), usuario);
-      this.saveStoredUser(usuario);
+      uid = credential.user.uid;
     } catch (error) {
       throw new Error(mapAuthError(error as { code?: string }));
     }
+
+    // Paso 2: subir avatar si existe (fallo no bloquea el registro)
+    let imagen_url: string | undefined = data.imagen_url;
+    if (avatarFile) {
+      try { imagen_url = await this.uploadAvatar(avatarFile, uid); }
+      catch { /* continúa sin imagen */ }
+    }
+
+    const usuario: Usuario = {
+      uid, nombre: data.nombre, nombre_usuario: data.nombre_usuario,
+      email: data.email, tipo_dieta: data.tipo_dieta,
+      ...(imagen_url ? { imagen_url } : {}),
+      fechaRegistro: new Date(),
+    };
+
+    // Paso 3: guardar en localStorage inmediatamente (siempre disponible)
+    this.saveStoredUser(usuario);
+
+    // Paso 4: intentar escribir en Firestore (fallo no bloquea la sesión)
+    try {
+      await setDoc(doc(this.firestore, `usuarios/${uid}`), usuario);
+    } catch { /* Firestore puede fallar, el usuario sigue registrado */ }
   }
 
   async logout(): Promise<void> {

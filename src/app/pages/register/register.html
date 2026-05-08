@@ -89,6 +89,11 @@
                (change)="onAvatarSelected($event)">
       </div>
 
+      @if (emailExistente()) {
+        <p class="aviso-existente">
+          Este email ya tiene cuenta. <a routerLink="/login">Inicia sesión</a>
+        </p>
+      }
       @if (error()) {
         <p class="error-global">{{ error() }}</p>
       }
