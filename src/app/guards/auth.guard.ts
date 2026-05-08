@@ -1,25 +1,20 @@
 import { PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { CanActivateFn, Router } from '@angular/router';
-import { map, take } from 'rxjs';
-import { AuthService } from '../services/auth';
+import { Auth } from '@angular/fire/auth';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = async () => {
   if (!isPlatformBrowser(inject(PLATFORM_ID))) return true;
-  const auth = inject(AuthService);
+  const auth = inject(Auth);
   const router = inject(Router);
-  return auth.currentUser$.pipe(
-    take(1),
-    map(user => (user !== null ? true : router.createUrlTree(['/login'])))
-  );
+  await auth.authStateReady();
+  return auth.currentUser !== null ? true : router.createUrlTree(['/login']);
 };
 
-export const guestGuard: CanActivateFn = () => {
+export const guestGuard: CanActivateFn = async () => {
   if (!isPlatformBrowser(inject(PLATFORM_ID))) return true;
-  const auth = inject(AuthService);
+  const auth = inject(Auth);
   const router = inject(Router);
-  return auth.currentUser$.pipe(
-    take(1),
-    map(user => (user === null ? true : router.createUrlTree(['/inicio'])))
-  );
+  await auth.authStateReady();
+  return auth.currentUser === null ? true : router.createUrlTree(['/inicio']);
 };
