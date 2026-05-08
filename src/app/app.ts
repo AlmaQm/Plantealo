@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
@@ -7,7 +7,7 @@ import { Navbar } from './shared/components/navbar/navbar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar],
+  imports: [RouterOutlet, RouterLink, Navbar],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
