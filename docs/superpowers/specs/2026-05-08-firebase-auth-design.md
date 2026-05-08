@@ -27,16 +27,15 @@ Add in order:
 ```ts
 provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
 provideAuth(() => {
-  if (isPlatformBrowser(platformId)) {
-    const auth = initializeAuth(getApp(), { persistence: browserLocalPersistence });
-    return auth;
+  if (typeof window !== 'undefined') {
+    return initializeAuth(getApp(), { persistence: browserLocalPersistence });
   }
   return getAuth();
 }),
 provideFirestore(() => getFirestore()),
 provideStorage(() => getStorage()),
 ```
-`platformId` injected via `inject(PLATFORM_ID)` inside a factory function.
+`typeof window !== 'undefined'` distinguishes browser from SSR server context without needing `PLATFORM_ID` injection (which is unavailable in provider factory scope).
 
 ### 2.3 `interfaces.ts` — Usuario model
 Replace existing `Usuario` interface:
@@ -66,9 +65,9 @@ Update any references to old fields (`usuario_id`, `recetasGuardadasIds`).
 | Method | Signature | Behaviour |
 |---|---|---|
 | login | `(email: string, password: string): Promise<void>` | `signInWithEmailAndPassword`, throws mapped error |
-| register | `(usuario: Usuario, password: string): Promise<void>` | `createUserWithEmailAndPassword` → write Firestore doc `/usuarios/{uid}` |
+| register | `(data: Omit<Usuario, 'uid' \| 'fechaRegistro'>, password: string, avatarFile?: File): Promise<void>` | `createUserWithEmailAndPassword` → uid from result → optional avatar upload → write Firestore doc `/usuarios/{uid}` |
 | logout | `(): Promise<void>` | `signOut`, navigate to `/login` |
-| uploadAvatar | `(file: File, uid: string): Promise<string>` | Upload to `Storage: avatares/{uid}`, return download URL |
+| uploadAvatar | `(file: File, uid: string): Promise<string>` | Upload to `Storage: avatares/{uid}`, return download URL (called internally from `register`) |
 
 ### Error mapping
 Firebase error codes mapped to Spanish strings:
