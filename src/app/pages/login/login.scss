@@ -1,0 +1,101 @@
+@import '../../../styles/variables';
+
+.auth-page {
+  min-height: 100vh;
+  background-color: $earth-1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+}
+
+.auth-logo {
+  font-size: 26px;
+  font-weight: 700;
+  color: $green-7;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: #f5efe6;
+  border-radius: 20px;
+  padding: 28px 20px;
+}
+
+.campo-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: $green-6;
+  margin-bottom: 8px;
+}
+
+.campo-label--mt { margin-top: 16px; }
+
+.campo-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 1.5px solid white;
+  border-radius: 12px;
+  font-size: 14px;
+  color: $green-7;
+  background: white;
+  font-family: inherit;
+
+  &:focus { outline: none; border-color: $green-4; }
+  &--error { border-color: #e11d48; }
+}
+
+.error-inline {
+  font-size: 12px;
+  color: #e11d48;
+  margin: 4px 0 0;
+}
+
+.error-global {
+  font-size: 13px;
+  color: #e11d48;
+  text-align: center;
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border-radius: 10px;
+}
+
+.btn-primary {
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: $earth-9;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+
+  &:disabled { background: $green-3; cursor: not-allowed; }
+  &:not(:disabled):hover { background: darken($earth-9, 6%); }
+}
+
+.auth-link {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: $green-5;
+
+  a {
+    color: $green-6;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+}
