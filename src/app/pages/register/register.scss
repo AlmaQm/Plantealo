@@ -70,19 +70,19 @@
 
 .aviso-existente {
   font-size: 13px;
-  color: $green-7;
+  color: $earth-9;
   text-align: center;
   margin: 12px 0 0;
   padding: 10px 14px;
-  background: $earth-1;
+  background: #f0e6d3;
   border-radius: 10px;
   border-left: 3px solid $earth-2;
 
   a {
-    color: $green-6;
-    font-weight: 600;
-    text-decoration: none;
-    &:hover { text-decoration: underline; }
+    color: $earth-9;
+    font-weight: 700;
+    text-decoration: underline;
+    &:hover { opacity: 0.75; }
   }
 }
 

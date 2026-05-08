@@ -19,14 +19,17 @@ import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage
 
 import { Usuario } from '../models/interfaces';
 
+export const ERROR_EMAIL_EXISTENTE = 'El usuario ya existe';
+export const ERROR_NO_REGISTRADO  = 'Usuario no registrado';
+
 export function mapAuthError(error: { code?: string }): string {
   switch (error.code) {
     case 'auth/email-already-in-use':
-      return 'Este email ya está registrado';
+      return ERROR_EMAIL_EXISTENTE;
     case 'auth/user-not-found':
     case 'auth/invalid-credential':
     case 'auth/wrong-password':
-      return 'Email o contraseña incorrectos';
+      return ERROR_NO_REGISTRADO;
     case 'auth/weak-password':
       return 'La contraseña debe tener al menos 6 caracteres';
     default:

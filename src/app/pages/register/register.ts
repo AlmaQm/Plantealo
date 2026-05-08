@@ -9,7 +9,7 @@ import {
   Validators
 } from '@angular/forms';
 import { Router, RouterLink, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth';
+import { AuthService, ERROR_EMAIL_EXISTENTE } from '../../services/auth';
 import { Usuario } from '../../models/interfaces';
 
 export function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -109,7 +109,7 @@ export class Register {
       await this.router.navigate(['/inicio']);
     } catch (e) {
       const msg = (e as Error).message;
-      if (msg === 'Este email ya está registrado') {
+      if (msg === ERROR_EMAIL_EXISTENTE) {
         this.emailExistente.set(true);
       } else {
         this.error.set(msg);
