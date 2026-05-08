@@ -1,21 +1,24 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core'; // 👈 Añadido importProvidersFrom
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 
-import { provideTranslateService } from "@ngx-translate/core";
-import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
-import { provideHttpClient, withFetch } from "@angular/common/http"; // 👈 Añadido withFetch
-import { IonicModule } from '@ionic/angular'; // 👈 Añadido
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { IonicModule } from '@ionic/angular';
+
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getStorage, provideStorage } from '@angular/fire/storage';
+
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    // 1. Añadimos el soporte global de Ionic para que el ModalController funcione
-    importProvidersFrom(IonicModule.forRoot({})), 
-    
-    // 2. Mejoramos el HttpClient con withFetch para evitar el aviso de la consola
-    provideHttpClient(withFetch()), 
-    
+    importProvidersFrom(IonicModule.forRoot({})),
+    provideHttpClient(withFetch()),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
         prefix: '/assets/i18n/',
@@ -23,7 +26,10 @@ export const appConfig: ApplicationConfig = {
       }),
       fallbackLang: 'es',
       lang: 'es'
-    })
+    }),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()),
   ],
 };
-
