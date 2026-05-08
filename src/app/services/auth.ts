@@ -34,6 +34,8 @@ export function mapAuthError(error: { code?: string }): string {
   }
 }
 
+const STORAGE_KEY = 'plantealo_user';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly auth = inject(Auth);
@@ -45,14 +47,43 @@ export class AuthService {
   readonly currentUser$: Observable<Usuario | null> = isPlatformBrowser(this.platformId)
     ? authState(this.auth).pipe(
         switchMap(user => {
-          if (!user) return of(null);
+          if (!user) {
+            this.clearStoredUser();
+            return of(null);
+          }
           const docRef = doc(this.firestore, `usuarios/${user.uid}`);
           return from(getDoc(docRef)).pipe(
-            map(snap => (snap.exists() ? (snap.data() as Usuario) : null))
+            map(snap => {
+              const usuario = snap.exists() ? (snap.data() as Usuario) : null;
+              if (usuario) this.saveStoredUser(usuario);
+              return usuario;
+            })
           );
         })
       )
     : of(null);
+
+  getStoredUser(): Usuario | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as Usuario) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private saveStoredUser(usuario: Usuario): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(usuario));
+    }
+  }
+
+  private clearStoredUser(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -89,12 +120,14 @@ export class AuthService {
         fechaRegistro: new Date(),
       };
       await setDoc(doc(this.firestore, `usuarios/${uid}`), usuario);
+      this.saveStoredUser(usuario);
     } catch (error) {
       throw new Error(mapAuthError(error as { code?: string }));
     }
   }
 
   async logout(): Promise<void> {
+    this.clearStoredUser();
     await signOut(this.auth);
     await this.router.navigate(['/login']);
   }

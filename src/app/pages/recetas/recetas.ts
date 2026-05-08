@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RecipesService } from '../../services/recipes';
+import { AuthService } from '../../services/auth';
 import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
 import { Recipe, GardenPlant } from '../../models/interfaces';
@@ -17,12 +18,15 @@ type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
   styleUrls: ['./recetas.scss']
 })
 export class RecetasComponent implements OnInit {
+  private readonly authService = inject(AuthService);
+  private readonly recipesService = inject(RecipesService);
+
   recipes: Recipe[] = [];
   filteredRecipes: Recipe[] = [];
   selectedRecipe: Recipe | null = null;
   searchTerm = '';
 
-  readonly dietaUsuario: TipoDieta = 'VEGETARIANA';
+  dietaUsuario: TipoDieta = 'OMNIVORA';
 
   readonly dietaChips: { value: TipoDieta; label: string }[] = [
     { value: 'VEGETARIANA', label: '🥬 Vegetariana' },
@@ -42,9 +46,14 @@ export class RecetasComponent implements OnInit {
     { id: '7', name: 'cilantro', quantity: 2,  unit: 'plantas' }
   ];
 
-  constructor(private recipesService: RecipesService) {}
 
   ngOnInit(): void {
+    const usuario = this.authService.getStoredUser();
+    if (usuario?.tipo_dieta) {
+      this.dietaUsuario = usuario.tipo_dieta as TipoDieta;
+    }
+    this.dietasActivas = new Set<TipoDieta>([this.dietaUsuario]);
+
     this.recipes = RECETAS_LOCALES.map(r =>
       this.recipesService.updateGardenCompatibility(r, this.gardenPlants)
     );
