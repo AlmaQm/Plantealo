@@ -25,7 +25,11 @@
       "Bash(node -e \"const f = require\\('./node_modules/@angular/fire/package.json'\\); console.log\\('@angular/fire:', f.version\\)\")",
       "Bash(Remove-Item -Recurse -Force .angular/cache -ErrorAction SilentlyContinue)",
       "Bash(Write-Host \"Cache cleared\")",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(Get-Content \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\shared\\\\components\\\\navbar\\\\navbar.scss\")",
+      "Bash(Select-String \"background\")",
+      "PowerShell($content = Get-Content \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\shared\\\\components\\\\navbar\\\\navbar.scss\" -Raw; $bytes = [System.Text.Encoding]::UTF8.GetBytes\\($content\\); $bytes[0..5] | ForEach-Object { $_.ToString\\(\"X2\"\\) })",
+      "PowerShell($content = Get-Content \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\shared\\\\components\\\\navbar\\\\navbar.scss\" -Raw; $line = \\($content -split \"`n\" | Select-String \"mat-sys-surface\"\\).Line; [System.Text.Encoding]::UTF8.GetBytes\\($line\\) | ForEach-Object { $_.ToString\\(\"X2\"\\) })"
     ],
     "additionalDirectories": [
       "c:\\Estudis\\FundeSplai\\angular\\Plantealo\\docs\\superpowers"
