@@ -35,11 +35,13 @@ export interface Ingrediente {
 }
 
 export interface Usuario {
-  usuario_id: string;
+  uid: string;
   nombre: string;
+  nombre_usuario: string;
   email: string;
-  tipo_dieta: 'VEGANA' | 'VEGETARIANA' | 'OMNIVORA';
-  recetasGuardadasIds: string[];
+  tipo_dieta: 'OMNIVORA' | 'VEGETARIANA' | 'VEGANA';
+  imagen_url?: string;
+  fechaRegistro?: Date;
 }
 
 export interface GardenPlant {
