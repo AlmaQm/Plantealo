@@ -1,0 +1,261 @@
+@import '../../../../styles/variables';
+
+.pub-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $green-4;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__user {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__nombre {
+    font-size: 14px;
+    font-weight: 600;
+    color: $green-7;
+  }
+
+  &__username {
+    font-size: 12px;
+    color: $green-5;
+  }
+
+  &__seguir {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid $green-3;
+    background: $green-6;
+    color: white;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    &.siguiendo {
+      background: $green-1;
+      border-color: $green-3;
+      color: $green-6;
+    }
+  }
+
+  &__imagen-wrap {
+    position: relative;
+  }
+
+  &__imagen {
+    display: block;
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+
+    &.categoria--huerto  { background: $green-1; color: $green-6; }
+    &.categoria--receta  { background: $earth-1; color: $earth-9; }
+    &.categoria--consejo { background: #fef3c7;  color: #92400e; }
+    &.categoria--cosecha { background: $green-2; color: $green-7; }
+  }
+
+  &__acciones {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px 6px;
+  }
+
+  &__fecha {
+    margin-left: auto;
+    font-size: 11px;
+    color: $green-5;
+  }
+
+  &__desc {
+    padding: 0 14px 8px;
+    position: relative;
+
+    p {
+      font-size: 13px;
+      color: $green-7;
+      line-height: 1.5;
+      margin: 0 0 2px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    &.expandida p {
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+  }
+
+  &__comentarios {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding: 0 14px;
+
+    &.open {
+      max-height: 600px;
+      padding: 4px 14px 8px;
+    }
+  }
+
+  &__ver-comentarios {
+    display: block;
+    width: 100%;
+    padding: 8px 14px;
+    background: none;
+    border: none;
+    border-top: 1px solid $earth-1;
+    font-size: 12px;
+    color: $green-5;
+    cursor: pointer;
+    text-align: left;
+
+    &:hover { color: $green-6; }
+  }
+}
+
+.accion-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: $green-5;
+  transition: background 0.15s;
+
+  &:hover { background: $green-1; }
+  &.liked { color: #e11d48; }
+
+  &--like .accion-icon { fill: none; }
+  &--like.liked .accion-icon { fill: currentColor; }
+}
+
+.accion-icon {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.ver-mas {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: $green-5;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover { color: $green-6; }
+}
+
+.comentario-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.comentario {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+
+  &__avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: $green-3;
+    color: $green-7;
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  &__username {
+    font-weight: 600;
+    color: $green-6;
+    margin-right: 4px;
+  }
+
+  &__texto { color: $green-7; }
+}
+
+.comentario-input {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid $earth-1;
+  padding-top: 8px;
+
+  input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1.5px solid $green-3;
+    border-radius: 20px;
+    font-size: 13px;
+    outline: none;
+    color: $green-7;
+
+    &:focus { border-color: $green-5; }
+  }
+
+  button {
+    padding: 8px 14px;
+    background: $green-6;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+
+    &:disabled { background: $green-3; cursor: not-allowed; }
+  }
+}

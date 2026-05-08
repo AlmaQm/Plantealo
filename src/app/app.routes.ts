@@ -1,16 +1,45 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home';
-import { PlantasComponent } from './pages/plantas/plantas';
-import { ComunidadComponent } from './pages/comunidad/comunidad';
-import { RecetasComponent } from './pages/recetas/recetas';
-import { PerfilComponent } from './pages/perfil/perfil';
+import { authGuard, guestGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-   { path: '', redirectTo: '/home', pathMatch: 'full' },
-   { path: 'home', component: HomeComponent },
-   { path: 'plantas', component: PlantasComponent },
-   { path: 'comunidad', component: ComunidadComponent },
-   { path: 'recetas', component: RecetasComponent },
-   { path: 'perfil', component: PerfilComponent },
-   { path: '**', redirectTo: '/home' }
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login').then(m => m.Login),
+    canActivate: [guestGuard]
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/register/register').then(m => m.Register),
+    canActivate: [guestGuard]
+  },
+  {
+    path: 'inicio',
+    loadComponent: () => import('./pages/home/home').then(m => m.HomeComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'plantas',
+    loadComponent: () => import('./pages/plantas/plantas').then(m => m.PlantasComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'recetas',
+    loadComponent: () => import('./pages/recetas/recetas').then(m => m.RecetasComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'comunidad',
+    loadComponent: () => import('./pages/comunidad/comunidad').then(m => m.Comunidad),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'perfil',
+    loadComponent: () => import('./pages/perfil/perfil').then(m => m.PerfilComponent),
+    canActivate: [authGuard]
+  }
 ];

@@ -1,0 +1,51 @@
+<div class="planta-card" [class.expanded]="expanded()" (click)="toggle()">
+
+  <div class="planta-card__summary">
+    <img class="planta-card__img" [src]="planta.imagen_url" [alt]="planta.nombre_planta"
+         (error)="$any($event.target).src='assets/images/placeholder-planta.jpg'">
+
+    <div class="planta-card__info">
+      <span class="planta-card__nombre">{{ planta.nombre_planta }}</span>
+      <span class="planta-card__estado estado--{{ planta.estado | lowercase }}">
+        {{ getEstadoLabel() }}
+      </span>
+      <div class="planta-card__progreso-mini">
+        <div class="progreso-mini__fill" [style.width.%]="getProgreso()"></div>
+      </div>
+    </div>
+
+    <span class="planta-card__arrow" [class.rotated]="expanded()">›</span>
+  </div>
+
+  <div class="planta-card__detalle" [class.open]="expanded()" (click)="$event.stopPropagation()">
+
+    <div class="detalle-seccion">
+      <h4 class="detalle-seccion__titulo">Cuidados</h4>
+      <div class="detalle-seccion__items">
+        @if (planta.clima) {
+          <div class="cuidado-item">
+            <span class="cuidado-item__icon">🌡️</span>
+            <span>Clima <strong>{{ planta.clima }}</strong></span>
+          </div>
+        }
+        <div class="cuidado-item">
+          <span class="cuidado-item__icon">🌿</span>
+          <span>Cosecha: <strong>{{ formatFecha(planta.f_recogida) }}</strong></span>
+        </div>
+        <div class="cuidado-item">
+          <span class="cuidado-item__icon">📅</span>
+          <span>Plantada: <strong>{{ formatFecha(planta.f_siembra) }}</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detalle-seccion">
+      <h4 class="detalle-seccion__titulo">Etapa de crecimiento</h4>
+      <div class="progreso-barra">
+        <div class="progreso-barra__fill" [style.width.%]="getProgreso()"></div>
+      </div>
+      <p class="progreso-mensaje">{{ getProgresoMensaje() }} ({{ getProgreso() }}%)</p>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<div class="receta-card" (click)="onCardClick()">
+  <div class="receta-card__image">
+    <img [src]="recipe.imagen_url" [alt]="recipe.nombre_receta"
+         (error)="$any($event.target).src='assets/images/placeholder-receta.jpg'">
+    <div class="receta-card__compatibility" [class]="'compatibility--' + compatibilityPercentage">
+      <span>{{ compatibilityPercentage }}%</span>
+    </div>
+  </div>
+
+  <div class="receta-card__content">
+    <h3 class="receta-card__title">{{ recipe.nombre_receta }}</h3>
+
+    <div class="receta-card__meta">
+      <div class="meta-item">
+        <span class="meta-icon">⏱️</span>
+        <span>{{ getTiempo() }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-icon">👥</span>
+        <span>{{ recipe.num_comensales }} personas</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-icon">📊</span>
+        <span>{{ getDificultad() }}</span>
+      </div>
+    </div>
+
+    <div class="receta-card__badges">
+      @if (recipe.tipo_dieta === 'VEGANA') {
+        <span class="badge badge--vegana">🌱 Vegana</span>
+      }
+      @if (recipe.tipo_dieta === 'VEGETARIANA') {
+        <span class="badge badge--vegetariana">🥬 Vegetariana</span>
+      }
+      <span class="badge badge--category">{{ getCategoriaText() }}</span>
+    </div>
+
+    <p class="receta-card__description">{{ recipe.descripcion }}</p>
+
+    <div class="receta-card__compatibility-bar">
+      <div class="compatibility-bar__fill" [style.width.%]="compatibilityPercentage"></div>
+    </div>
+  </div>
+</div>

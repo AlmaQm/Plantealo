@@ -1,0 +1,57 @@
+@use '../../../../styles/variables' as *;
+
+.navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: var(--mat-sys-surface);
+  padding: 8px 0;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+
+  a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 12px;
+    min-width: 64px;
+    cursor: pointer;
+
+    .icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s ease;
+
+      ion-icon {
+        font-size: 22px;
+      }
+    }
+
+    &.active {
+      .icon-wrap {
+        background-color: $earth-1;
+      }
+
+      .label {
+        color: $earth-9;
+      }
+
+      ion-icon {
+        color: $earth-9;
+      }
+    }
+  }
+}

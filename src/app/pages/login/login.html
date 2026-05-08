@@ -1,0 +1,57 @@
+<div class="auth-page">
+  <div class="auth-logo">🌱 PlantealoApp</div>
+
+  <div class="auth-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <label class="campo-label" for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        class="campo-input"
+        [class.campo-input--error]="form.controls.email.invalid && form.controls.email.touched"
+        formControlName="email"
+        placeholder="tu@email.com"
+        autocomplete="email">
+      @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+        <p class="error-inline">El email es obligatorio</p>
+      }
+      @if (form.controls.email.touched && form.controls.email.hasError('email')) {
+        <p class="error-inline">Introduce un email válido</p>
+      }
+
+      <label class="campo-label campo-label--mt" for="password">Contraseña</label>
+      <input
+        id="password"
+        type="password"
+        class="campo-input"
+        [class.campo-input--error]="form.controls.password.invalid && form.controls.password.touched"
+        formControlName="password"
+        placeholder="••••••"
+        autocomplete="current-password">
+      @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+        <p class="error-inline">La contraseña es obligatoria</p>
+      }
+      @if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
+        <p class="error-inline">Mínimo 6 caracteres</p>
+      }
+
+      @if (error()) {
+        <p class="error-global">{{ error() }}</p>
+      }
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="form.invalid || loading()">
+        {{ loading() ? 'Entrando...' : 'Iniciar sesión' }}
+      </button>
+
+    </form>
+
+    <p class="auth-link">
+      ¿No tienes cuenta?
+      <a routerLink="/register">Regístrate</a>
+    </p>
+  </div>
+</div>

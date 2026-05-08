@@ -1,0 +1,210 @@
+@import '../../../styles/variables';
+
+.comunidad-page {
+  min-height: 100vh;
+  background-color: $earth-1;
+  padding: 0 0 80px;
+
+  &__header {
+    padding: 24px 16px 16px;
+  }
+
+  &__titulo {
+    font-size: 28px;
+    font-weight: 700;
+    color: $green-7;
+    margin: 0 0 2px;
+  }
+
+  &__subtitulo {
+    font-size: 13px;
+    color: $green-5;
+    margin: 0;
+  }
+
+  &__feed {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 16px;
+  }
+}
+
+// FAB
+.fab {
+  position: fixed;
+  bottom: 124px;
+  right: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: $green-6;
+  color: white;
+  font-size: 28px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  &:hover  { background: $green-7; transform: scale(1.08); }
+  &:active { transform: scale(0.95); }
+}
+
+// Overlay
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  animation: fadeIn 0.2s ease;
+}
+
+// Modal centrado
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #F5EFE6;
+  border-radius: 20px;
+  z-index: 201;
+  padding: 24px 20px 28px;
+  width: calc(100% - 40px);
+  max-width: 460px;
+  max-height: 88vh;
+  overflow-y: auto;
+  animation: zoomIn 0.22s ease;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  &__titulo {
+    font-size: 18px;
+    font-weight: 700;
+    color: $green-7;
+    margin: 0;
+  }
+
+  &__cerrar {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: $green-5;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  &__body { margin-bottom: 20px; }
+
+  &__footer { }
+}
+
+.campo-label--mt { margin-top: 16px; }
+
+.campo-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: $green-6;
+  margin-bottom: 8px;
+}
+
+.campo-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 1.5px solid white;
+  border-radius: 12px;
+  font-size: 14px;
+  color: $green-7;
+  background: white;
+  font-family: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2387986a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+
+  &:focus { outline: none; border-color: $green-4; }
+}
+
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 16px;
+  border: 2px dashed #c8b89a;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover { background: rgba(255, 255, 255, 0.7); border-color: $green-4; }
+
+  &__icono {
+    width: 36px;
+    height: 36px;
+    color: $green-4;
+  }
+
+  &__texto {
+    font-size: 13px;
+    color: $green-5;
+  }
+}
+
+.upload-input { display: none; }
+
+.imagen-preview {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.campo-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 1.5px solid white;
+  border-radius: 12px;
+  font-size: 14px;
+  color: $green-7;
+  background: white;
+  resize: none;
+  font-family: inherit;
+
+  &:focus { outline: none; border-color: $green-4; }
+  &::placeholder { color: $green-4; }
+}
+
+.btn-publicar-full {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: $earth-9;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease;
+
+  &:disabled { background: $green-3; cursor: not-allowed; }
+  &:not(:disabled):hover { background: darken($earth-9, 6%); }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }

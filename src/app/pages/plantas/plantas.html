@@ -1,1 +1,76 @@
-<H1>MIS PLANTAS</H1>
+<div class="plantas-page">
+
+  <header class="plantas-page__header">
+    <div>
+      <h1 class="plantas-page__titulo">Inventario</h1>
+      <p class="plantas-page__contador">{{ plantasFiltradas().length }} plantas</p>
+    </div>
+  </header>
+
+  <div class="plantas-page__filtros">
+    <button class="filtro-btn" [class.active]="filtroActivo() === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
+    <button class="filtro-btn" [class.active]="filtroActivo() === 'INTERIOR'" (click)="setFiltro('INTERIOR')">Interior</button>
+    <button class="filtro-btn" [class.active]="filtroActivo() === 'EXTERIOR'" (click)="setFiltro('EXTERIOR')">Exterior</button>
+  </div>
+
+  <div class="plantas-page__lista">
+    @if (plantasFiltradas().length === 0) {
+      <div class="plantas-page__vacio">
+        <span class="vacio-icon">🌱</span>
+        <p>¡Anímate a empezar tu pequeño huerto!</p>
+        <span>Dale al <strong>+</strong> y añade tu primera planta</span>
+      </div>
+    }
+    @for (planta of plantasFiltradas(); track planta.planta_id) {
+      <app-planta-card [planta]="planta" />
+    }
+  </div>
+
+</div>
+
+<!-- Botón flotante + -->
+<button class="fab" (click)="abrirModal()" aria-label="Añadir planta">+</button>
+
+<!-- Overlay -->
+@if (modalAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModal()"></div>
+  <div class="bottomsheet">
+    <div class="bottomsheet__handle"></div>
+
+    <div class="bottomsheet__header">
+      <h3 class="bottomsheet__titulo">Añadir planta</h3>
+      <button class="bottomsheet__cerrar" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <div class="bottomsheet__body">
+      <label class="campo-label" for="selectPlanta">Selecciona una planta</label>
+      <select
+        id="selectPlanta"
+        class="campo-select"
+        [ngModel]="plantaIdSeleccionada()"
+        (ngModelChange)="plantaIdSeleccionada.set($event)">
+        <option [value]="null" disabled selected>— Elige una planta —</option>
+        @for (planta of catalogo; track planta.planta_id) {
+          <option [value]="planta.planta_id">{{ planta.nombre_planta }}</option>
+        }
+      </select>
+
+
+<label class="campo-label" for="fechaSiembra" style="margin-top:16px">¿Cuándo la plantaste?</label>
+      <input
+        id="fechaSiembra"
+        type="date"
+        class="campo-input"
+        [max]="hoy"
+        [ngModel]="fechaSiembra()"
+        (ngModelChange)="fechaSiembra.set($event)">
+    </div>
+
+    <div class="bottomsheet__footer">
+      <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn-añadir" [disabled]="plantaIdSeleccionada() === null" (click)="agregarPlanta()">
+        Añadir
+      </button>
+    </div>
+  </div>
+}

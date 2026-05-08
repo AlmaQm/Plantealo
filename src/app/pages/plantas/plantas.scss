@@ -1,0 +1,299 @@
+@import '../../../styles/variables';
+
+.plantas-page {
+  min-height: 100vh;
+  background-color: $earth-1;
+  padding: 24px 16px 80px;
+
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  &__titulo {
+    font-size: 28px;
+    font-weight: 700;
+    color: $green-7;
+    margin: 0 0 2px 0;
+  }
+
+  &__contador {
+    font-size: 13px;
+    color: $green-5;
+    margin: 0;
+  }
+
+  &__filtros {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  &__lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 260px);
+    text-align: center;
+    color: $green-5;
+    gap: 16px;
+
+    .vacio-icon {
+      font-size: 72px;
+    }
+
+    p {
+      font-size: 20px;
+      font-weight: 700;
+      color: $green-6;
+      margin: 0;
+    }
+
+    span {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+}
+
+.filtro-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid $green-3;
+  background: transparent;
+  color: $green-6;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: $green-6;
+    border-color: $green-6;
+    color: white;
+  }
+
+  &:not(.active):hover {
+    background: $green-1;
+  }
+}
+
+// Botón flotante
+.fab {
+  position: fixed;
+  bottom: 124px;
+  right: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: $green-6;
+  color: white;
+  font-size: 28px;
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s ease, transform 0.15s ease;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: $green-7;
+    transform: scale(1.08);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Overlay
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  animation: fadeIn 0.2s ease;
+}
+
+// Bottomsheet
+.bottomsheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  z-index: 201;
+  padding: 12px 20px 32px;
+  animation: slideUp 0.28s ease;
+
+  &__handle {
+    width: 40px;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  &__titulo {
+    font-size: 17px;
+    font-weight: 700;
+    color: $green-7;
+    margin: 0;
+  }
+
+  &__cerrar {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: $green-5;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+  }
+
+  &__body {
+    margin-bottom: 24px;
+  }
+
+  &__footer {
+    display: flex;
+    gap: 10px;
+  }
+}
+
+.campo-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: $green-6;
+  margin-bottom: 8px;
+}
+
+.campo-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid $green-3;
+  border-radius: 12px;
+  font-size: 15px;
+  color: $green-7;
+  background: white;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23718355' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+
+  &:focus {
+    outline: none;
+    border-color: $green-5;
+  }
+}
+
+.btn-cancelar {
+  flex: 1;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1.5px solid $green-3;
+  background: transparent;
+  color: $green-6;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-añadir {
+  flex: 2;
+  padding: 13px;
+  border-radius: 12px;
+  border: none;
+  background: $green-6;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:disabled {
+    background: $green-3;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    background: $green-7;
+  }
+}
+
+.tipo-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.tipo-opcion {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1.5px solid $green-3;
+  font-size: 14px;
+  color: $green-6;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  &.selected {
+    background: $green-1;
+    border-color: $green-5;
+    color: $green-7;
+    font-weight: 600;
+  }
+}
+
+.campo-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid $green-3;
+  border-radius: 12px;
+  font-size: 15px;
+  color: $green-7;
+  background: white;
+
+  &:focus {
+    outline: none;
+    border-color: $green-5;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}

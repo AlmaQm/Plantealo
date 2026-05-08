@@ -1,10 +1,62 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { PlantasService } from '../../services/plantas';
+import { PlantaCardComponent } from '../../shared/components/planta-card/planta-card';
+
+type Filtro = 'TODAS' | 'INTERIOR' | 'EXTERIOR';
 
 @Component({
   selector: 'app-plantas',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule, PlantaCardComponent],
   templateUrl: './plantas.html',
-  styleUrl: './plantas.scss',
+  styleUrls: ['./plantas.scss']
 })
-export class PlantasComponent { }
+export class PlantasComponent {
+
+  private plantasService = inject(PlantasService);
+
+  readonly catalogo = this.plantasService.catalogo;
+  readonly hoy = new Date().toISOString().split('T')[0];
+
+  filtroActivo = signal<Filtro>('TODAS');
+  modalAbierto = signal(false);
+  plantaIdSeleccionada = signal<number | null>(null);
+  fechaSiembra = signal<string>(this.hoy);
+
+  plantasFiltradas = computed(() => {
+    const filtro = this.filtroActivo();
+    const inventario = this.plantasService.inventario();
+    if (filtro === 'TODAS') return inventario;
+    return inventario.filter(p => p.tipo_planta === filtro || p.tipo_planta === 'TODAS');
+  });
+
+  setFiltro(filtro: Filtro): void {
+    this.filtroActivo.set(filtro);
+  }
+
+  abrirModal(): void {
+    this.plantaIdSeleccionada.set(null);
+    this.fechaSiembra.set(this.hoy);
+    this.modalAbierto.set(true);
+  }
+
+  cerrarModal(): void {
+    this.modalAbierto.set(false);
+    this.plantaIdSeleccionada.set(null);
+  }
+
+  agregarPlanta(): void {
+    const id = this.plantaIdSeleccionada();
+    if (id === null) return;
+    const planta = this.catalogo.find(p => p.planta_id === +id);
+    if (planta) {
+      this.plantasService.addPlanta({
+        ...planta,
+        f_siembra: new Date(this.fechaSiembra())
+      });
+      this.cerrarModal();
+    }
+  }
+}
