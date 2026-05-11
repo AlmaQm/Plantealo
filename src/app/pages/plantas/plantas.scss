@@ -1,4 +1,4 @@
-@import '../../../styles/variables';
+﻿@use 'styles/variables' as *;
 
 .plantas-page {
   min-height: 100vh;
@@ -87,7 +87,7 @@
   }
 }
 
-// Botón flotante
+// BotÃ³n flotante
 .fab {
   position: fixed;
   bottom: 124px;
@@ -133,7 +133,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
+  background: $earth-0;
   border-radius: 20px 20px 0 0;
   z-index: 201;
   padding: 12px 20px 32px;
@@ -177,7 +177,8 @@
 
   &__footer {
     display: flex;
-    gap: 10px;
+    gap: 12px;
+    width: 100%;
   }
 }
 
@@ -221,7 +222,7 @@
 }
 
 .btn-añadir {
-  flex: 2;
+  flex: 1;
   padding: 13px;
   border-radius: 12px;
   border: none;

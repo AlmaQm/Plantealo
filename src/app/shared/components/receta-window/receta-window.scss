@@ -1,6 +1,4 @@
-//@use 'styles/variables.scss' as *;
-
-@import '../../../../styles/variables';
+﻿@use 'styles/variables' as *;
 
 .receta-window {
   position: fixed;
@@ -195,7 +193,7 @@
 .compatibility--61-80 { background: $green-5; }
 .compatibility--81-100 { background: $green-3; }
 
-// Añadir al final de receta-window.component.scss
+// AÃ±adir al final de receta-window.component.scss
 
 .instruction-step {
   display: flex;

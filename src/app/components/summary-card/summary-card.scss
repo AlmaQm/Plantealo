@@ -1,4 +1,4 @@
-@use '../../styles/variables.scss' as *;
+﻿@use 'styles/variables' as *;
 
 .summary-box {
    background-color: white;
@@ -46,7 +46,7 @@
 
          .progress-bar-bg {
             height: 8px; // Grosor de la barra
-            background-color: #e2e0d8; // El color grisáceo/tierra claro de fondo
+            background-color: #e2e0d8; // El color grisÃ¡ceo/tierra claro de fondo
             border-radius: 10px;
             overflow: hidden;
             width: 100%;

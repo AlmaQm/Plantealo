@@ -1,4 +1,4 @@
-@use '../../styles/variables.scss' as *;
+﻿@use 'styles/variables' as *;
 
 // El selector :host afecta al componente <app-home> directamente
 :host {
@@ -12,7 +12,7 @@
    box-sizing: border-box; // Evita que el padding sume al ancho total
 }
 
-// Reset para asegurar que no hay márgenes externos (opcional pero recomendado)
+// Reset para asegurar que no hay mÃ¡rgenes externos (opcional pero recomendado)
 ::ng-deep body {
    margin: 0;
    padding: 0;
@@ -39,7 +39,7 @@
    }
 }
 
-// Títulos de sección como "Esta Semana" o "Tareas de Hoy"
+// TÃ­tulos de secciÃ³n como "Esta Semana" o "Tareas de Hoy"
 h2,
 .section-title {
    font-size: 1.1rem;

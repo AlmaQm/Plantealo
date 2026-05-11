@@ -1,4 +1,10 @@
-@import '../styles/variables';
+﻿@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  overflow-x: hidden;
+}
 
 .user-fab {
   position: fixed;

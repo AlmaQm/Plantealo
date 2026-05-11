@@ -1,15 +1,15 @@
-@use '../../styles/variables.scss' as *;
+﻿@use 'styles/variables' as *;
 
 .weather-box {
    // Gradiente de verde oliva a verde oscuro (usando tus variables)
    background: linear-gradient(135deg, $green-6 0%, $green-7 100%);
-   color: white !important; // Forzamos blanco para que resalte sobre el verde
+   color: white;
    border-radius: 24px;
    padding: 24px;
    display: flex;
    justify-content: space-between;
    align-items: flex-start;
-   min-height: 140px; // Altura mínima para que no se deforme mientras carga
+   min-height: 140px; // Altura mÃ­nima para que no se deforme mientras carga
    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 
    .left-content {
@@ -27,7 +27,7 @@
          }
 
          .temp {
-            font-size: 2.8rem; // Tamaño grande para la temperatura
+            font-size: 2.8rem; // TamaÃ±o grande para la temperatura
             font-weight: 600;
             line-height: 1;
             color: white;

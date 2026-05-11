@@ -1,4 +1,4 @@
-@use '../../styles/variables.scss' as *;
+﻿@use 'styles/variables' as *;
 
 
 :host {
@@ -221,7 +221,7 @@
    box-shadow: 0 4px 12px rgba(166, 77, 50, 0.2);
 
    &:hover {
-      background-color: #8e3e28; // Un tono más oscuro al pasar el mouse
+      background-color: #8e3e28; // Un tono mÃ¡s oscuro al pasar el mouse
       transform: translateY(-2px);
    }
 

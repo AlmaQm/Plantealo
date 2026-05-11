@@ -29,7 +29,9 @@
       "Bash(Get-Content \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\shared\\\\components\\\\navbar\\\\navbar.scss\")",
       "Bash(Select-String \"background\")",
       "PowerShell($content = Get-Content \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\shared\\\\components\\\\navbar\\\\navbar.scss\" -Raw; $bytes = [System.Text.Encoding]::UTF8.GetBytes\\($content\\); $bytes[0..5] | ForEach-Object { $_.ToString\\(\"X2\"\\) })",
-      "PowerShell($content = Get-Content \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\shared\\\\components\\\\navbar\\\\navbar.scss\" -Raw; $line = \\($content -split \"`n\" | Select-String \"mat-sys-surface\"\\).Line; [System.Text.Encoding]::UTF8.GetBytes\\($line\\) | ForEach-Object { $_.ToString\\(\"X2\"\\) })"
+      "PowerShell($content = Get-Content \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\shared\\\\components\\\\navbar\\\\navbar.scss\" -Raw; $line = \\($content -split \"`n\" | Select-String \"mat-sys-surface\"\\).Line; [System.Text.Encoding]::UTF8.GetBytes\\($line\\) | ForEach-Object { $_.ToString\\(\"X2\"\\) })",
+      "PowerShell(Get-ChildItem \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\styles\" -ErrorAction SilentlyContinue | Write-Output; if \\(-not \\(Test-Path \"c:\\\\Estudis\\\\FundeSplai\\\\angular\\\\Plantealo\\\\src\\\\app\\\\styles\"\\)\\) { Write-Output \"Directory is empty/gone\" })",
+      "Bash(Write-Output \"Cache eliminada\")"
     ],
     "additionalDirectories": [
       "c:\\Estudis\\FundeSplai\\angular\\Plantealo\\docs\\superpowers"
