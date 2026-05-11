@@ -51,6 +51,15 @@
       border: 2px solid #eee;
       border-radius: 50%;
       cursor: pointer;
+      accent-color: $green-6;
+   }
+
+   input[type="checkbox"] {
+      accent-color: $green-6;
+   }
+
+   input[type="checkbox"]:checked {
+      accent-color: $green-6;
    }
 
    &.completed {
