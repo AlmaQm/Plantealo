@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth';
 
 interface MenuOption {
   icon: string;
@@ -16,6 +17,7 @@ interface MenuOption {
   styleUrls: ['./perfil.scss']
 })
 export class PerfilComponent {
+  private readonly authService = inject(AuthService);
   user = {
     name: 'María García',
     handle: '@maria_huerto',
@@ -51,12 +53,9 @@ export class PerfilComponent {
   // Método funcional para manejar los clicks
 
 
-  handleAction(key: string) {
+  handleAction(key: string): void {
     if (key === 'logout') {
-      console.log('Cerrando sesión...');
-      // Aquí iría tu lógica: this.authService.logout() o similar
-    } else {
-      console.log(`Ejecutando acción para: ${key}`);
+      this.authService.logout();
     }
   }
 }
