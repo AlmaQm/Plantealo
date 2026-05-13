@@ -5,3 +5,10 @@ export interface GardenTask {
    description: string;
    completed: boolean;
 }
+
+export interface WeatherData {
+   temp: number;
+   condition: string;
+   humidity: number;
+   advice: string;
+}
