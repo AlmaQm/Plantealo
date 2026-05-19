@@ -1,24 +1,77 @@
-<!-- <div class="weather-box" *ngIf="weather$ | async as weather">
-   <div class="temp-header">
-      <span class="temp">{{ weather.temp }}°C</span>
-      <p>{{ weather.condition }}</p>
-      <p>Humedad: {{ weather.humidity }}%</p>
-   </div>
-   <div class="advice">
-      <small>{{ weather.advice }}</small>
-   </div>
-</div> -->
-<div class="weather-box">
-   <div class="left-content">
-      <div class="temp-row">
-         <span class="weather-icon">☀️</span>
-         <span class="temp">24°C</span>
+<ng-container *ngIf="weather$ | async as weather">
+
+   <div class="weather-container">
+
+      <button class="arrow" (click)="prevDay()" [disabled]="currentDay === 0">
+         ‹
+      </button>
+
+      <div class="weather-box" *ngIf="weather[0]?.prediccion?.dia?.[currentDay] as dia">
+
+         <!-- IZQUIERDA -->
+         <div class="left-content">
+
+            <div class="temp-row">
+
+               <span class="weather-icon">
+                  {{
+                  weatherService.getIconoClimaPorCodigo(
+                  dia.estadoCielo?.[0]?.value
+                  )
+                  }}
+               </span>
+
+               <!-- 🔥 TEMPERATURA ACTUAL (MÁXIMA) -->
+               <div class="temp-current">
+                  {{ dia.temperatura.maxima }}°
+               </div>
+
+            </div>
+
+            <div class="stats">
+
+               <div>🔥 Máx: {{ dia.temperatura.maxima }}°C</div>
+
+               <div>❄️ Mín: {{ dia.temperatura.minima }}°C</div>
+
+               <div>🌧️ Precipitación: {{ dia.probPrecipitacion?.[0]?.value || 0 }}%</div>
+
+            </div>
+
+            <div class="status">
+               {{ dia.estadoCielo?.[0]?.descripcion }}
+            </div>
+
+         </div>
+
+         <!-- DERECHA -->
+         <div class="right-content">
+
+            <div class="water-box" [ngClass]="weatherService.isGoodDayToWater(
+               dia.temperatura.maxima,
+               dia.probPrecipitacion?.[0]?.value || 0
+             ) ? 'good' : 'bad'">
+
+               {{
+               weatherService.isGoodDayToWater(
+               dia.temperatura.maxima,
+               dia.probPrecipitacion?.[0]?.value || 0
+               )
+               ? '🌱 Buen día para regar'
+               : '🚫 No regar hoy'
+               }}
+
+            </div>
+
+         </div>
+
       </div>
-      <p class="status">Soleado</p>
-      <p class="humidity">Humedad: 65%</p>
+
+      <button class="arrow" (click)="nextDay(weather[0].prediccion.dia.length)"
+         [disabled]="currentDay === weather[0].prediccion.dia.length - 1">
+         ›
+      </button>
+
    </div>
 
-   <div class="right-content">
-      <p class="advice">Ideal para regar por la mañana</p>
-   </div>
-</div>
+</ng-container>
