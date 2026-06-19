@@ -1,0 +1,55 @@
+<div class="dp">
+
+  <!-- Botón que abre el calendario (sustituye al input nativo) -->
+  <button
+    type="button"
+    class="dp__trigger"
+    [class.dp__trigger--vacio]="!value()"
+    (click)="toggle()">
+    <span>{{ etiqueta() }}</span>
+    <svg class="dp__icono" width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4.5" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6" />
+      <path d="M3 9h18M8 2.5v4M16 2.5v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    </svg>
+  </button>
+
+  <!-- Calendario -->
+  @if (abierto()) {
+    <div class="dp__panel">
+
+      <div class="dp__cabecera">
+        <button type="button" class="dp__nav" (click)="mesAnterior()" aria-label="Mes anterior">‹</button>
+        <span class="dp__mes">{{ etiquetaMes() }}</span>
+        <button type="button" class="dp__nav" (click)="mesSiguiente()" aria-label="Mes siguiente">›</button>
+      </div>
+
+      <div class="dp__semana">
+        @for (d of diasSemana; track d) {
+          <span class="dp__diasem">{{ d }}</span>
+        }
+      </div>
+
+      <div class="dp__grid">
+        @for (celda of dias(); track celda.fecha.getTime()) {
+          <button
+            type="button"
+            class="dp__dia"
+            [class.dp__dia--otro]="celda.otroMes"
+            [class.dp__dia--hoy]="celda.esHoy"
+            [class.dp__dia--sel]="celda.seleccionado"
+            [disabled]="celda.deshabilitado"
+            (click)="seleccionar(celda)">
+            {{ celda.dia }}
+          </button>
+        }
+      </div>
+
+      <div class="dp__pie">
+        <button type="button" class="dp__accion" (click)="limpiar()">Borrar</button>
+        <button type="button" class="dp__accion dp__accion--hoy" (click)="irHoy()">Hoy</button>
+      </div>
+
+    </div>
+  }
+
+</div>

@@ -1,0 +1,30 @@
+<div class="sp">
+
+  <!-- Botón disparador (mismo look que .campo-select) -->
+  <button
+    type="button"
+    class="sp__trigger"
+    [class.sp__trigger--vacio]="value() === null"
+    (click)="toggle()">
+    <span>{{ etiquetaActual() }}</span>
+    <svg class="sp__icono" width="12" height="8" viewBox="0 0 12 8" fill="none">
+      <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" />
+    </svg>
+  </button>
+
+  <!-- Lista desplegable -->
+  @if (abierto()) {
+    <div class="sp__panel" [class.sp__panel--arriba]="direccion() === 'arriba'">
+      @for (opcion of opciones(); track opcion.valor) {
+        <button
+          type="button"
+          class="sp__opcion"
+          [class.sp__opcion--sel]="opcion.valor === value()"
+          (click)="seleccionar(opcion)">
+          {{ opcion.etiqueta }}
+        </button>
+      }
+    </div>
+  }
+
+</div>

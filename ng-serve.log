@@ -1,0 +1,130 @@
+
+> plantealo-app@0.0.0 start
+> ng serve
+
+[33m❯[39m Building...
+[32m✔[39m Building...
+[35mBrowser bundles[39m     
+[1mInitial chunk files[22m [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m
+[32mmain.js[39m             [2m | [22m[2mmain[22m            [2m | [22m [36m15.59 kB[39m[2m | [22m
+[32mstyles.css[39m          [2m | [22m[2mstyles[22m          [2m | [22m  [36m9.71 kB[39m[2m | [22m
+[32mchunk-CZJLB7T5.js[39m   [2m | [22m[2m-[22m               [2m | [22m  [36m1.08 kB[39m[2m | [22m
+
+[1m [22m                   [2m | [22m[1mInitial total[22m   [2m | [22m [1m26.38 kB[22m
+
+[1mLazy chunk files[22m    [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m
+[32mchunk-EYGG6TXF.js[39m   [2m | [22m[2mplantas[22m         [2m | [22m [36m86.25 kB[39m[2m | [22m
+[32mchunk-AFNUZVMF.js[39m   [2m | [22m[2mrecetas[22m         [2m | [22m [36m81.87 kB[39m[2m | [22m
+[32mchunk-XCAX6XJT.js[39m   [2m | [22m[2mcomunidad[22m       [2m | [22m [36m59.14 kB[39m[2m | [22m
+[32mchunk-ZLRMWKDS.js[39m   [2m | [22m[2mhome[22m            [2m | [22m [36m43.86 kB[39m[2m | [22m
+[32mchunk-VCP2MAVE.js[39m   [2m | [22m[2mregister[22m        [2m | [22m [36m31.77 kB[39m[2m | [22m
+[32mchunk-CAXQJVMM.js[39m   [2m | [22m[2mperfil[22m          [2m | [22m [36m20.76 kB[39m[2m | [22m
+[32mchunk-WUXTNRRU.js[39m   [2m | [22m[2mlogin[22m           [2m | [22m [36m15.33 kB[39m[2m | [22m
+[32mchunk-ZI5QTB2V.js[39m   [2m | [22m[2m-[22m               [2m | [22m  [36m4.54 kB[39m[2m | [22m
+
+
+[35mServer bundles[39m      
+[1mInitial chunk files[22m [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m
+[32mmain.server.mjs[39m     [2m | [22m[2mmain.server[22m     [2m | [22m [36m16.86 kB[39m[2m | [22m
+[32mserver.mjs[39m          [2m | [22m[2mserver[22m          [2m | [22m  [36m1.84 kB[39m[2m | [22m
+[32mchunk-XZXRA2IB.mjs[39m  [2m | [22m[2m-[22m               [2m | [22m  [36m1.11 kB[39m[2m | [22m
+[32mpolyfills.server.mjs[39m[2m | [22m[2mpolyfills.server[22m[2m | [22m[36m268 bytes[39m[2m | [22m
+
+[1mLazy chunk files[22m    [2m | [22m[1mNames[22m           [2m | [22m [1mRaw size[22m
+[32mchunk-5E5PWAO5.mjs[39m  [2m | [22m[2mplantas[22m         [2m | [22m [36m86.28 kB[39m[2m | [22m
+[32mchunk-ENE6G5KQ.mjs[39m  [2m | [22m[2mrecetas[22m         [2m | [22m [36m81.90 kB[39m[2m | [22m
+[32mchunk-GTS3OFN6.mjs[39m  [2m | [22m[2mcomunidad[22m       [2m | [22m [36m59.18 kB[39m[2m | [22m
+[32mchunk-TS4TBYHB.mjs[39m  [2m | [22m[2mhome[22m            [2m | [22m [36m43.90 kB[39m[2m | [22m
+[32mchunk-X6WRUHBK.mjs[39m  [2m | [22m[2mregister[22m        [2m | [22m [36m31.80 kB[39m[2m | [22m
+[32mchunk-PIK5LIFS.mjs[39m  [2m | [22m[2mperfil[22m          [2m | [22m [36m20.80 kB[39m[2m | [22m
+[32mchunk-ASVQTA4A.mjs[39m  [2m | [22m[2mlogin[22m           [2m | [22m [36m15.36 kB[39m[2m | [22m
+[32mchunk-VJHLTPV5.mjs[39m  [2m | [22m[2m-[22m               [2m | [22m  [36m4.57 kB[39m[2m | [22m
+
+Application bundle generation complete. [18.873 seconds] - 2026-06-19T11:22:27.262Z
+
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDeprecation[0m [1m[35m[plugin angular-sass][0m
+
+    src/app/pages/comunidad/comunidad.scss:206:39:
+[37m      206 │   &:not(:disabled):hover { background: [32m[37mdarken($earth-9, 6%); }
+          ╵                                        [32m^[0m
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: [4mhttps://sass-lang.com/d/import[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDeprecation[0m [1m[35m[plugin angular-sass][0m
+
+    src/app/pages/comunidad/comunidad.scss:206:39:
+[37m      206 │   &:not(:disabled):hover { background: [32m[37mdarken($earth-9, 6%); }
+          ╵                                        [32m^[0m
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -30.297029703%)
+  color.adjust($color, $lightness: -6%)
+  
+  More info: [4mhttps://sass-lang.com/d/color-functions[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDeprecation[0m [1m[35m[plugin angular-sass][0m
+
+    src/app/pages/login/login.scss:87:39:
+[37m      87 │   &:not(:disabled):hover { background: [32m[37mdarken($earth-9, 6%); }
+         ╵                                        [32m^[0m
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: [4mhttps://sass-lang.com/d/import[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDeprecation[0m [1m[35m[plugin angular-sass][0m
+
+    src/app/pages/login/login.scss:87:39:
+[37m      87 │   &:not(:disabled):hover { background: [32m[37mdarken($earth-9, 6%); }
+         ╵                                        [32m^[0m
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -30.297029703%)
+  color.adjust($color, $lightness: -6%)
+  
+  More info: [4mhttps://sass-lang.com/d/color-functions[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDeprecation[0m [1m[35m[plugin angular-sass][0m
+
+    src/app/pages/register/register.scss:158:39:
+[37m      158 │   &:not(:disabled):hover { background: [32m[37mdarken($earth-9, 6%); }
+          ╵                                        [32m^[0m
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: [4mhttps://sass-lang.com/d/import[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDeprecation[0m [1m[35m[plugin angular-sass][0m
+
+    src/app/pages/register/register.scss:158:39:
+[37m      158 │   &:not(:disabled):hover { background: [32m[37mdarken($earth-9, 6%); }
+          ╵                                        [32m^[0m
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -30.297029703%)
+  color.adjust($color, $lightness: -6%)
+  
+  More info: [4mhttps://sass-lang.com/d/color-functions[0m
+
+[39m[22m
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.

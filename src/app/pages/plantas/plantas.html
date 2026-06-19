@@ -43,27 +43,17 @@
     </div>
 
     <div class="bottomsheet__body">
-      <label class="campo-label" for="selectPlanta">Selecciona una planta</label>
-      <select
-        id="selectPlanta"
-        class="campo-select"
-        [ngModel]="plantaIdSeleccionada()"
-        (ngModelChange)="plantaIdSeleccionada.set($event)">
-        <option [value]="null" disabled selected>— Elige una planta —</option>
-        @for (planta of catalogo; track planta.planta_id) {
-          <option [value]="planta.planta_id">{{ planta.nombre_planta }}</option>
-        }
-      </select>
+      <label class="campo-label">Selecciona una planta</label>
+      <app-select-plantas
+        [opciones]="opcionesPlantas"
+        [value]="plantaIdSeleccionada()"
+        (valueChange)="plantaIdSeleccionada.set($event)" />
 
-
-<label class="campo-label" for="fechaSiembra" style="margin-top:16px">¿Cuándo la plantaste?</label>
-      <input
-        id="fechaSiembra"
-        type="date"
-        class="campo-input"
+      <label class="campo-label" style="margin-top:16px">¿Cuándo la plantaste?</label>
+      <app-datepicker
+        [value]="fechaSiembra()"
         [max]="hoy"
-        [ngModel]="fechaSiembra()"
-        (ngModelChange)="fechaSiembra.set($event)">
+        (valueChange)="fechaSiembra.set($event)" />
     </div>
 
     <div class="bottomsheet__footer">

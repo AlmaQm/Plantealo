@@ -1,0 +1,104 @@
+@use 'styles/variables' as *;
+
+.sp {
+  position: relative;
+  width: 100%;
+
+  // --- Botón disparador (mismo look que .campo-select) ---
+  &__trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border: 1.5px solid $green-3;
+    border-radius: 12px;
+    font-size: 15px;
+    color: $green-7;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    text-align: left;
+
+    &:hover,
+    &:focus {
+      border-color: $green-5;
+      outline: none;
+    }
+
+    &--vacio {
+      color: $green-5;
+    }
+  }
+
+  &__icono {
+    color: $green-5;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+
+  // --- Lista desplegable ---
+  // Se abre hacia abajo por defecto: la lista de plantas suele tener sitio,
+  // a diferencia del datepicker que vive al fondo del bottomsheet.
+  &__panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background: $earth-0;
+    border: 1.5px solid $green-2;
+    border-radius: 14px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    animation: spIn 0.14s ease;
+
+    // Se despliega hacia arriba cuando no hay sitio debajo del trigger
+    // (p. ej. el select está al fondo del bottomsheet).
+    &--arriba {
+      top: auto;
+      bottom: calc(100% + 6px);
+    }
+  }
+
+  &__opcion {
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 14px;
+    color: $green-6;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+
+    &:hover {
+      background: $green-1;
+    }
+
+    &--sel,
+    &--sel:hover {
+      background: $green-6;
+      color: white;
+      font-weight: 600;
+    }
+  }
+}
+
+@keyframes spIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
