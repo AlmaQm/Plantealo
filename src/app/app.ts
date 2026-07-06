@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -27,6 +27,12 @@ export class App {
     const url = this.currentUrl();
     return url.startsWith('/login') || url.startsWith('/register');
   });
+
+  protected readonly chatObert = signal(false);
+
+  protected toggleChat(): void {
+    this.chatObert.update(v => !v);
+  }
 
   constructor() {
     this.translate.addLangs(['es', 'ca', 'en']);

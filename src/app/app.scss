@@ -14,14 +14,40 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: $green-3;
   color: $green-7;
   text-decoration: none;
 
   svg {
-    width: 26px;
-    height: 26px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover { color: $green-6; }
+}
+
+.chat-fab {
+  position: fixed;
+  top: 14px;
+  right: 64px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: $green-3;
+  color: $green-7;
+  border: none;
+  cursor: pointer;
+
+  svg {
+    width: 20px;
+    height: 20px;
   }
 
   &:hover { color: $green-6; }
