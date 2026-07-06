@@ -75,6 +75,14 @@ button { cursor: pointer; }
 
 /* ===== MODAL CALENDARIO TEMPORADAS ===== */
 
+/* el wrapper interno de ion-modal tiene su propio radio/fondo; si no coincide
+   con el de .cal-wrap, sus esquinas cuadradas asoman como puntas blancas
+   por encima de la cabecera redondeada */
+ion-modal.cal-modal {
+  --border-radius: 20px;
+  --background: transparent;
+}
+
 /* contenedor raíz del modal — absolute para fijar altura real */
 .cal-wrap {
   position: absolute;

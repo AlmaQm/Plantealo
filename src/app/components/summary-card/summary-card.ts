@@ -9,17 +9,16 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./summary-card.scss']
 })
 export class SummaryCardComponent {
-  // Valores por defecto basados en tu imagen
-  @Input() harvestReady: number = 2;
-  @Input() totalPlants: number = 8;
+  @Input() harvestReady: number = 0;
+  @Input() totalPlants: number = 0;
   @Input() tasksCompleted: number = 0;
-  @Input() totalTasks: number = 5;
+  @Input() totalTasks: number = 0;
 
   get harvestPercentage(): number {
-    return (this.harvestReady / this.totalPlants) * 100;
+    return this.totalPlants > 0 ? (this.harvestReady / this.totalPlants) * 100 : 0;
   }
 
   get tasksPercentage(): number {
-    return (this.tasksCompleted / this.totalTasks) * 100;
+    return this.totalTasks > 0 ? (this.tasksCompleted / this.totalTasks) * 100 : 0;
   }
 }

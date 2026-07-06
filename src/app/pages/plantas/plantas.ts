@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PlantasService, getTipoPlanta } from '../../services/plantas';
+import { PlantasService, getTipoPlanta, diasHastaCosecha } from '../../services/plantas';
 
 import { DatepickerComponent } from '../../components/datepicker/datepicker';
 import { SelectPlantasComponent, SelectOpcion } from '../../components/select-plantas/select-plantas';
@@ -61,10 +61,16 @@ export class PlantasComponent {
     if (id === null) return;
     const planta = this.catalogo.find(p => p.planta_id === +id);
     if (planta) {
+      const f_siembra = new Date(this.fechaSiembra());
+      const f_recogida = new Date(f_siembra);
+      f_recogida.setDate(f_recogida.getDate() + diasHastaCosecha(planta.nombre_planta));
+
       this.plantasService.addPlanta({
         ...planta,
         tipo_planta: getTipoPlanta(planta.nombre_planta),
-        f_siembra:   new Date(this.fechaSiembra()),
+        f_siembra,
+        f_recogida,
+        estado: 'PLANTADA',
       });
       this.cerrarModal();
     }

@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { PlantasService, calcularEstado, diasRestantes } from '../../services/plantas';
+import { PlantasService, calcularEstado, diasRestantes, diasHastaProximoRiego } from '../../services/plantas';
 import { GardenTask } from '../../models/interfaces';
 
 import { WeatherCardComponent } from '../../components/weather-card/weather-card';
@@ -46,12 +46,13 @@ export class HomeComponent {
       .map(p => {
         const estado = calcularEstado(p);
         const dias   = diasRestantes(p);
+        const riego  = diasHastaProximoRiego(p);
         return {
           id:          p.planta_id,
           icon:        ICONOS[estado] ?? '🌿',
           image:       p.imagen_url,
           title:       p.nombre_planta,
-          description: this.descripcion(estado, dias),
+          description: this.descripcion(estado, dias, riego),
           completed:   done.has(p.planta_id),
         };
       })
@@ -74,6 +75,16 @@ export class HomeComponent {
     this.mostrarTodasTareas.update(v => !v);
   }
 
+  totalPlantas = computed(() => this.plantasService.inventario().length);
+
+  plantasListas = computed(() =>
+    this.plantasService.inventario().filter(p => calcularEstado(p) === 'LISTA').length
+  );
+
+  totalTareas = computed(() => this.tasks().length);
+
+  tareasCompletadas = computed(() => this.completedIds().size);
+
   toggleTask(task: GardenTask) {
     this.completedIds.update(set => {
       const next = new Set(set);
@@ -82,15 +93,20 @@ export class HomeComponent {
     });
   }
 
-  private descripcion(estado: string, dias: number): string {
+  private descripcion(estado: string, dias: number, diasRiego: number): string {
     switch (estado) {
       case 'LISTA':     return dias < 0
                           ? `Lista para cosechar — no esperes más`
                           : `Lista para cosechar hoy`;
-      case 'CRECIENDO': return dias > 0
-                          ? `Lista en ${dias} día${dias === 1 ? '' : 's'}`
-                          : 'Revisa si está lista';
-      case 'PLANTADA':  return 'Germinando — vigila la humedad';
+      case 'CRECIENDO':
+      case 'PLANTADA': {
+        const cosecha = dias > 0
+          ? `Lista en ${dias} día${dias === 1 ? '' : 's'}`
+          : 'Revisa si está lista';
+        return diasRiego === 0
+          ? `Riega hoy · ${cosecha}`
+          : `Próximo riego en ${diasRiego} día${diasRiego === 1 ? '' : 's'} · ${cosecha}`;
+      }
       case 'ENFERMA':   return 'Necesita atención urgente';
       default:          return 'Revisar estado';
     }

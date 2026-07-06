@@ -99,10 +99,76 @@ export const DIAS_COSECHA: Record<string, number> = {
   'Puerros':      120,
   'Cebollas':     120,
   'Ajos':         180,
+
+  // ── Alias de nombres tal como aparecen en el catálogo (data/planta.ts) ────
+  'Tomates Cherry':   90,
+  'Tomate Ramillete': 90,
+  'Tomate Pera':      90,
+  'Zanahoria':        80,
+  'Calabacín':        55,
+  'Pepino':           65,
+  'Judías Verdes':    60,
 };
 
 export function diasHastaCosecha(nombre: string): number {
   return DIAS_COSECHA[nombre] ?? 90;
+}
+
+// ─── Frecuencia de riego por planta (días entre riegos) ──────────────────────
+// Referencia orientativa para huerto/maceta en clima mediterráneo sin lluvia.
+export const DIAS_RIEGO: Record<string, number> = {
+  'Rábanos':       2,
+  'Rúcula':        2,
+  'Albahaca':      2,
+  'Cilantro':      2,
+  'Espinacas':     2,
+  'Lechugas':      2,
+  'Kale':          3,
+  'Acelgas':       3,
+  'Calabacines':   2,
+  'Judías verdes': 3,
+  'Pepinos':       2,
+  'Cebollino':     3,
+  'Fresas':        2,
+  'Remolacha':     3,
+  'Perejil':       3,
+  'Menta':         2,
+  'Zanahorias':    4,
+  'Guisantes':     4,
+  'Tomates':       3,
+  'Pimientos':     3,
+  'Berenjenas':    3,
+  'Romero':        7,
+  'Tomillo':       7,
+  'Orégano':       6,
+  'Brócoli':       3,
+  'Coliflor':      3,
+  'Habas':         5,
+  'Puerros':       4,
+  'Cebollas':      5,
+  'Ajos':          6,
+
+  // ── Alias de nombres tal como aparecen en el catálogo (data/planta.ts) ────
+  'Tomates Cherry':   3,
+  'Tomate Ramillete': 3,
+  'Tomate Pera':      3,
+  'Zanahoria':        4,
+  'Calabacín':        2,
+  'Pepino':           2,
+  'Judías Verdes':    3,
+};
+
+export function diasEntreRiegos(nombre: string): number {
+  return DIAS_RIEGO[nombre] ?? 3;
+}
+
+// ─── Próximo riego según días transcurridos desde la siembra ─────────────────
+export function diasHastaProximoRiego(planta: Planta): number {
+  const intervalo = diasEntreRiegos(planta.nombre_planta);
+  const transcurridos = Math.floor((Date.now() - new Date(planta.f_siembra).getTime()) / 86_400_000);
+  if (transcurridos <= 0) return intervalo;
+  const resto = transcurridos % intervalo;
+  return resto === 0 ? 0 : intervalo - resto;
 }
 
 // ─── Estado calculado según fechas reales ────────────────────────────────────
