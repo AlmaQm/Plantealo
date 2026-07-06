@@ -44,3 +44,9 @@ __screenshots__/
 Thumbs.db
 
 backend/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+backend/venv/
