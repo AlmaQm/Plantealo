@@ -1,6 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { PlantasService, calcularEstado, diasRestantes, diasHastaProximoRiego } from '../../services/plantas';
 import { GardenTask } from '../../models/interfaces';
 
@@ -26,7 +25,6 @@ const URGENCIA: Record<string, number> = {
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     WeatherCardComponent,
     CalendarWeekComponent,
     TaskItemComponent,
