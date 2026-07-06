@@ -1,6 +1,8 @@
 <div class="task-card" [class.completed]="task.completed">
 
-   <span class="icon">{{ task.icon }}</span>
+   <span class="icon">
+      <img [src]="task.image" [alt]="task.title">
+   </span>
 
    <div class="info">
       <h3>{{ task.title }}</h3>

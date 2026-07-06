@@ -1,74 +1,135 @@
 ﻿@use 'styles/variables' as *;
 
+.weather-container {
+   user-select: none;
+}
+
 .weather-box {
-   background: linear-gradient(135deg, $green-7, $earth-9);
-   color: white;
-   border-radius: 24px;
-   padding: 24px;
-   display: flex;
-   justify-content: space-between;
-   align-items: flex-start;
-   min-height: 180px;
-}
-
-.left-content {
-   display: flex;
-   flex-direction: column;
-   gap: 8px;
-}
-
-.temp-row {
+   background: white;
+   border: 1.5px solid $green-1;
+   border-radius: 22px;
+   padding: 16px 10px;
    display: flex;
    align-items: center;
-   gap: 12px;
+   gap: 6px;
 }
 
-.weather-icon {
-   font-size: 2.5rem;
+.weather-main {
+   flex: 1;
+   min-width: 0;
+}
+
+.temp-top {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+}
+
+.weather-icon-svg {
+   width: 2.6rem;
+   height: 2.6rem;
+   stroke-width: 1.6;
+   color: $sky-1;
+   flex-shrink: 0;
+
+   &.is-sun {
+      color: $sun-1;
+   }
+
+   &.is-rain {
+      color: $rain-1;
+   }
+}
+
+.temp-block {
+   min-width: 0;
 }
 
 .temp-current {
-   font-size: 4rem;
+   font-size: 2.6rem;
    font-weight: 800;
    line-height: 1;
+   color: $earth-9;
 }
 
-.stats {
-   font-size: 0.9rem;
-   opacity: 0.9;
+.cond-label {
+   font-size: 0.68rem;
+   font-weight: 700;
+   letter-spacing: 0.04em;
+   text-transform: uppercase;
+   color: $green-6;
+   margin-top: 2px;
+}
+
+.advice-line {
    display: flex;
-   flex-direction: column;
-   gap: 2px;
+   align-items: center;
+   gap: 6px;
+   margin-top: 10px;
+   font-size: 0.92rem;
+   font-weight: 700;
+   color: $green-7;
+
+   &.bad {
+      color: $earth-9;
+   }
 }
 
-.status {
-   font-size: 1rem;
-   opacity: 0.95;
+.advice-icon {
+   width: 15px;
+   height: 15px;
+   flex-shrink: 0;
 }
 
-/* DERECHA */
-.right-content {
+.sub-stats {
+   display: flex;
+   gap: 14px;
+   margin-top: 6px;
+   font-size: 0.74rem;
+   color: $green-5;
+
+   span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+   }
+}
+
+.stat-icon {
+   width: 13px;
+   height: 13px;
+   flex-shrink: 0;
+}
+
+.nav-arrow {
+   flex-shrink: 0;
+   background: $green-1;
+   border: none;
+   border-radius: 50%;
+   width: 28px;
+   height: 28px;
    display: flex;
    align-items: center;
    justify-content: center;
+   cursor: pointer;
+   color: $green-6;
+   transition: background 0.2s, transform 0.15s;
+
+   svg {
+      width: 13px;
+      height: 13px;
+   }
+
+   &:hover:not(:disabled) {
+      background: $green-2;
+   }
+
+   &:disabled {
+      opacity: 0.35;
+      cursor: default;
+   }
+
+   &--left:hover:not(:disabled) { transform: translateX(-2px); }
+   &--right:hover:not(:disabled) { transform: translateX(2px); }
 }
 
-.water-box {
-   padding: 12px 16px;
-   border-radius: 12px;
-   text-align: center;
-   font-weight: bold;
-   font-size: 0.9rem;
-}
-
-/* 🌱 BUEN DÍA */
-.water-box.good {
-   background: rgba($green-1, 0.15);
-   border: 1px solid $green-2;
-}
-
-/* 🚫 MAL DÍA */
-.water-box.bad {
-   background: rgba($earth-9, 0.25);
-   border: 1px solid $earth-2;
-}

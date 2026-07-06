@@ -1,6 +1,7 @@
 export interface GardenTask {
   id: number;
   icon: string;
+  image: string;
   title: string;
   description: string;
   completed: boolean;

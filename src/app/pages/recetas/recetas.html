@@ -44,22 +44,26 @@
   </div>
   
   <div class="recetas-page__grid">
-    <app-receta-card 
-      *ngFor="let recipe of filteredRecipes"
-      [recipe]="recipe"
-      [compatibilityPercentage]="getCompatibility(recipe)"
-      (recipeClick)="openRecipeDetail($event)">
-    </app-receta-card>
-    
-    <div *ngIf="filteredRecipes.length === 0" class="no-results">
-      <p>No se encontraron recetas con estos filtros</p>
-    </div>
+    @for (recipe of filteredRecipes; track recipe.id_receta) {
+      <app-receta-card
+        [recipe]="recipe"
+        [compatibilityPercentage]="getCompatibility(recipe)"
+        (recipeClick)="openRecipeDetail($event)">
+      </app-receta-card>
+    }
+
+    @if (filteredRecipes.length === 0) {
+      <div class="no-results">
+        <p>No se encontraron recetas con estos filtros</p>
+      </div>
+    }
   </div>
-  
-  <app-receta-window 
-    *ngIf="selectedRecipe"
-    [recipe]="selectedRecipe"
-    [gardenPlants]="gardenPlants"
-    (close)="closeRecipeDetail()">
-  </app-receta-window>
+
+  @if (selectedRecipe) {
+    <app-receta-window
+      [recipe]="selectedRecipe"
+      [gardenPlants]="gardenPlants"
+      (close)="closeRecipeDetail()">
+    </app-receta-window>
+  }
 </div>

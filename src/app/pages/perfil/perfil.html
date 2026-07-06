@@ -5,37 +5,68 @@
    </header>
 
    <div class="profile-content">
+
+      <!-- Tarjeta principal -->
       <section class="card card--main">
-         <div class="avatar">
-            <span class="material-icons">MG</span>
-         </div>
-         <h2>María García</h2>
-         <span class="handle">@maria_huerto</span>
-         <div class="tag">
-            <span class="material-icons">leaf</span> Vegetariano
-         </div>
+         @if (usuario()?.imagen_url) {
+            <div class="avatar avatar--img">
+               <img [src]="usuario()!.imagen_url" [alt]="usuario()!.nombre" />
+            </div>
+         } @else {
+            <div class="avatar">
+               <span class="initials">{{ iniciales(usuario()?.nombre) }}</span>
+            </div>
+         }
+         <h2>{{ usuario()?.nombre ?? '—' }}</h2>
+         <span class="handle">@{{ usuario()?.nombre_usuario ?? '' }}</span>
+         @if (usuario()?.tipo_dieta) {
+            <div class="tag">{{ dietaLabel(usuario()!.tipo_dieta) }}</div>
+         }
       </section>
 
+      <!-- Información personal -->
       <section class="card card--info">
          <div class="card__header">
             <h3>Información Personal</h3>
-            <button class="btn-edit">Editar</button>
          </div>
-
          <div class="field">
             <label>Nombre completo</label>
-            <p>María García</p>
+            <p>{{ usuario()?.nombre ?? '—' }}</p>
          </div>
          <div class="field">
             <label>Nombre de usuario</label>
-            <p>maria_huerto</p>
+            <p>@{{ usuario()?.nombre_usuario ?? '—' }}</p>
+         </div>
+         <div class="field">
+            <label>Correo electrónico</label>
+            <p>{{ usuario()?.email ?? '—' }}</p>
          </div>
          <div class="field">
             <label>Preferencia alimentaria</label>
-            <p>Vegetariano</p>
+            <p>{{ dietaLabel(usuario()?.tipo_dieta) || '—' }}</p>
          </div>
       </section>
 
+      <!-- Estadísticas reales -->
+      <section class="card card--stats">
+         <h3>Estadísticas del Huerto</h3>
+         <div class="stats-grid">
+            <div class="stat-item">
+               <span class="stat-value">{{ totalPlantas() }}</span>
+               <span class="stat-label">Plantas</span>
+            </div>
+            <div class="stat-item">
+               <span class="stat-value">{{ plantasCreciendo() }}</span>
+               <span class="stat-label">Creciendo</span>
+            </div>
+            <div class="stat-item">
+               <span class="stat-value">{{ plantasListas() }}</span>
+               <span class="stat-label">Listas</span>
+            </div>
+         </div>
+      </section>
+
+      <!-- Opciones -->
       <nav class="menu-group">
          <button class="card card--action">
             <div class="icon-wrapper"><span class="material-icons">notifications_none</span></div>
@@ -44,7 +75,6 @@
                <span>Gestiona tus alertas de riego y cosecha</span>
             </div>
          </button>
-
          <button class="card card--action">
             <div class="icon-wrapper"><span class="material-icons">lock_open</span></div>
             <div class="text-group">
@@ -52,7 +82,6 @@
                <span>Cambiar contraseña y opciones de privacidad</span>
             </div>
          </button>
-
          <button class="card card--action">
             <div class="icon-wrapper"><span class="material-icons">settings</span></div>
             <div class="text-group">
@@ -62,26 +91,10 @@
          </button>
       </nav>
 
-      <section class="card card--stats">
-         <h3>Estadísticas del Huerto</h3>
-         <div class="stats-grid">
-            <div class="stat-item">
-               <span class="stat-value">8</span>
-               <span class="stat-label">Plantas</span>
-            </div>
-            <div class="stat-item">
-               <span class="stat-value">2</span>
-               <span class="stat-label">Listas</span>
-            </div>
-            <div class="stat-item">
-               <span class="stat-value">6</span>
-               <span class="stat-label">Recetas</span>
-            </div>
-         </div>
-      </section>
-      <button class="btn-logout" (click)="handleAction('logout')">
-         <span class="material-icons"></span>
+      <button class="btn-logout" (click)="logout()">
+         <span class="material-icons">logout</span>
          Cerrar Sesión
       </button>
+
    </div>
 </div>

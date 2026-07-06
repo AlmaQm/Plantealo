@@ -1,77 +1,61 @@
-<ng-container *ngIf="weather$ | async as weather">
+@if (weatherService.weatherError()) {
+  <div class="weather-error">{{ weatherService.weatherError() }}</div>
+}
 
+@if (weather$ | async; as weather) {
    <div class="weather-container">
 
-      <button class="arrow" (click)="prevDay()" [disabled]="currentDay === 0">
-         ‹
-      </button>
+      @if (weather[0]?.prediccion?.dia?.[currentDay]; as dia) {
+         <div class="weather-box"
+            (touchstart)="onTouchStart($event)"
+            (touchmove)="onTouchMove($event)"
+            (touchend)="onTouchEnd($event, weather[0].prediccion.dia.length)">
 
-      <div class="weather-box" *ngIf="weather[0]?.prediccion?.dia?.[currentDay] as dia">
+            <button class="nav-arrow nav-arrow--left" [disabled]="currentDay === 0" (click)="prevDay()">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"/>
+               </svg>
+            </button>
 
-         <!-- IZQUIERDA -->
-         <div class="left-content">
+            <div class="weather-main">
 
-            <div class="temp-row">
+               <div class="temp-top">
+                  <svg class="weather-icon-svg"
+                     [class.is-sun]="weatherService.getIconoDia(dia) === weatherService.iconoSol"
+                     [class.is-rain]="weatherService.esLluvia(weatherService.getIconoDia(dia))"
+                     [lucideIcon]="weatherService.getIconoDia(dia)"></svg>
+                  <div class="temp-block">
+                     <div class="temp-current">{{ dia.temperatura.maxima }}°</div>
+                     <div class="cond-label">{{ weatherService.getDescripcionDia(dia) }}</div>
+                  </div>
+               </div>
 
-               <span class="weather-icon">
-                  {{
-                  weatherService.getIconoClimaPorCodigo(
-                  dia.estadoCielo?.[0]?.value
-                  )
-                  }}
-               </span>
+               <div class="advice-line"
+                  [class.bad]="!weatherService.isGoodDayToWater(dia.temperatura.maxima, weatherService.getPrecipitacion(dia))">
+                  @if (weatherService.isGoodDayToWater(dia.temperatura.maxima, weatherService.getPrecipitacion(dia))) {
+                     <svg lucideSprout class="advice-icon"></svg> Buen día para regar
+                  } @else {
+                     <svg lucideBan class="advice-icon"></svg> No riegues hoy
+                  }
+               </div>
 
-               <!-- 🔥 TEMPERATURA ACTUAL (MÁXIMA) -->
-               <div class="temp-current">
-                  {{ dia.temperatura.maxima }}°
+               <div class="sub-stats">
+                  <span><svg lucideSnowflake class="stat-icon"></svg> Mín {{ dia.temperatura.minima }}°C</span>
+                  <span><svg lucideCloudRain class="stat-icon"></svg> {{ weatherService.getPrecipitacion(dia) }}% lluvia</span>
                </div>
 
             </div>
 
-            <div class="stats">
-
-               <div>🔥 Máx: {{ dia.temperatura.maxima }}°C</div>
-
-               <div>❄️ Mín: {{ dia.temperatura.minima }}°C</div>
-
-               <div>🌧️ Precipitación: {{ dia.probPrecipitacion?.[0]?.value || 0 }}%</div>
-
-            </div>
-
-            <div class="status">
-               {{ dia.estadoCielo?.[0]?.descripcion }}
-            </div>
+            <button class="nav-arrow nav-arrow--right"
+               [disabled]="currentDay === weather[0].prediccion.dia.length - 1"
+               (click)="nextDay(weather[0].prediccion.dia.length)">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+               </svg>
+            </button>
 
          </div>
-
-         <!-- DERECHA -->
-         <div class="right-content">
-
-            <div class="water-box" [ngClass]="weatherService.isGoodDayToWater(
-               dia.temperatura.maxima,
-               dia.probPrecipitacion?.[0]?.value || 0
-             ) ? 'good' : 'bad'">
-
-               {{
-               weatherService.isGoodDayToWater(
-               dia.temperatura.maxima,
-               dia.probPrecipitacion?.[0]?.value || 0
-               )
-               ? '🌱 Buen día para regar'
-               : '🚫 No regar hoy'
-               }}
-
-            </div>
-
-         </div>
-
-      </div>
-
-      <button class="arrow" (click)="nextDay(weather[0].prediccion.dia.length)"
-         [disabled]="currentDay === weather[0].prediccion.dia.length - 1">
-         ›
-      </button>
+      }
 
    </div>
-
-</ng-container>
+}

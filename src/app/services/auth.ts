@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { Observable, of, from, switchMap, map } from 'rxjs';
+import { Observable, of, from, switchMap, map, catchError } from 'rxjs';
 
 import { Auth, authState } from '@angular/fire/auth';
 import {
@@ -59,8 +59,11 @@ export class AuthService {
             map(snap => {
               const usuario = snap.exists() ? (snap.data() as Usuario) : null;
               if (usuario) this.saveStoredUser(usuario);
-              return usuario;
-            })
+              // Si Firestore no tiene el doc, usar localStorage
+              return usuario ?? this.getStoredUser();
+            }),
+            // Si Firestore falla (reglas, sin conexión), usar localStorage
+            catchError(() => of(this.getStoredUser()))
           );
         })
       )

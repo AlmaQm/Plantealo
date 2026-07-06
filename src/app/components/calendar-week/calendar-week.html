@@ -1,7 +1,16 @@
 <div class="calendar-strip">
-   <div class="day" *ngFor="let day of week" [class.active]="day.isToday">
-      <span class="day-name">{{ day.name }}</span>
-      <strong class="day-date">{{ day.date }}</strong>
-      <div class="weather-icon" *ngIf="day.isToday">☀️</div>
-   </div>
+   @for (day of week; track day.name) {
+      <div class="day" [class.active]="day.isToday">
+         <span class="day-line1">{{ day.name }} {{ day.date }}</span>
+         <span class="day-line2">
+            <svg class="weather-icon-svg"
+               [class.is-sun]="day.icon === weatherService.iconoSol"
+               [class.is-rain]="weatherService.esLluvia(day.icon)"
+               [lucideIcon]="day.icon"></svg>
+            @if (day.tempMax !== null) {
+               <span class="day-temp">{{ day.tempMax }}°</span>
+            }
+         </span>
+      </div>
+   }
 </div>

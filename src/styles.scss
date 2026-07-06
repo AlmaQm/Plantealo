@@ -73,6 +73,300 @@ input, button, textarea, select {
 
 button { cursor: pointer; }
 
+/* ===== MODAL CALENDARIO TEMPORADAS ===== */
+
+/* contenedor raíz del modal — absolute para fijar altura real */
+.cal-wrap {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: #f5efe6;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+/* CABECERA con gradiente */
+.cal-header {
+  background: linear-gradient(135deg, #354024 0%, #4c3d19 100%);
+  padding: 18px 16px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  border-radius: 20px 20px 0 0;
+}
+
+.cal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cal-header-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #e9f5db;
+  flex-shrink: 0;
+}
+
+.cal-header-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cal-header-sub {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.6);
+  margin: 2px 0 0;
+}
+
+.cal-close {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  flex-shrink: 0;
+  transition: background 0.2s;
+
+  svg { width: 14px; height: 14px; }
+  &:active { background: rgba(255,255,255,0.3); }
+}
+
+/* LEYENDA DE COLORES */
+.cal-color-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 8px 14px;
+  background: #f5efe6;
+  border-bottom: 1.5px solid #e5d7c4;
+  flex-shrink: 0;
+}
+
+.cal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #4c3d19;
+}
+
+.cal-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid rgba(76, 61, 25, 0.15);
+}
+
+/* mismos colores que .cal-seg, para que la leyenda coincida con la barra real */
+.dot-on  { background: #b5c99a; }
+.dot-now { background: #354024; border-color: #354024; }
+.dot-off { background: #e5d7c4; }
+
+/* CABECERA DE MESES (sticky) */
+.cal-months-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 6px;
+  background: #f5efe6;
+  border-bottom: 1.5px solid #e5d7c4;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.cal-months-spacer {
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.cal-months-row {
+  flex: 1;
+  display: flex;
+}
+
+.cal-month-lbl {
+  flex: 1;
+  text-align: center;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #718355;
+  padding: 3px 0;
+  border-radius: 3px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &.es-hoy {
+    box-shadow: inset 0 -2px 0 #718355;
+  }
+
+  &.es-seleccionado {
+    background: #354024;
+    color: white;
+    border-radius: 4px;
+    box-shadow: none;
+  }
+}
+
+/* CUERPO SCROLLABLE */
+.cal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px 10px 48px;
+  padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* FILA DE PLANTA */
+.cal-plant {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border-radius: 12px;
+  padding: 9px 10px;
+  border: 1.5px solid transparent;
+  transition: border-color 0.15s;
+
+  &.plantable {
+    border-color: #b5c99a;
+    background: linear-gradient(135deg, white 70%, #e9f5db);
+  }
+
+  &:last-child {
+    margin-bottom: 28px;
+  }
+}
+
+.cal-plant-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.cal-plant-data {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cal-plant-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.cal-plant-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4c3d19;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal-now-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #354024;
+  background: #e9f5db;
+  border: 1px solid #b5c99a;
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+
+  &:active {
+    background: #b5c99a;
+    transform: scale(0.96);
+  }
+}
+
+.cal-added-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: white;
+  background: #354024;
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.cal-added-icon {
+  width: 11px;
+  height: 11px;
+  stroke-width: 3;
+}
+
+.cal-epoca-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #354024;
+  background: #e9f5db;
+  border: 1px solid #b5c99a;
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* BARRA DE MESES */
+.cal-bar {
+  display: flex;
+  gap: 2px;
+}
+
+.cal-seg {
+  flex: 1;
+  height: 8px;
+  border-radius: 2px;
+  background: #e5d7c4;
+
+  &.seg-on  { background: #b5c99a; }
+  &.seg-sel { background: #354024; }
+  &.seg-cur { background: #cfbb99; }
+}
+
+/* ===== ICONOS LUCIDE DE TIEMPO ===== */
+/* Regla global a propósito: los <path> del icono "cloud-sun" los inserta Lucide
+   dinámicamente vía Renderer2 en un componente sin view encapsulation, así que un
+   selector definido dentro del .scss de weather-card o calendar-week (encapsulado)
+   nunca los alcanza. Aquí, sin encapsular, sí llega. Los 5 primeros trazos son el
+   sol (rayos + arco), el 6º es la nube. */
+.weather-icon-svg.lucide-cloud-sun path:nth-of-type(-n + 5) {
+  stroke: $sun-1;
+}
+
 /* ===== ANGULAR ESPECÍFICO ===== */
 router-outlet { display: none; }
 

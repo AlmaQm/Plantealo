@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PlantasService } from '../../services/plantas';
+import { PlantasService, getTipoPlanta } from '../../services/plantas';
 
 import { DatepickerComponent } from '../../components/datepicker/datepicker';
 import { SelectPlantasComponent, SelectOpcion } from '../../components/select-plantas/select-plantas';
@@ -63,7 +63,8 @@ export class PlantasComponent {
     if (planta) {
       this.plantasService.addPlanta({
         ...planta,
-        f_siembra: new Date(this.fechaSiembra())
+        tipo_planta: getTipoPlanta(planta.nombre_planta),
+        f_siembra:   new Date(this.fechaSiembra()),
       });
       this.cerrarModal();
     }

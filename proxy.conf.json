@@ -6,6 +6,6 @@
       "pathRewrite": {
          "^/api-aemet": ""
       },
-      "logLevel": "debug"
+      "logLevel": "warn"
    }
 }

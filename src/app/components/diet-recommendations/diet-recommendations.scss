@@ -1,0 +1,112 @@
+@use 'styles/variables' as *;
+
+.recs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.estacion-badge {
+  background: $green-7;
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.estacion-badge-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.cal-btn {
+  background: white;
+  border: 1.5px solid $green-2;
+  border-radius: 10px;
+  height: 36px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: $green-6;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: background 0.2s, color 0.2s;
+
+  svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  &.activo {
+    background: $green-7;
+    border-color: $green-7;
+    color: white;
+  }
+}
+
+/* CUADRÍCULA DE RECOMENDACIONES — 3 columnas de tarjetas cuadradas */
+.recs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.rec-card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  overflow: hidden;
+  background: $green-1;
+}
+
+.rec-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rec-overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 65%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.32) 55%, transparent 100%);
+  pointer-events: none;
+}
+
+.rec-info {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 8px 9px;
+}
+
+.rec-nombre {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rec-consejo {
+  font-size: 0.58rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+

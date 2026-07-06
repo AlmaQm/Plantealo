@@ -1,0 +1,107 @@
+<div class="recs-header">
+  <span class="estacion-badge">
+    <svg [lucideIcon]="estacionIcon" class="estacion-badge-icon"></svg>
+    {{ estacion }} {{ mesNombre }}
+  </span>
+  <button class="cal-btn" (click)="abrirCalendario()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    Calendario
+  </button>
+</div>
+
+<div class="recs-grid">
+  @for (planta of plantas; track planta.nombre) {
+    <div class="rec-card">
+      <img [src]="planta.imagen" [alt]="planta.nombre" class="rec-img" />
+      <div class="rec-overlay"></div>
+      <div class="rec-info">
+        <strong class="rec-nombre">{{ planta.nombre }}</strong>
+        <span class="rec-consejo">{{ planta.consejo }}</span>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- MODAL CALENDARIO -->
+<ion-modal #calModal [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true">
+  <ng-template>
+    <div class="cal-wrap">
+
+      <!-- CABECERA -->
+      <div class="cal-header">
+        <div class="cal-header-left">
+          <svg lucideSprout class="cal-header-icon"></svg>
+          <div>
+            <p class="cal-header-title">Calendario de siembra</p>
+            <p class="cal-header-sub">Cuándo plantar en clima mediterráneo</p>
+          </div>
+        </div>
+        <button class="cal-close" (click)="calModal.dismiss()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- LEYENDA DE COLORES -->
+      <div class="cal-color-legend">
+        <span class="cal-legend-item"><span class="cal-dot dot-on"></span>Se puede sembrar</span>
+        <span class="cal-legend-item"><span class="cal-dot dot-now"></span>Mes seleccionado, en temporada</span>
+        <span class="cal-legend-item"><span class="cal-dot dot-off"></span>Fuera de temporada</span>
+      </div>
+
+      <!-- CABECERA DE MESES (sticky, seleccionable) -->
+      <div class="cal-months-header">
+        <div class="cal-months-spacer"></div>
+        <div class="cal-months-row">
+          @for (m of mesesCortos; track m; let i = $index) {
+            <span class="cal-month-lbl"
+              [class.es-hoy]="i + 1 === mesActual"
+              [class.es-seleccionado]="i + 1 === mesSeleccionado()"
+              (click)="seleccionarMes(i)">{{ m }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- LISTA DE PLANTAS (scroll) -->
+      <div class="cal-body">
+        @for (t of temporadas; track t.nombre) {
+          <div class="cal-plant" [class.plantable]="t.meses.includes(mesSeleccionado())">
+            <img [src]="t.imagen" [alt]="t.nombre" class="cal-plant-img" />
+            <div class="cal-plant-data">
+              <div class="cal-plant-top">
+                <span class="cal-plant-name">{{ t.nombre }}</span>
+                @if (t.meses.includes(mesSeleccionado())) {
+                  @if (mesSeleccionado() === mesActual) {
+                    @if (plantadaReciente() === t.nombre) {
+                      <span class="cal-added-badge"><svg lucideCheck class="cal-added-icon"></svg> Añadida</span>
+                    } @else {
+                      <button class="cal-now-badge" (click)="plantarAhora(t)">+ Plantar ahora</button>
+                    }
+                  } @else {
+                    <span class="cal-epoca-badge">Época de siembra</span>
+                  }
+                }
+              </div>
+              <div class="cal-bar">
+                @for (m of mesesCortos; track m; let i = $index) {
+                  <span class="cal-seg"
+                    [class.seg-on]="t.meses.includes(i + 1)"
+                    [class.seg-sel]="t.meses.includes(i + 1) && i + 1 === mesSeleccionado()"
+                    [class.seg-cur]="!t.meses.includes(i + 1) && i + 1 === mesSeleccionado()">
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+    </div>
+  </ng-template>
+</ion-modal>

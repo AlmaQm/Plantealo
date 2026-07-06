@@ -1,13 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../services/auth';
+import { PlantasService, calcularEstado } from '../../services/plantas';
 
-interface MenuOption {
-  icon: string;
-  title: string;
-  subtitle: string;
-  key: string; // Para identificar la acción
-}
+const DIETA_LABEL: Record<string, string> = {
+  OMNIVORA:    '🥩 Omnívora',
+  VEGETARIANA: '🥗 Vegetariana',
+  VEGANA:      '🌱 Vegana',
+};
 
 @Component({
   selector: 'app-perfil',
@@ -17,45 +18,35 @@ interface MenuOption {
   styleUrls: ['./perfil.scss']
 })
 export class PerfilComponent {
-  private readonly authService = inject(AuthService);
-  user = {
-    name: 'María García',
-    handle: '@maria_huerto',
-    avatar: 'MG', // O un emoji como 👩‍🌾
-    stats: [
-      { label: 'Plantas', value: 8 },
-      { label: 'Listas', value: 2 },
-      { label: 'Recetas', value: 6 }
-    ]
-  };
+  private readonly authService   = inject(AuthService);
+  private readonly plantasService = inject(PlantasService);
 
-  menuOptions: MenuOption[] = [
-    {
-      icon: 'notifications',
-      title: 'Notificaciones',
-      subtitle: 'Gestiona tus alertas de riego y cosecha',
-      key: 'notifications'
-    },
-    {
-      icon: 'lock',
-      title: 'Seguridad',
-      subtitle: 'Cambiar contraseña y privacidad',
-      key: 'security'
-    },
-    {
-      icon: 'settings',
-      title: 'Configuración',
-      subtitle: 'Ajustes generales de la aplicación',
-      key: 'settings'
-    }
-  ];
+  readonly usuario = toSignal(this.authService.currentUser$, {
+    initialValue: this.authService.getStoredUser()
+  });
 
-  // Método funcional para manejar los clicks
+  readonly totalPlantas = computed(() => this.plantasService.inventario().length);
 
+  readonly plantasListas = computed(() =>
+    this.plantasService.inventario().filter(p => calcularEstado(p) === 'LISTA').length
+  );
 
-  handleAction(key: string): void {
-    if (key === 'logout') {
-      this.authService.logout();
-    }
+  readonly plantasCreciendo = computed(() =>
+    this.plantasService.inventario().filter(p => calcularEstado(p) === 'CRECIENDO').length
+  );
+
+  dietaLabel(tipo: string | undefined): string {
+    return DIETA_LABEL[tipo ?? ''] ?? '';
+  }
+
+  iniciales(nombre: string | undefined): string {
+    if (!nombre) return '?';
+    const parts = nombre.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return nombre[0].toUpperCase();
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }
