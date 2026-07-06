@@ -1,0 +1,74 @@
+@if (obert()) {
+  <!-- Overlay fosc -->
+  <div class="chat-overlay" (click)="onTancar()"></div>
+
+  <!-- Panell -->
+  <div class="chat-panel">
+    <div class="chat-panel__handle"></div>
+
+    <div class="chat-panel__header">
+      <h3 class="chat-panel__titulo">🌱 Assistent de l'hort</h3>
+      <button class="chat-panel__cerrar" type="button" (click)="onTancar()" aria-label="Tancar">✕</button>
+    </div>
+
+    <!-- Missatges -->
+    <div class="chat-panel__missatges">
+      @for (m of missatges(); track $index) {
+        <div class="bombolla"
+             [class.bombolla--user]="m.rol === 'user'"
+             [class.bombolla--assistant]="m.rol === 'assistant'">
+          {{ m.text }}
+        </div>
+      }
+
+      @if (carregant()) {
+        <div class="bombolla bombolla--assistant bombolla--carregant">
+          <span class="punt"></span>
+          <span class="punt"></span>
+          <span class="punt"></span>
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="chat-panel__footer">
+      @if (imatgeBase64()) {
+        <div class="chat-preview">
+          <img [src]="'data:image/jpeg;base64,' + imatgeBase64()" alt="Imatge seleccionada" />
+          <button type="button" class="chat-preview__treure"
+                  (click)="imatgeBase64.set(null)" aria-label="Treure imatge">✕</button>
+        </div>
+      }
+
+      <div class="chat-input-row">
+        <!-- Botó foto (obre l'input de fitxer ocult) -->
+        <button type="button" class="chat-foto-btn"
+                (click)="fileInput.click()" aria-label="Adjuntar foto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </button>
+        <input #fileInput type="file" accept="image/*" hidden (change)="seleccionarImatge($event)" />
+
+        <!-- Text -->
+        <input
+          class="chat-text"
+          type="text"
+          placeholder="Escriu un missatge…"
+          [ngModel]="inputText()"
+          (ngModelChange)="inputText.set($event)"
+          (keyup.enter)="enviarMissatge()"
+          [disabled]="carregant()" />
+
+        <!-- Enviar -->
+        <button type="button" class="chat-enviar"
+                (click)="enviarMissatge()"
+                [disabled]="carregant() || !inputText().trim()">
+          Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+}

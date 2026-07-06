@@ -4,10 +4,11 @@ import { filter, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { Navbar } from './shared/components/navbar/navbar';
+import { ChatComponent } from './components/chat/chat';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Navbar],
+  imports: [RouterOutlet, RouterLink, Navbar, ChatComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

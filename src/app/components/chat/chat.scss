@@ -1,0 +1,236 @@
+@use 'styles/variables' as *;
+
+// Overlay (igual que .modal-overlay de plantas)
+.chat-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  animation: chatFadeIn 0.2s ease;
+}
+
+// Panell (igual que .bottomsheet)
+.chat-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70vh;
+  background: $earth-0;
+  border-radius: 20px 20px 0 0;
+  z-index: 201;
+  padding: 12px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  animation: chatSlideUp 0.28s ease;
+
+  &__handle {
+    width: 40px;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    margin: 0 auto 12px;
+    flex-shrink: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+
+  &__titulo {
+    font-size: 17px;
+    font-weight: 700;
+    color: $green-7;
+    margin: 0;
+  }
+
+  &__cerrar {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: $green-5;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+  }
+
+  // Zona de missatges amb scroll
+  &__missatges {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 2px;
+  }
+
+  &__footer {
+    flex-shrink: 0;
+    padding-top: 12px;
+  }
+}
+
+// Bombolles
+.bombolla {
+  max-width: 80%;
+  padding: 10px 13px;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  &--assistant {
+    align-self: flex-start;
+    background: $green-1;
+    color: $green-7;
+    border-radius: 12px 12px 12px 0;
+  }
+
+  &--user {
+    align-self: flex-end;
+    background: $green-6;
+    color: white;
+    border-radius: 12px 12px 0 12px;
+  }
+
+  // Tres puntets animats
+  &--carregant {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+
+    .punt {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: $green-5;
+      animation: chatPunt 1s infinite ease-in-out;
+
+      &:nth-child(2) { animation-delay: 0.2s; }
+      &:nth-child(3) { animation-delay: 0.4s; }
+    }
+  }
+}
+
+// Preview de la imatge seleccionada
+.chat-preview {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 8px;
+
+  img {
+    max-height: 72px;
+    border-radius: 10px;
+    display: block;
+  }
+
+  &__treure {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: $green-7;
+    color: white;
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// Fila d'entrada
+.chat-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Botó foto (cercle verd petit, com .chat-fab)
+.chat-foto-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: $green-3;
+  color: $green-7;
+  border: none;
+  cursor: pointer;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover { color: $green-6; }
+}
+
+// Input de text (igual que .campo-input)
+.chat-text {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1.5px solid $green-3;
+  border-radius: 12px;
+  font-size: 15px;
+  color: $green-7;
+  background: white;
+
+  &:focus {
+    outline: none;
+    border-color: $green-5;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+// Botó enviar (igual que .btn-añadir)
+.chat-enviar {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: $green-6;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:disabled {
+    background: $green-3;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    background: $green-7;
+  }
+}
+
+@keyframes chatFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes chatSlideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes chatPunt {
+  0%, 60%, 100% { transform: translateY(0);   opacity: 0.5; }
+  30%           { transform: translateY(-4px); opacity: 1;   }
+}
