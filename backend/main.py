@@ -1,9 +1,30 @@
-﻿from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from typing import Optional, List
+from dotenv import load_dotenv
+from groq import Groq
 import models, schemas, crud, database
+import os
 import time
 
+load_dotenv()  # Asegura que GROQ_API_KEY y demás variables estén disponibles
+
 app = FastAPI(title="Plantealo API")
+
+# --- CORS ---
+# localhost:4200 para desarrollo; regex para cualquier subdominio *.onrender.com
+# (Starlette no soporta comodines en allow_origins, por eso el subdominio va por regex.
+#  Con regex el origen concreto se refleja, compatible con allow_credentials=True.)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_origin_regex=r"https://.*\.onrender\.com",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Crear tablas al iniciar
 @app.on_event("startup")
@@ -37,3 +58,76 @@ def register_user(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db))
 @app.post("/usuarios/{usuario_id}/plantas/", response_model=schemas.PUsuario)
 def add_planta_to_user(usuario_id: int, planta: schemas.PUsuarioCreate, db: Session = Depends(get_db)):
     return crud.crear_planta_usuario(db=db, planta=planta, usuario_id=usuario_id)
+
+
+# --- CHAT CON GROQ ---
+
+# Modelos de Groq (IDs verificados en la documentación de Groq):
+#   - Visión (acepta imágenes): meta-llama/llama-4-scout-17b-16e-instruct
+#   - Texto puro:               llama-3.3-70b-versatile
+GROQ_MODELO_VISION = "meta-llama/llama-4-scout-17b-16e-instruct"
+GROQ_MODELO_TEXTO = "llama-3.3-70b-versatile"
+
+
+class ChatRequest(BaseModel):
+    mensaje: str
+    plantas: List[str] = []
+    imagen_base64: Optional[str] = None
+
+
+class ChatResponse(BaseModel):
+    respuesta: str
+
+
+@app.post("/chat/", response_model=ChatResponse)
+def chat(req: ChatRequest):
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="GROQ_API_KEY no está configurada en el servidor.",
+        )
+
+    plantas_txt = ", ".join(req.plantas) if req.plantas else "ninguna planta registrada todavía"
+    system_prompt = (
+        "Eres un asistente experto en jardinería y horticultura para la app Plantéalo. "
+        f"El usuario tiene actualmente estas plantas en su huerto: {plantas_txt}. "
+        "Ofrece consejos prácticos y concretos sobre riego, cuidados, plagas, cosecha y clima "
+        "adaptados a esas plantas. "
+        "Responde SIEMPRE en el mismo idioma en el que te escriba el usuario "
+        "(catalán, castellano, inglés, etc.). "
+        "Sé cercano, claro y directo."
+    )
+
+    # Con imagen → modelo de visión y contenido multimodal; sin imagen → texto puro.
+    if req.imagen_base64:
+        modelo = GROQ_MODELO_VISION
+        contenido_usuario = [
+            {"type": "text", "text": req.mensaje},
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{req.imagen_base64}"},
+            },
+        ]
+    else:
+        modelo = GROQ_MODELO_TEXTO
+        contenido_usuario = req.mensaje
+
+    mensajes = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": contenido_usuario},
+    ]
+
+    try:
+        client = Groq(api_key=api_key)
+        completion = client.chat.completions.create(
+            model=modelo,
+            messages=mensajes,
+            temperature=0.7,
+            max_tokens=1024,
+        )
+        respuesta = completion.choices[0].message.content or ""
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Error al contactar con Groq: {e}")
+
+    return ChatResponse(respuesta=respuesta)
