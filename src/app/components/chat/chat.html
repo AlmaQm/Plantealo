@@ -12,7 +12,7 @@
     </div>
 
     <!-- Missatges -->
-    <div class="chat-panel__missatges">
+    <div class="chat-panel__missatges" #missatgesRef>
       @for (m of missatges(); track $index) {
         <div class="bombolla"
              [class.bombolla--user]="m.rol === 'user'"

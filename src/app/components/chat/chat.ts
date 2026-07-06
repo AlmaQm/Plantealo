@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal, ViewChild, ElementRef, Injector, afterNextRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -20,6 +20,9 @@ interface Missatge {
 export class ChatComponent {
   private plantasService = inject(PlantasService);
   private http = inject(HttpClient);
+  private injector = inject(Injector);
+
+  @ViewChild('missatgesRef') missatgesRef!: ElementRef<HTMLDivElement>;
 
   // --- API pública ---
   obert = input<boolean>(false);
@@ -47,6 +50,14 @@ export class ChatComponent {
       ? `🌱 Hola! Benvingut al teu hort. Tens ${inventari.length} plantes: ${noms.join(', ')}. Què necessites?`
       : `🌱 Hola! Benvingut al teu hort. Encara no tens plantes registrades. Què necessites?`;
     this.missatges.set([{ rol: 'assistant', text }]);
+    this.scrollAlFinal();
+  }
+
+  private scrollAlFinal(): void {
+    afterNextRender(() => {
+      const el = this.missatgesRef?.nativeElement;
+      if (el) el.scrollTop = el.scrollHeight;
+    }, { injector: this.injector });
   }
 
   enviarMissatge(): void {
@@ -55,6 +66,7 @@ export class ChatComponent {
 
     // 1. Missatge de l'usuari
     this.missatges.update(m => [...m, { rol: 'user', text }]);
+    this.scrollAlFinal();
     // 2. Neteja l'input
     this.inputText.set('');
     // 3. Estat de càrrega
@@ -72,6 +84,7 @@ export class ChatComponent {
       next: (res) => {
         // 5. Resposta de l'assistent
         this.missatges.update(m => [...m, { rol: 'assistant', text: res.respuesta }]);
+        this.scrollAlFinal();
         // 6. Fi de la càrrega
         this.carregant.set(false);
         this.imatgeBase64.set(null);
