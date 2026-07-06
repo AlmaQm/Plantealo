@@ -1,63 +1,61 @@
-﻿@use 'styles/variables' as *;
+@use 'styles/variables' as *;
 
-.summary-box {
-   background-color: white;
-   border-radius: 24px; // Muy redondeado como la imagen
-   padding: 24px;
-   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-   width: 100%;
+.stat-row {
+   display: flex;
+   gap: 8px;
+}
+
+.stat-chip {
+   flex: 1;
+   background: white;
+   border-radius: 16px;
+   padding: 12px 6px;
+   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   text-align: center;
+   gap: 6px;
    box-sizing: border-box;
+   min-width: 0;
+}
 
-   h3 {
-      color: $green-7;
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin: 0 0 24px 0;
+.chip-icon {
+   width: 28px;
+   height: 28px;
+   border-radius: 9px;
+   background: $green-1;
+   color: $green-6;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-shrink: 0;
+
+   svg {
+      width: 14px;
+      height: 14px;
    }
+}
 
-   .stat-row {
-      margin-bottom: 20px;
+.chip-text {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   min-width: 0;
+}
 
-      &:last-child {
-         margin-bottom: 0;
-      }
+.chip-num {
+   font-size: 0.95rem;
+   font-weight: 800;
+   color: $green-7;
+   line-height: 1.1;
+}
 
-      .label-group {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         margin-bottom: 8px;
-
-         .label-text {
-            color: $green-7;
-            font-size: 0.9rem;
-            font-weight: 500;
-         }
-
-         .label-value {
-            color: $green-7;
-            font-size: 0.9rem;
-            opacity: 0.8;
-         }
-      }
-
-      .progress-container {
-         width: 100%;
-
-         .progress-bar-bg {
-            height: 8px; // Grosor de la barra
-            background-color: #e2e0d8; // El color grisÃ¡ceo/tierra claro de fondo
-            border-radius: 10px;
-            overflow: hidden;
-            width: 100%;
-
-            .progress-bar-fill {
-               height: 100%;
-               background-color: $earth-9; // El color oscuro de la barra llena
-               border-radius: 10px;
-               transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-         }
-      }
-   }
+.chip-label {
+   font-size: 0.56rem;
+   color: $green-6;
+   font-weight: 600;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
 }

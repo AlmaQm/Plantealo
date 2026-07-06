@@ -43,19 +43,24 @@ export class HomeComponent {
   tasks = computed<GardenTask[]>(() => {
     const done = this.completedIds();
     return this.plantasService.inventario()
-      .map(p => {
-        const estado = calcularEstado(p);
-        const dias   = diasRestantes(p);
-        const riego  = diasHastaProximoRiego(p);
-        return {
-          id:          p.planta_id,
-          icon:        ICONOS[estado] ?? '🌿',
-          image:       p.imagen_url,
-          title:       p.nombre_planta,
-          description: this.descripcion(estado, dias, riego),
-          completed:   done.has(p.planta_id),
-        };
-      })
+      .map(p => ({
+        p,
+        estado: calcularEstado(p),
+        dias:   diasRestantes(p),
+        riego:  diasHastaProximoRiego(p),
+      }))
+      // Solo mostrar como tarea de hoy si hay algo pendiente ahora mismo:
+      // enferma o lista para cosechar siempre son urgentes; en crecimiento/plantada
+      // solo si el riego toca hoy (o está atrasado), no si es en días futuros.
+      .filter(({ estado, riego }) => estado === 'ENFERMA' || estado === 'LISTA' || riego <= 0)
+      .map(({ p, estado, dias, riego }) => ({
+        id:          p.planta_id,
+        icon:        ICONOS[estado] ?? '🌿',
+        image:       p.imagen_url,
+        title:       p.nombre_planta,
+        description: this.descripcion(estado, dias, riego),
+        completed:   done.has(p.planta_id),
+      }))
       .sort((a, b) => {
         const ua = URGENCIA[this.estadoDesdeTitulo(a)] ?? 9;
         const ub = URGENCIA[this.estadoDesdeTitulo(b)] ?? 9;

@@ -22,7 +22,11 @@
             @for (t of tasksVisibles(); track t.id) {
                <app-task-item [task]="t" (toggle)="toggleTask($event)"></app-task-item>
             } @empty {
-               <p class="tasks-empty">No tienes plantas en tu huerto aún. ¡Añade alguna!</p>
+               @if (totalPlantas() === 0) {
+                  <p class="tasks-empty">No tienes plantas en tu huerto aún. ¡Añade alguna!</p>
+               } @else {
+                  <p class="tasks-empty">Todo en orden, nada pendiente hoy 🌿</p>
+               }
             }
          </div>
          @if (tasks().length > 3) {
@@ -38,14 +42,6 @@
    </section>
 
    <section class="zone">
-      <span class="zone-label">Esta semana</span>
-
-      <div class="zone-block">
-         <app-diet-recommendations></app-diet-recommendations>
-      </div>
-   </section>
-
-   <section class="zone-flat">
       <span class="zone-label">Tu huerto</span>
       <app-summary-card
          [harvestReady]="plantasListas()"
@@ -53,5 +49,11 @@
          [tasksCompleted]="tareasCompletadas()"
          [totalTasks]="totalTareas()">
       </app-summary-card>
+   </section>
+
+   <section class="zone">
+      <div class="zone-block">
+         <app-diet-recommendations></app-diet-recommendations>
+      </div>
    </section>
 </main>
