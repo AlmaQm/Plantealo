@@ -7,8 +7,8 @@
     <div class="chat-panel__handle"></div>
 
     <div class="chat-panel__header">
-      <h3 class="chat-panel__titulo">🌱 Assistent de l'hort</h3>
-      <button class="chat-panel__cerrar" type="button" (click)="onTancar()" aria-label="Tancar">✕</button>
+      <h3 class="chat-panel__titulo">🌱 Asistente del huerto</h3>
+      <button class="chat-panel__cerrar" type="button" (click)="onTancar()" aria-label="Cerrar">✕</button>
     </div>
 
     <!-- Missatges -->
@@ -56,7 +56,7 @@
         <input
           class="chat-text"
           type="text"
-          placeholder="Escriu un missatge…"
+          placeholder="Escribe un mensaje…"
           [ngModel]="inputText()"
           (ngModelChange)="inputText.set($event)"
           (keyup.enter)="enviarMissatge()"
