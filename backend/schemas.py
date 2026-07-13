@@ -25,7 +25,7 @@ class PUsuarioBase(BaseModel):
     estado_crecimiento: str
 
 class PUsuarioCreate(PUsuarioBase):
-    pass
+    planta_id: int
 
 class PUsuario(PUsuarioBase):
     planta_id: int
@@ -43,6 +43,23 @@ class PlantaCat(BaseModel):
     imagen_url: Optional[str] = None
     clima: Optional[str] = None
     h_luzsolar: Optional[int] = None
+    caracteristicas: Optional[str] = None
+    class Config:
+        from_attributes = True
+
+# Planta personal del usuario + datos del catálogo (join p_usuario + plantas)
+class PUsuarioDetall(BaseModel):
+    planta_id: int
+    usuario_id: int
+    f_siembra: date
+    f_recogida: Optional[date] = None
+    estado_crecimiento: str
+    # Camps del catàleg (PlantaCat)
+    nombre_planta: str
+    tipo_planta: str
+    freq_riego: int
+    imagen_url: Optional[str] = None
+    clima: Optional[str] = None
     caracteristicas: Optional[str] = None
     class Config:
         from_attributes = True

@@ -36,3 +36,11 @@ def crear_planta_usuario(db: Session, planta: schemas.PUsuarioCreate, usuario_id
     db.commit()
     db.refresh(db_planta)
     return db_planta
+
+def get_plantas_usuario(db, usuario_id: int):
+    return (
+        db.query(models.PUsuario, models.PlantaCat)
+        .join(models.PlantaCat, models.PUsuario.planta_id == models.PlantaCat.planta_id)
+        .filter(models.PUsuario.usuario_id == usuario_id)
+        .all()
+    )

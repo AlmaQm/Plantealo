@@ -59,6 +59,30 @@ def register_user(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db))
 def add_planta_to_user(usuario_id: int, planta: schemas.PUsuarioCreate, db: Session = Depends(get_db)):
     return crud.crear_planta_usuario(db=db, planta=planta, usuario_id=usuario_id)
 
+@app.get("/plantas/", response_model=List[schemas.PlantaCat])
+def get_catalogo_plantas(db: Session = Depends(get_db)):
+    return crud.get_plantas(db)
+
+@app.get("/usuarios/{usuario_id}/plantas/", response_model=List[schemas.PUsuarioDetall])
+def get_plantas_de_usuario(usuario_id: int, db: Session = Depends(get_db)):
+    filas = crud.get_plantas_usuario(db, usuario_id)
+    return [
+        schemas.PUsuarioDetall(
+            planta_id=pu.planta_id,
+            usuario_id=pu.usuario_id,
+            f_siembra=pu.f_siembra,
+            f_recogida=pu.f_recogida,
+            estado_crecimiento=pu.estado_crecimiento,
+            nombre_planta=cat.nombre_planta,
+            tipo_planta=cat.tipo_planta,
+            freq_riego=cat.freq_riego,
+            imagen_url=cat.imagen_url,
+            clima=cat.clima,
+            caracteristicas=cat.caracteristicas,
+        )
+        for pu, cat in filas
+    ]
+
 
 # --- CHAT CON GROQ ---
 
