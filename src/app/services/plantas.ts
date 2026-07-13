@@ -214,6 +214,45 @@ interface PUsuarioDetallAiven {
   caracteristicas: string | null;
 }
 
+// ─── Imagen local por nombre de planta ───────────────────────────────────────
+const IMAGEN_PLANTA: Record<string, string> = {
+  'Tomate':           'assets/images/tomate-cherry.jpg',
+  'Lechuga':          'assets/images/lechuga.jpg',
+  'Zanahoria':        'assets/images/zanahoria.jpg',
+  'Pimiento':         'assets/images/pimientos.jpg',
+  'Menta':            'assets/images/menta.jpg',
+  'Guisantes':        'assets/images/guisantes.jpg',
+  'Kale':             'assets/images/kale.jpg',
+  'Perejil':          'assets/images/peregil.jpg',
+  'Cebollino':        'assets/images/cebollino.jpg',
+  'Fresas':           'assets/images/fresas.jpg',
+  'Judías verdes':    'assets/images/judias-verdes.jpg',
+  'Rábanos':          'assets/images/rabanos.jpg',
+  'Acelgas':          'assets/images/acelgas.jpg',
+  'Orégano':          'assets/images/oregano.jpg',
+  'Tomillo':          'assets/images/tomillo.jpg',
+  'Tomates cherry':   'assets/images/tomate-cherry.jpg',
+  'Albahaca':         'assets/images/albahaca.jpg',
+  'Lechugas':         'assets/images/lechuga.jpg',
+  'Cilantro':         'assets/images/cilantro.jpg',
+  'Pimientos':        'assets/images/pimientos.jpg',
+  'Calabacín':        'assets/images/calabacin.jpg',
+  'Tomate ramillete': 'assets/images/toamte-ramillete.jpg',
+  'Tomate pera':      'assets/images/tomate-pera.jpg',
+  'Espinacas':        'assets/images/espinacas.jpg',
+  'Rúcula':           'assets/images/rucula.jpg',
+  'Pepino':           'assets/images/pepino.jpg',
+  'Berenjenas':       'assets/images/berenjenasç.jpg',
+  'Romero':           'assets/images/romero.jpg',
+  'Ajos':             'assets/images/placeholder-receta.jpg',
+  'Fresones':         'assets/images/fresas.jpg',
+  'Guindillas':       'assets/images/pimientos.jpg',
+};
+
+function getImagenPlanta(nombre: string): string {
+  return IMAGEN_PLANTA[nombre] ?? 'assets/images/placeholder-receta.jpg';
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlantasService {
   private http = inject(HttpClient);
@@ -296,7 +335,7 @@ export class PlantasService {
       planta_id:     d.planta_id,
       usuario_id:    0,
       nombre_planta: d.nombre_planta,
-      imagen_url:    d.imagen_url ?? 'assets/images/placeholder.jpg',
+      imagen_url:    getImagenPlanta(d.nombre_planta),
       f_siembra,
       f_recogida,
       tipo_planta:   this.mapTipoPlanta(d.tipo_planta),
