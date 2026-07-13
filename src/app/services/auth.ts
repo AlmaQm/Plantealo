@@ -1,7 +1,10 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, from, switchMap, map, catchError } from 'rxjs';
+import { Observable, of, from, switchMap, map, catchError, firstValueFrom } from 'rxjs';
+
+import { environment } from '../../environments/environment';
 
 import { Auth, authState } from '@angular/fire/auth';
 import {
@@ -46,6 +49,7 @@ export class AuthService {
   private readonly storage = inject(Storage);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly http = inject(HttpClient);
 
   readonly currentUser$: Observable<Usuario | null> = isPlatformBrowser(this.platformId)
     ? authState(this.auth).pipe(
@@ -99,7 +103,31 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<void> {
     try {
-      await signInWithEmailAndPassword(this.auth, email, password);
+      const credential = await signInWithEmailAndPassword(this.auth, email, password);
+      // Sincronitzar amb Aiven (upsert): resol també els usuaris antics
+      try {
+        const uid = credential.user.uid;
+        const stored = this.getStoredUser();
+        if (stored) {
+          const res = await firstValueFrom(
+            this.http.post<{ usuario_id: number }>(
+              `${environment.apiUrl}/usuarios/sync`,
+              {
+                firebase_uid: uid,
+                nombre: stored.nombre,
+                nombre_usuario: stored.nombre_usuario,
+                email: stored.email,
+                tipo_dieta: stored.tipo_dieta,
+                imagen_url: stored.imagen_url ?? null,
+              }
+            )
+          );
+          if (res?.usuario_id) {
+            stored.usuario_id = res.usuario_id;
+            this.saveStoredUser(stored);
+          }
+        }
+      } catch { /* no bloquegem */ }
     } catch (error) {
       throw new Error(mapAuthError(error as { code?: string }));
     }
@@ -142,6 +170,27 @@ export class AuthService {
     try {
       await setDoc(doc(this.firestore, `usuarios/${uid}`), usuario);
     } catch { /* Firestore puede fallar, el usuario sigue registrado */ }
+
+    // Paso 5: sincronizar con Aiven (fallo no bloquea la sesión)
+    try {
+      const res = await firstValueFrom(
+        this.http.post<{ usuario_id: number }>(
+          `${environment.apiUrl}/usuarios/sync`,
+          {
+            firebase_uid: uid,
+            nombre: data.nombre,
+            nombre_usuario: data.nombre_usuario,
+            email: data.email,
+            tipo_dieta: data.tipo_dieta,
+            imagen_url: imagen_url ?? null,
+          }
+        )
+      );
+      if (res?.usuario_id) {
+        usuario.usuario_id = res.usuario_id;
+        this.saveStoredUser(usuario);
+      }
+    } catch { /* Aiven pot fallar, la sessió segueix */ }
   }
 
   async logout(): Promise<void> {

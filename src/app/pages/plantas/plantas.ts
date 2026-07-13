@@ -24,10 +24,9 @@ export class PlantasComponent {
   readonly catalogo = this.plantasService.catalogo;
   readonly hoy = new Date().toISOString().split('T')[0];
 
-  readonly opcionesPlantas: SelectOpcion[] = this.catalogo.map(p => ({
-    valor: p.planta_id,
-    etiqueta: p.nombre_planta,
-  }));
+  readonly opcionesPlantas = computed<SelectOpcion[]>(() =>
+    this.catalogo().map(p => ({ valor: p.planta_id, etiqueta: p.nombre_planta }))
+  );
 
   filtroActivo = signal<Filtro>('TODAS');
   modalAbierto = signal(false);
@@ -38,7 +37,11 @@ export class PlantasComponent {
     const filtro = this.filtroActivo();
     const inventario = this.plantasService.inventario();
     if (filtro === 'TODAS') return inventario;
-    return inventario.filter(p => p.tipo_planta === filtro || p.tipo_planta === 'TODAS');
+    return inventario.filter(p =>
+      p.tipo_planta === filtro ||
+      p.tipo_planta === 'TODAS' ||
+      (filtro === 'EXTERIOR' && p.tipo_planta === 'HUERTO')
+    );
   });
 
   setFiltro(filtro: Filtro): void {
@@ -59,18 +62,22 @@ export class PlantasComponent {
   agregarPlanta(): void {
     const id = this.plantaIdSeleccionada();
     if (id === null) return;
-    const planta = this.catalogo.find(p => p.planta_id === +id);
+    const planta = this.catalogo().find(p => p.planta_id === +id);
     if (planta) {
       const f_siembra = new Date(this.fechaSiembra());
       const f_recogida = new Date(f_siembra);
       f_recogida.setDate(f_recogida.getDate() + diasHastaCosecha(planta.nombre_planta));
 
       this.plantasService.addPlanta({
-        ...planta,
+        planta_id: planta.planta_id,
+        usuario_id: 0,
+        nombre_planta: planta.nombre_planta,
+        imagen_url: planta.imagen_url ?? 'assets/images/placeholder.jpg',
         tipo_planta: getTipoPlanta(planta.nombre_planta),
         f_siembra,
         f_recogida,
         estado: 'PLANTADA',
+        clima: planta.clima ?? undefined,
       });
       this.cerrarModal();
     }

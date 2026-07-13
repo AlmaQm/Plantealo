@@ -31,10 +31,11 @@ receta_ingredientes = Table(
 class Usuario(Base):
     __tablename__ = "usuario"
     usuario_id = Column(Integer, primary_key=True, index=True)
+    firebase_uid = Column(String(128), unique=True, index=True, nullable=True)
     nombre = Column(String(50), nullable=False)
     nombre_usuario = Column(String(30), unique=True, nullable=False)
     email = Column(String(50), unique=True, nullable=False)
-    contrasena = Column(String(255), nullable=False)
+    contrasena = Column(String(255), nullable=True)  # ya era nullable en la BD (Firebase gestiona auth)
     tipo_dieta = Column(String(20), nullable=False) # OMNIVORA, VEGETARIANA, VEGANA
     imagen_url = Column(String(100))
 
