@@ -18,6 +18,27 @@ class Usuario(UsuarioBase):
     class Config:
         from_attributes = True
 
+# Sincronización Firebase → Aiven (input desde el frontend, sin contraseña)
+class UsuarioSync(BaseModel):
+    firebase_uid: str
+    nombre: str
+    nombre_usuario: str
+    email: EmailStr
+    tipo_dieta: str
+    imagen_url: Optional[str] = None
+
+# Usuario de salida (incluye usuario_id y firebase_uid)
+class UsuarioOut(BaseModel):
+    usuario_id: int
+    firebase_uid: Optional[str] = None
+    nombre: str
+    nombre_usuario: str
+    email: EmailStr
+    tipo_dieta: str
+    imagen_url: Optional[str] = None
+    class Config:
+        from_attributes = True
+
 # Planta Personal (p_usuario)
 class PUsuarioBase(BaseModel):
     f_siembra: date
