@@ -60,6 +60,38 @@ def add_planta_to_user(usuario_id: int, planta: schemas.PUsuarioCreate, db: Sess
     return crud.crear_planta_usuario(db=db, planta=planta, usuario_id=usuario_id)
 
 
+# --- COMUNIDAD ---
+
+@app.get("/publicaciones/", response_model=List[schemas.Publicacion])
+def listar_publicaciones(uid: Optional[str] = None, db: Session = Depends(get_db)):
+    return crud.listar_publicaciones(db, uid=uid)
+
+@app.post("/publicaciones/", response_model=schemas.Publicacion)
+def crear_publicacion(publicacion: schemas.PublicacionCreate, db: Session = Depends(get_db)):
+    return crud.crear_publicacion(db=db, publicacion=publicacion)
+
+@app.patch("/publicaciones/{publicacion_id}/imagen", response_model=schemas.Publicacion)
+def actualizar_imagen_publicacion(publicacion_id: int, body: schemas.ImagenUpdate, db: Session = Depends(get_db)):
+    db_pub = crud.actualizar_imagen_publicacion(db, publicacion_id, body.imagen_url)
+    if not db_pub:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada")
+    return crud.serializar_publicacion(db_pub, None)
+
+@app.post("/publicaciones/{publicacion_id}/like", response_model=schemas.Publicacion)
+def toggle_like(publicacion_id: int, body: schemas.LikeToggle, db: Session = Depends(get_db)):
+    resultado = crud.toggle_like(db, publicacion_id, body.usuario_id)
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada")
+    return resultado
+
+@app.post("/publicaciones/{publicacion_id}/comentarios", response_model=schemas.Publicacion)
+def agregar_comentario(publicacion_id: int, comentario: schemas.ComentarioCreate, db: Session = Depends(get_db)):
+    resultado = crud.crear_comentario(db, publicacion_id, comentario)
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada")
+    return resultado
+
+
 # --- CHAT CON GROQ ---
 
 # Modelos de Groq (IDs verificados en la documentación de Groq):

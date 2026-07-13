@@ -25,17 +25,17 @@
 
   <!-- Interacciones -->
   <div class="pub-card__acciones">
-    <button class="accion-btn accion-btn--like" [class.liked]="liked()" (click)="toggleLike()">
+    <button class="accion-btn accion-btn--like" [class.liked]="publicacion.liked" [disabled]="procesandoLike()" (click)="toggleLike()">
       <svg class="accion-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
       </svg>
-      {{ likes() }}
+      {{ publicacion.likes }}
     </button>
     <button class="accion-btn" (click)="toggleComentarios()">
       <svg class="accion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
       </svg>
-      {{ comentarios().length }}
+      {{ publicacion.comentarios.length }}
     </button>
     <span class="pub-card__fecha">{{ formatFecha(publicacion.fecha) }}</span>
   </div>
@@ -52,9 +52,9 @@
 
   <!-- Comentarios desplegables -->
   <div class="pub-card__comentarios" [class.open]="mostrarComentarios()">
-    @if (comentarios().length > 0) {
+    @if (publicacion.comentarios.length > 0) {
       <div class="comentario-lista">
-        @for (c of comentarios(); track c.comentario_id) {
+        @for (c of publicacion.comentarios; track c.comentario_id) {
           <div class="comentario">
             <span class="comentario__avatar">{{ c.nombre_usuario[0] }}</span>
             <div class="comentario__body">
@@ -72,8 +72,8 @@
         [ngModel]="nuevoComentario()"
         (ngModelChange)="nuevoComentario.set($event)"
         (keyup.enter)="enviarComentario()">
-      <button (click)="enviarComentario()" [disabled]="!nuevoComentario().trim()">
-        Enviar
+      <button (click)="enviarComentario()" [disabled]="!nuevoComentario().trim() || enviandoComentario()">
+        {{ enviandoComentario() ? '...' : 'Enviar' }}
       </button>
     </div>
   </div>
@@ -81,7 +81,7 @@
   <!-- Toggle comentarios -->
   <button class="pub-card__ver-comentarios" (click)="toggleComentarios()">
     @if (!mostrarComentarios()) {
-      Ver {{ comentarios().length }} comentario{{ comentarios().length !== 1 ? 's' : '' }}
+      Ver {{ publicacion.comentarios.length }} comentario{{ publicacion.comentarios.length !== 1 ? 's' : '' }}
     } @else {
       Ocultar comentarios
     }

@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, Input, OnInit, inject, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Publicacion, Comentario } from '../../../models/interfaces';
+import { Publicacion } from '../../../models/interfaces';
+import { ComunidadService } from '../../../services/comunidad';
 
 @Component({
   selector: 'app-publicacion-card',
@@ -13,24 +14,27 @@ import { Publicacion, Comentario } from '../../../models/interfaces';
 export class PublicacionCardComponent implements OnInit {
   @Input() publicacion!: Publicacion;
 
-  liked!: WritableSignal<boolean>;
-  likes!: WritableSignal<number>;
+  private readonly comunidadService = inject(ComunidadService);
+
   siguiendo!: WritableSignal<boolean>;
-  comentarios!: WritableSignal<Comentario[]>;
   mostrarComentarios = signal(false);
   expandirDesc = signal(false);
   nuevoComentario = signal('');
+  procesandoLike = signal(false);
+  enviandoComentario = signal(false);
 
   ngOnInit(): void {
-    this.liked = signal(this.publicacion.liked);
-    this.likes = signal(this.publicacion.likes);
     this.siguiendo = signal(this.publicacion.siguiendo);
-    this.comentarios = signal([...this.publicacion.comentarios]);
   }
 
-  toggleLike(): void {
-    this.liked.update(v => !v);
-    this.likes.update(n => this.liked() ? n + 1 : n - 1);
+  async toggleLike(): Promise<void> {
+    if (this.procesandoLike()) return;
+    this.procesandoLike.set(true);
+    try {
+      await this.comunidadService.toggleLike(this.publicacion.publicacion_id, this.publicacion.liked);
+    } finally {
+      this.procesandoLike.set(false);
+    }
   }
 
   toggleSeguir(): void {
@@ -41,19 +45,17 @@ export class PublicacionCardComponent implements OnInit {
     this.mostrarComentarios.update(v => !v);
   }
 
-  enviarComentario(): void {
+  async enviarComentario(): Promise<void> {
     const texto = this.nuevoComentario().trim();
-    if (!texto) return;
-    const nuevo: Comentario = {
-      comentario_id: Date.now(),
-      usuario_id: 1,
-      nombre_usuario: 'Tú',
-      username: '@mi_huerto',
-      texto,
-      fecha: new Date()
-    };
-    this.comentarios.update(list => [...list, nuevo]);
-    this.nuevoComentario.set('');
+    if (!texto || this.enviandoComentario()) return;
+
+    this.enviandoComentario.set(true);
+    try {
+      await this.comunidadService.agregarComentario(this.publicacion.publicacion_id, texto);
+      this.nuevoComentario.set('');
+    } finally {
+      this.enviandoComentario.set(false);
+    }
   }
 
   formatFecha(fecha: Date): string {

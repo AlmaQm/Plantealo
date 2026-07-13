@@ -67,8 +67,8 @@ export interface GardenPlant {
 }
 
 export interface Comentario {
-  comentario_id: number;
-  usuario_id: number;
+  comentario_id: string;
+  usuario_id: string;
   nombre_usuario: string;
   username: string;
   texto: string;
@@ -76,8 +76,8 @@ export interface Comentario {
 }
 
 export interface Publicacion {
-  publicacion_id: number;
-  usuario_id: number;
+  publicacion_id: string;
+  usuario_id: string;
   nombre_usuario: string;
   username: string;
   avatar_inicial: string;

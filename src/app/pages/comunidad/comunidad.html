@@ -65,11 +65,15 @@
         (ngModelChange)="nuevaDesc.set($event)">
       </textarea>
 
+      @if (error()) {
+        <p class="campo-error">{{ error() }}</p>
+      }
+
     </div>
 
     <div class="modal-dialog__footer">
-      <button class="btn-publicar-full" [disabled]="!nuevaDesc().trim()" (click)="publicar()">
-        Publicar
+      <button class="btn-publicar-full" [disabled]="!nuevaDesc().trim() || publicando()" (click)="publicar()">
+        {{ publicando() ? 'Publicando...' : 'Publicar' }}
       </button>
     </div>
 

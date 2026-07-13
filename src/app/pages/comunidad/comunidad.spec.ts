@@ -1,17 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 
-import { ComunidadComponent } from './comunidad';
+import { Comunidad } from './comunidad';
+import { ComunidadService } from '../../services/comunidad';
 
-describe('ComunidadComponent', () => {
-  let component: ComunidadComponent;
-  let fixture: ComponentFixture<ComunidadComponent>;
+class MockComunidadService {
+  feed = signal([]).asReadonly();
+  crearPublicacion = jasmine.createSpy('crearPublicacion').and.resolveTo(undefined);
+}
+
+describe('Comunidad', () => {
+  let component: Comunidad;
+  let fixture: ComponentFixture<Comunidad>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ComunidadComponent],
+      imports: [Comunidad],
+      providers: [{ provide: ComunidadService, useClass: MockComunidadService }]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ComunidadComponent);
+    fixture = TestBed.createComponent(Comunidad);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

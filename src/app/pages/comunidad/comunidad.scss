@@ -189,6 +189,12 @@
   &::placeholder { color: $green-4; }
 }
 
+.campo-error {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #c0392b;
+}
+
 .btn-publicar-full {
   width: 100%;
   padding: 14px;

@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PublicacionCardComponent } from '../../shared/components/publicacion-card/publicacion-card';
 import { Publicacion } from '../../models/interfaces';
-import { COMUNIDAD_DATA } from '../../data/comunidad.data';
+import { ComunidadService } from '../../services/comunidad';
 
 @Component({
   selector: 'app-comunidad',
@@ -13,31 +13,34 @@ import { COMUNIDAD_DATA } from '../../data/comunidad.data';
   styleUrls: ['./comunidad.scss']
 })
 export class Comunidad {
+  private readonly comunidadService = inject(ComunidadService);
 
-  feed = signal<Publicacion[]>([...COMUNIDAD_DATA]);
+  readonly feed = this.comunidadService.feed;
   modalAbierto = signal(false);
+  publicando = signal(false);
+  error = signal('');
 
   nuevaDesc = signal('');
   nuevaCategoria = signal<Publicacion['categoria']>('HUERTO');
-  nuevaImagenUrl = signal('');
   nuevaImagenPreview = signal('');
+  private nuevaImagenFile: File | null = null;
 
   readonly categorias: Publicacion['categoria'][] = ['HUERTO', 'RECETA', 'CONSEJO', 'COSECHA'];
 
   abrirModal(): void {
     this.nuevaDesc.set('');
     this.nuevaCategoria.set('HUERTO');
-    this.nuevaImagenUrl.set('');
+    this.nuevaImagenFile = null;
     this.nuevaImagenPreview.set('');
+    this.error.set('');
     this.modalAbierto.set(true);
   }
 
   onImagenSeleccionada(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      this.nuevaImagenUrl.set(url);
-      this.nuevaImagenPreview.set(url);
+      this.nuevaImagenFile = file;
+      this.nuevaImagenPreview.set(URL.createObjectURL(file));
     }
   }
 
@@ -45,27 +48,21 @@ export class Comunidad {
     this.modalAbierto.set(false);
   }
 
-  publicar(): void {
+  async publicar(): Promise<void> {
     const desc = this.nuevaDesc().trim();
-    if (!desc) return;
+    if (!desc || this.publicando()) return;
 
-    const nueva: Publicacion = {
-      publicacion_id: Date.now(),
-      usuario_id: 1,
-      nombre_usuario: 'Tú',
-      username: '@mi_huerto',
-      avatar_inicial: 'T',
-      imagen_url: this.nuevaImagenUrl().trim() || 'assets/images/placeholder-receta.jpg',
-      categoria: this.nuevaCategoria(),
-      descripcion: desc,
-      likes: 0,
-      liked: false,
-      comentarios: [],
-      fecha: new Date(),
-      siguiendo: false
-    };
-
-    this.feed.update(f => [nueva, ...f]);
-    this.cerrarModal();
+    this.publicando.set(true);
+    this.error.set('');
+    try {
+      await this.comunidadService.crearPublicacion(desc, this.nuevaCategoria(), this.nuevaImagenFile ?? undefined);
+      this.cerrarModal();
+    } catch (e) {
+      console.error('Error al publicar en comunidad:', e);
+      const codigo = (e as { code?: string })?.code ?? (e as Error)?.message ?? 'desconocido';
+      this.error.set(`No se ha podido publicar (${codigo}).`);
+    } finally {
+      this.publicando.set(false);
+    }
   }
 }

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, Text, Enum, Time, Table
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, DateTime, Text, Enum, Time, Table, func
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -94,3 +94,42 @@ class Ingrediente(Base):
     cantidad = Column(String(20))
     imagen_url = Column(String(100))
     tipo_dieta = Column(String(20))
+
+# --- COMUNIDAD ---
+# usuario_id aqui es el uid de Firebase Auth (string), no el usuario_id de la
+# tabla Usuario: la comunidad solo usa Firebase para identificar al autor,
+# los datos de la publicacion se guardan siempre en esta base de datos.
+
+class Publicacion(Base):
+    __tablename__ = "publicaciones"
+    publicacion_id = Column(Integer, primary_key=True, index=True)
+    usuario_id = Column(String(128), nullable=False, index=True)
+    nombre_usuario = Column(String(50), nullable=False)
+    username = Column(String(50), nullable=False)
+    avatar_inicial = Column(String(5))
+    imagen_url = Column(Text)
+    categoria = Column(String(20), nullable=False)
+    descripcion = Column(Text, nullable=False)
+    fecha = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    likes = relationship("PublicacionLike", back_populates="publicacion", cascade="all, delete-orphan")
+    comentarios = relationship("Comentario", back_populates="publicacion", cascade="all, delete-orphan", order_by="Comentario.fecha")
+
+class PublicacionLike(Base):
+    __tablename__ = "publicacion_likes"
+    publicacion_id = Column(Integer, ForeignKey("publicaciones.publicacion_id", ondelete="CASCADE"), primary_key=True)
+    usuario_id = Column(String(128), primary_key=True)
+
+    publicacion = relationship("Publicacion", back_populates="likes")
+
+class Comentario(Base):
+    __tablename__ = "comentarios"
+    comentario_id = Column(Integer, primary_key=True, index=True)
+    publicacion_id = Column(Integer, ForeignKey("publicaciones.publicacion_id", ondelete="CASCADE"), nullable=False)
+    usuario_id = Column(String(128), nullable=False)
+    nombre_usuario = Column(String(50), nullable=False)
+    username = Column(String(50), nullable=False)
+    texto = Column(Text, nullable=False)
+    fecha = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    publicacion = relationship("Publicacion", back_populates="comentarios")

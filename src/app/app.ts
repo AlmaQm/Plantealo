@@ -38,6 +38,6 @@ export class App {
   constructor() {
     this.translate.addLangs(['es', 'ca', 'en']);
     this.translate.setFallbackLang('es');
-    this.translate.use('en');
+    this.translate.use('es');
   }
 }

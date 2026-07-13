@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
-from datetime import date, time
+from datetime import date, time, datetime
 
 # Usuario
 class UsuarioBase(BaseModel):
@@ -46,3 +46,52 @@ class PlantaCat(BaseModel):
     caracteristicas: Optional[str] = None
     class Config:
         from_attributes = True
+
+# --- COMUNIDAD ---
+
+class ComentarioCreate(BaseModel):
+    usuario_id: str
+    nombre_usuario: str
+    username: str
+    texto: str
+
+class Comentario(BaseModel):
+    comentario_id: int
+    usuario_id: str
+    nombre_usuario: str
+    username: str
+    texto: str
+    fecha: datetime
+    class Config:
+        from_attributes = True
+
+class PublicacionCreate(BaseModel):
+    usuario_id: str
+    nombre_usuario: str
+    username: str
+    avatar_inicial: str
+    categoria: str
+    descripcion: str
+    imagen_url: Optional[str] = None
+
+class Publicacion(BaseModel):
+    publicacion_id: int
+    usuario_id: str
+    nombre_usuario: str
+    username: str
+    avatar_inicial: Optional[str] = None
+    imagen_url: Optional[str] = None
+    categoria: str
+    descripcion: str
+    fecha: datetime
+    likes: int
+    liked: bool
+    comentarios: List[Comentario]
+    class Config:
+        from_attributes = True
+
+class LikeToggle(BaseModel):
+    usuario_id: str
+
+class ImagenUpdate(BaseModel):
+    imagen_url: str
