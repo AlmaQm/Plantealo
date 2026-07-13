@@ -25,15 +25,26 @@ class PUsuarioBase(BaseModel):
     estado_crecimiento: str
 
 class PUsuarioCreate(PUsuarioBase):
-    pass
+    planta_cat_id: int  # especie del catálogo (plantas.planta_id) que se está plantando
 
 class PUsuario(PUsuarioBase):
     planta_id: int
     usuario_id: int
+    planta_cat_id: Optional[int] = None
     class Config:
         from_attributes = True
 
 # Planta Catálogo
+class PlantaCatCreate(BaseModel):
+    nombre_planta: str
+    hortaliza: bool
+    tipo_planta: str
+    freq_riego: int
+    imagen_url: Optional[str] = None
+    clima: Optional[str] = None
+    h_luzsolar: Optional[int] = None
+    caracteristicas: Optional[str] = None
+
 class PlantaCat(BaseModel):
     planta_id: int
     nombre_planta: str
@@ -46,3 +57,52 @@ class PlantaCat(BaseModel):
     caracteristicas: Optional[str] = None
     class Config:
         from_attributes = True
+
+# --- Nivel 1: ¿Qué puedo cocinar con mi huerto? ---
+
+class ConsultaHuertoRequest(BaseModel):
+    ids_plantas: List[int]
+
+class RecetaBase(BaseModel):
+    id_receta: int
+    nombre_receta: str
+    descripcion: Optional[str] = None
+    tipo_dieta: Optional[str] = None
+    estacion: Optional[str] = None
+    categoria: Optional[str] = None
+    tiempo_preparacion: Optional[time] = None
+    dificultad: Optional[str] = None
+    num_comensales: Optional[int] = None
+    instrucciones: Optional[str] = None
+    tips: Optional[str] = None
+    imagen_url: Optional[str] = None
+    class Config:
+        from_attributes = True
+
+class RecetaHuerto(RecetaBase):
+    ingredientes_faltantes: int
+
+class ClasificacionRecetasResponse(BaseModel):
+    puedes_cocinar: List[RecetaHuerto]
+    te_falta_1: List[RecetaHuerto]
+    te_faltan_varios: List[RecetaHuerto]
+
+# --- Creación de recetas ---
+
+class IngredienteRecetaInput(BaseModel):
+    nombre_ingrediente: str
+    cantidad: str
+
+class RecetaCreate(BaseModel):
+    nombre_receta: str
+    descripcion: Optional[str] = None
+    tipo_dieta: Optional[str] = None
+    estacion: Optional[str] = None
+    categoria: Optional[str] = None
+    tiempo_preparacion: Optional[time] = None
+    dificultad: Optional[str] = None
+    num_comensales: Optional[int] = None
+    instrucciones: Optional[str] = None
+    tips: Optional[str] = None
+    imagen_url: Optional[str] = None
+    ingredientes: List[IngredienteRecetaInput]

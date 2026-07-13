@@ -43,23 +43,25 @@
     
   </div>
   
+  <div *ngIf="cargando" class="cargando">
+    <p>Cargando recetas de tu huerto...</p>
+  </div>
+
   <div class="recetas-page__grid">
-    <app-receta-card 
+    <app-receta-card
       *ngFor="let recipe of filteredRecipes"
       [recipe]="recipe"
-      [compatibilityPercentage]="getCompatibility(recipe)"
       (recipeClick)="openRecipeDetail($event)">
     </app-receta-card>
-    
-    <div *ngIf="filteredRecipes.length === 0" class="no-results">
+
+    <div *ngIf="!cargando && filteredRecipes.length === 0" class="no-results">
       <p>No se encontraron recetas con estos filtros</p>
     </div>
   </div>
-  
-  <app-receta-window 
+
+  <app-receta-window
     *ngIf="selectedRecipe"
     [recipe]="selectedRecipe"
-    [gardenPlants]="gardenPlants"
     (close)="closeRecipeDetail()">
   </app-receta-window>
 </div>

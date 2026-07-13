@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func, case, select, insert, delete
+from typing import List
 import models
 import schemas
 
@@ -32,6 +34,18 @@ def crear_planta_usuario(db: Session, planta: schemas.PUsuarioCreate, usuario_id
     db.refresh(db_planta)
     return db_planta
 
+def get_plantas_ids_usuario(db: Session, usuario_id: int) -> List[int]:
+    filas = (
+        db.query(models.PUsuario.planta_cat_id)
+        .filter(
+            models.PUsuario.usuario_id == usuario_id,
+            models.PUsuario.planta_cat_id.isnot(None)
+        )
+        .distinct()
+        .all()
+    )
+    return [id_planta for (id_planta,) in filas]
+
 # --- NUEVO: CREAR PLANTA EN EL CATÁLOGO MAESTRO ---
 def crear_planta_catalogo(db: Session, planta: schemas.PlantaCatCreate):
     # Inserta la planta directamente en la tabla PlantaCat (catálogo general)
@@ -40,3 +54,163 @@ def crear_planta_catalogo(db: Session, planta: schemas.PlantaCatCreate):
     db.commit()
     db.refresh(db_planta)
     return db_planta
+
+# --- LÓGICA PARA RECETAS (NIVEL 1: ¿QUÉ PUEDO COCINAR CON MI HUERTO? / FEED INTELIGENTE) ---
+
+def _resultados_recetas_con_faltantes(db: Session, ids_plantas: List[int]):
+    # Como 'plantas' e 'ingredientes' comparten IDs, ids_plantas se usa directamente
+    # como el conjunto de id_ingrediente disponibles para el usuario.
+    subquery = (
+        db.query(
+            models.receta_ingredientes.c.id_receta.label("id_receta"),
+            func.count(models.receta_ingredientes.c.id_ingrediente).label("total_ingredientes"),
+            func.sum(
+                case(
+                    (models.receta_ingredientes.c.id_ingrediente.in_(ids_plantas), 1),
+                    else_=0
+                )
+            ).label("ingredientes_disponibles")
+        )
+        .group_by(models.receta_ingredientes.c.id_receta)
+        .subquery()
+    )
+
+    # LEFT JOIN: una receta sin filas en receta_ingredientes no debe desaparecer del
+    # resultado. Sin ingredientes asociados, total y disponibles son NULL tras el
+    # outerjoin; coalesce los deja en 0, por lo que ingredientes_faltantes = 0.
+    total_ingredientes = func.coalesce(subquery.c.total_ingredientes, 0)
+    ingredientes_disponibles = func.coalesce(subquery.c.ingredientes_disponibles, 0)
+    ingredientes_faltantes = (total_ingredientes - ingredientes_disponibles).label(
+        "ingredientes_faltantes"
+    )
+
+    return (
+        db.query(models.Receta, ingredientes_faltantes)
+        .outerjoin(subquery, models.Receta.id_receta == subquery.c.id_receta)
+        .all()
+    )
+
+def _receta_a_schema_huerto(receta: models.Receta, faltantes: int) -> schemas.RecetaHuerto:
+    return schemas.RecetaHuerto(
+        id_receta=receta.id_receta,
+        nombre_receta=receta.nombre_receta,
+        descripcion=receta.descripcion,
+        tipo_dieta=receta.tipo_dieta,
+        estacion=receta.estacion,
+        categoria=receta.categoria,
+        tiempo_preparacion=receta.tiempo_preparacion,
+        dificultad=receta.dificultad,
+        num_comensales=receta.num_comensales,
+        instrucciones=receta.instrucciones,
+        tips=receta.tips,
+        imagen_url=receta.imagen_url,
+        ingredientes_faltantes=int(faltantes)
+    )
+
+def clasificar_recetas_por_huerto(db: Session, ids_plantas: List[int]) -> schemas.ClasificacionRecetasResponse:
+    resultados = _resultados_recetas_con_faltantes(db, ids_plantas)
+
+    puedes_cocinar = []
+    te_falta_1 = []
+    te_faltan_varios = []
+
+    for receta, faltantes in resultados:
+        receta_out = _receta_a_schema_huerto(receta, faltantes)
+
+        if receta_out.ingredientes_faltantes == 0:
+            puedes_cocinar.append(receta_out)
+        elif receta_out.ingredientes_faltantes == 1:
+            te_falta_1.append(receta_out)
+        else:
+            te_faltan_varios.append(receta_out)
+
+    return schemas.ClasificacionRecetasResponse(
+        puedes_cocinar=puedes_cocinar,
+        te_falta_1=te_falta_1,
+        te_faltan_varios=te_faltan_varios
+    )
+
+def get_feed_recetas_inteligente(db: Session, ids_plantas: List[int]) -> List[schemas.RecetaHuerto]:
+    # Si el usuario no tiene plantas, se usa un ID ficticio para que el cálculo
+    # de faltantes equivalga al total de ingredientes de cada receta.
+    ids_comparacion = ids_plantas if ids_plantas else [-1]
+    resultados = _resultados_recetas_con_faltantes(db, ids_comparacion)
+    return [_receta_a_schema_huerto(receta, faltantes) for receta, faltantes in resultados]
+
+# --- LÓGICA PARA RECETAS GUARDADAS ---
+
+def guardar_receta(db: Session, usuario_id: int, id_receta: int):
+    ya_guardada = db.execute(
+        select(models.recetas_guardadas).where(
+            models.recetas_guardadas.c.usuario_id == usuario_id,
+            models.recetas_guardadas.c.id_receta == id_receta
+        )
+    ).first()
+
+    if not ya_guardada:
+        db.execute(
+            insert(models.recetas_guardadas).values(usuario_id=usuario_id, id_receta=id_receta)
+        )
+        db.commit()
+
+    return {"usuario_id": usuario_id, "id_receta": id_receta}
+
+def desguardar_receta(db: Session, usuario_id: int, id_receta: int):
+    db.execute(
+        delete(models.recetas_guardadas).where(
+            models.recetas_guardadas.c.usuario_id == usuario_id,
+            models.recetas_guardadas.c.id_receta == id_receta
+        )
+    )
+    db.commit()
+
+def get_recetas_guardadas(db: Session, usuario_id: int):
+    return (
+        db.query(models.Receta)
+        .join(models.recetas_guardadas, models.Receta.id_receta == models.recetas_guardadas.c.id_receta)
+        .filter(models.recetas_guardadas.c.usuario_id == usuario_id)
+        .all()
+    )
+
+# --- LÓGICA PARA CREAR RECETAS ---
+
+def crear_receta_completa(db: Session, receta_in: schemas.RecetaCreate, usuario_id: int) -> models.Receta:
+    db_receta = models.Receta(
+        usuario_id=usuario_id,
+        nombre_receta=receta_in.nombre_receta,
+        descripcion=receta_in.descripcion,
+        tipo_dieta=receta_in.tipo_dieta,
+        estacion=receta_in.estacion,
+        categoria=receta_in.categoria,
+        tiempo_preparacion=receta_in.tiempo_preparacion,
+        dificultad=receta_in.dificultad,
+        num_comensales=receta_in.num_comensales,
+        instrucciones=receta_in.instrucciones,
+        tips=receta_in.tips,
+        imagen_url=receta_in.imagen_url,
+    )
+    db.add(db_receta)
+    db.flush()  # Genera el id_receta en PostgreSQL sin cerrar la transacción
+
+    for item in receta_in.ingredientes:
+        ingrediente = (
+            db.query(models.Ingrediente)
+            .filter(func.lower(models.Ingrediente.nombre_ingrediente) == item.nombre_ingrediente.lower())
+            .first()
+        )
+
+        if ingrediente is None:
+            print(f"[crear_receta_completa] Ingrediente no encontrado en el catálogo: '{item.nombre_ingrediente}' (se omite)")
+            continue
+
+        db.execute(
+            insert(models.receta_ingredientes).values(
+                id_receta=db_receta.id_receta,
+                id_ingrediente=ingrediente.id_ingrediente,
+                cantidad=item.cantidad
+            )
+        )
+
+    db.commit()
+    db.refresh(db_receta)
+    return db_receta

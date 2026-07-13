@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  apiUrl: 'https://TODO-configurar-api-produccion', // TODO: sustituir por la URL real del backend en producción
   firebaseConfig: {
     apiKey: 'AIzaSyBJWkIyKjDGX67PQdkmpVnJIjzUYqalFsg',
     authDomain: 'plantealo.firebaseapp.com',

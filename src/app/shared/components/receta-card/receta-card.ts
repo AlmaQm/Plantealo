@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Recipe } from '../../../models/interfaces';
+import { RecetaHuerto } from '../../../models/interfaces';
+import { getFaltantesIcono, getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
 
 @Component({
   selector: 'app-receta-card',
@@ -10,27 +11,31 @@ import { Recipe } from '../../../models/interfaces';
   styleUrls: ['./receta-card.scss']
 })
 export class RecetaCardComponent {
-  @Input() recipe!: Recipe;
-  @Input() compatibilityPercentage: number = 0;
-  @Output() recipeClick = new EventEmitter<Recipe>();
-
-  getDificultad(): string {
-    const map: Record<Recipe['dificultad'], string> = {
-      'FACIL': 'Fácil', 'MEDIA': 'Medio', 'DIFICL': 'Difícil'
-    };
-    return map[this.recipe.dificultad];
-  }
+  @Input() recipe!: RecetaHuerto;
+  @Output() recipeClick = new EventEmitter<RecetaHuerto>();
 
   getTiempo(): string {
-    return `${this.recipe.tiempo_preparacion} min`;
+    return formatTiempoPreparacion(this.recipe.tiempo_preparacion);
   }
 
   getCategoriaText(): string {
-    const map: Record<Recipe['categoria'], string> = {
+    const map: Record<string, string> = {
       'ENTRANTE': '🥗 Entrante', 'PRINCIPAL': '🍽️ Principal',
       'POSTRE': '🍰 Postre',    'BEBIDA': '🥤 Bebida'
     };
-    return map[this.recipe.categoria] ?? this.recipe.categoria;
+    return map[this.recipe.categoria ?? ''] ?? this.recipe.categoria ?? '';
+  }
+
+  getFaltantesIcono(): string {
+    return getFaltantesIcono(this.recipe.ingredientes_faltantes);
+  }
+
+  getFaltantesTexto(): string {
+    return getFaltantesTexto(this.recipe.ingredientes_faltantes);
+  }
+
+  getFaltantesClase(): string {
+    return getFaltantesClase(this.recipe.ingredientes_faltantes);
   }
 
   onCardClick(): void {

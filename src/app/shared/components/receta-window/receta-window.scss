@@ -84,74 +84,53 @@
         margin-bottom: 12px;
       }
       
-      .compatibility-badge {
+      .badge-faltantes {
         display: inline-block;
         padding: 6px 12px;
         border-radius: 20px;
         font-size: 14px;
         font-weight: 500;
+
+        &.faltantes--completa {
+          background: $green-2;
+          color: $green-7;
+        }
+
+        &.faltantes--falta-uno {
+          background: #fef3c7;
+          color: #92400e;
+        }
+
+        &.faltantes--varios {
+          background: #fee2e2;
+          color: #991b1b;
+        }
       }
     }
   }
-  
+
   &__content {
     padding: 24px;
-    
+
     .content-section {
       margin-bottom: 32px;
-      
+
       h2 {
         color: $green-7;
         margin-bottom: 16px;
         font-size: 20px;
       }
-    }
-    
-    .ingredients-grid {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 24px;
-      
-      .ingredient {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px;
-        border-radius: 8px;
-        background: $green-1;
-        
-        &--garden {
-          background: $green-2;
-          border-left: 4px solid $green-5;
-        }
-        
-        &--missing {
-          background: $earth-1;
-          border-left: 4px solid #f97316;
-        }
-        
-        .ingredient-check {
-          font-size: 18px;
-        }
-        
-        .ingredient-name {
-          flex: 1;
-          font-weight: 500;
-          text-transform: capitalize;
-        }
-        
-        .ingredient-measure {
-          color: $green-6;
-          font-size: 14px;
-        }
+
+      .description {
+        color: #374151;
+        line-height: 1.6;
       }
     }
-    
+
     .instructions {
       p {
         line-height: 1.6;
         color: #374151;
-        white-space: pre-wrap;
       }
     }
     
@@ -187,41 +166,6 @@
   }
 }
 
-.compatibility--0-20 { background: #dc2626; }
-.compatibility--21-40 { background: #f97316; }
-.compatibility--41-60 { background: #eab308; }
-.compatibility--61-80 { background: $green-5; }
-.compatibility--81-100 { background: $green-3; }
-
-// AÃ±adir al final de receta-window.component.scss
-
-.instruction-step {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  align-items: flex-start;
-  
-  .step-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 28px;
-    height: 28px;
-    background: $green-2;
-    color: $green-7;
-    border-radius: 50%;
-    font-size: 14px;
-    font-weight: bold;
-  }
-  
-  p {
-    flex: 1;
-    margin: 0;
-    line-height: 1.5;
-    color: #374151;
-  }
-}
-
 .tips {
   display: grid;
   gap: 12px;
@@ -245,18 +189,7 @@
   }
 }
 
-.no-ingredients {
-  padding: 24px;
-  text-align: center;
-  background: $green-1;
-  border-radius: 8px;
-  color: $green-6;
+.whitespace-pre-line {
+  white-space: pre-line;
 }
 
-.ingredient-source {
-  font-size: 11px;
-  color: $green-7;
-  background: rgba(255, 255, 255, 0.5);
-  padding: 2px 6px;
-  border-radius: 12px;
-}

@@ -5,7 +5,7 @@
 
     <div class="receta-window__header">
       <img [src]="recipe.imagen_url" [alt]="recipe.nombre_receta"
-           (error)="recipe.imagen_url = 'assets/images/placeholder-receta.jpg'">
+           (error)="onImageError()">
       <div class="header-overlay"></div>
       <div class="header-content">
         <h1>{{ recipe.nombre_receta }}</h1>
@@ -13,66 +13,48 @@
           <span>{{ getCategoriaText() }}</span>
           <span>•</span>
           <span>{{ getDietaText() }}</span>
-          <span>•</span>
-          <span>{{ recipe.tiempo_preparacion }} min</span>
+          @if (getTiempo()) {
+            <span>•</span>
+            <span>⏱️ {{ getTiempo() }}</span>
+          }
+          @if (recipe.num_comensales) {
+            <span>•</span>
+            <span>👥 {{ recipe.num_comensales }} personas</span>
+          }
+          @if (recipe.dificultad) {
+            <span>•</span>
+            <span>📊 {{ recipe.dificultad }}</span>
+          }
         </div>
-        <div class="compatibility-badge" [class]="'compatibility--' + compatibilityPercentage">
-          Compatibilidad: {{ compatibilityPercentage }}%
+        <div class="badge-faltantes" [class]="getFaltantesClase()">
+          {{ getFaltantesIcono() }} {{ getFaltantesTexto() }}
         </div>
       </div>
     </div>
 
     <div class="receta-window__content">
-      <div class="content-section">
-        <h2>🌱 Ingredientes de tu huerto</h2>
-        <div class="ingredients-grid">
-          @for (ing of ingredientsBySource.fromGarden; track ing.nombre_ingrediente) {
-            <div class="ingredient ingredient--garden">
-              <span class="ingredient-check">✅</span>
-              <span class="ingredient-name">{{ ing.nombre_ingrediente }}</span>
-              <span class="ingredient-measure">{{ ing.cantidad }}</span>
-            </div>
-          }
-          @if (ingredientsBySource.fromGarden.length === 0) {
-            <div class="no-ingredients">
-              <p>No tienes ingredientes de tu huerto para esta receta</p>
-            </div>
-          }
+      @if (recipe.descripcion) {
+        <div class="content-section">
+          <p class="description">{{ recipe.descripcion }}</p>
         </div>
+      }
 
-        @if (ingredientsBySource.missing.length > 0) {
-          <h2>🛒 Ingredientes que necesitas</h2>
-          <div class="ingredients-grid">
-            @for (ing of ingredientsBySource.missing; track ing.nombre_ingrediente) {
-              <div class="ingredient ingredient--missing">
-                <span class="ingredient-check">❌</span>
-                <span class="ingredient-name">{{ ing.nombre_ingrediente }}</span>
-                <span class="ingredient-measure">{{ ing.cantidad }}</span>
-              </div>
-            }
+      @if (recipe.instrucciones) {
+        <div class="content-section">
+          <h2>📝 Instrucciones</h2>
+          <div class="instructions">
+            <p class="whitespace-pre-line">{{ recipe.instrucciones }}</p>
           </div>
-        }
-      </div>
-
-      <div class="content-section">
-        <h2>📝 Instrucciones</h2>
-        <div class="instructions">
-          @for (step of recipe.instrucciones; track $index) {
-            <div class="instruction-step">
-              <span class="step-number">{{ $index + 1 }}</span>
-              <p>{{ step }}</p>
-            </div>
-          }
         </div>
-      </div>
+      }
 
       @if (recipe.tips) {
         <div class="content-section">
-          <h2>💡 Tips y Consejos</h2>
+          <h2>👨‍🍳 Consejo del Chef</h2>
           <div class="tips">
             <div class="tip">
               <span class="tip-icon">✨</span>
-              <p>{{ recipe.tips }}</p>
+              <p class="whitespace-pre-line">{{ recipe.tips }}</p>
             </div>
           </div>
         </div>
