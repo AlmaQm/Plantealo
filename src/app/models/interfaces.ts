@@ -51,6 +51,7 @@ export interface Ingrediente {
 
 export interface Usuario {
   uid: string;
+  usuario_id?: number;   // ← nou: ID numèric d'Aiven
   nombre: string;
   nombre_usuario: string;
   email: string;
