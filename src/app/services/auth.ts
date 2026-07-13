@@ -104,30 +104,38 @@ export class AuthService {
   async login(email: string, password: string): Promise<void> {
     try {
       const credential = await signInWithEmailAndPassword(this.auth, email, password);
-      // Sincronitzar amb Aiven (upsert): resol també els usuaris antics
+      // Sincronitzar amb Aiven llegint el perfil de Firestore (no depèn de localStorage)
       try {
         const uid = credential.user.uid;
-        const stored = this.getStoredUser();
-        if (stored) {
+
+        // Llegir perfil de Firestore (font de veritat, funciona en qualsevol dispositiu)
+        const docRef = doc(this.firestore, `usuarios/${uid}`);
+        const snap = await getDoc(docRef);
+
+        if (snap.exists()) {
+          const perfil = snap.data() as any;
           const res = await firstValueFrom(
             this.http.post<{ usuario_id: number }>(
               `${environment.apiUrl}/usuarios/sync`,
               {
                 firebase_uid: uid,
-                nombre: stored.nombre,
-                nombre_usuario: stored.nombre_usuario,
-                email: stored.email,
-                tipo_dieta: stored.tipo_dieta,
-                imagen_url: stored.imagen_url ?? null,
+                nombre: perfil.nombre,
+                nombre_usuario: perfil.nombre_usuario,
+                email: perfil.email,
+                tipo_dieta: perfil.tipo_dieta,
+                imagen_url: perfil.imagen_url ?? null,
               }
             )
           );
           if (res?.usuario_id) {
-            stored.usuario_id = res.usuario_id;
-            this.saveStoredUser(stored);
+            const stored = this.getStoredUser();
+            if (stored) {
+              stored.usuario_id = res.usuario_id;
+              this.saveStoredUser(stored);
+            }
           }
         }
-      } catch { /* no bloquegem */ }
+      } catch { /* no bloquegem el login */ }
     } catch (error) {
       throw new Error(mapAuthError(error as { code?: string }));
     }
