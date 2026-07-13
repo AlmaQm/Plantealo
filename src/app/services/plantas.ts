@@ -1,9 +1,9 @@
-import { Injectable, inject, signal, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { Firestore, collection, collectionData, addDoc, Timestamp } from '@angular/fire/firestore';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { Auth, authState } from '@angular/fire/auth';
 import { Planta } from '../models/interfaces';
-import { PLANTAS_DATA } from '../data/planta';
+import { environment } from '../../environments/environment';
 
 // ─── Clasificación por nombre ─────────────────────────────────────────────────
 // INTERIOR: hierbas pequeñas que se cultivan habitualmente en maceta dentro de casa
@@ -190,14 +190,40 @@ export function diasRestantes(planta: Planta): number {
 }
 
 // ─── Servicio ─────────────────────────────────────────────────────────────────
+// ─── Tipos de la API (Aiven) ──────────────────────────────────────────────────
+interface PlantaCatAiven {
+  planta_id: number;
+  nombre_planta: string;
+  tipo_planta: string;
+  freq_riego: number;
+  imagen_url: string | null;
+  clima: string | null;
+}
+
+interface PUsuarioDetallAiven {
+  planta_id: number;
+  usuario_id: number;
+  f_siembra: string;
+  f_recogida: string | null;
+  estado_crecimiento: string;
+  nombre_planta: string;
+  tipo_planta: string;
+  freq_riego: number;
+  imagen_url: string | null;
+  clima: string | null;
+  caracteristicas: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlantasService {
-  private firestore  = inject(Firestore);
-  private auth       = inject(Auth);
-  private platformId = inject(PLATFORM_ID);
+  private http = inject(HttpClient);
+  private auth = inject(Auth);
 
-  readonly catalogo: Planta[] = PLANTAS_DATA;
+  // Catálogo (GET /plantas/)
+  private catalogoSignal = signal<PlantaCatAiven[]>([]);
+  readonly catalogo = this.catalogoSignal.asReadonly();
 
+  // Inventario del usuario (GET /usuarios/by-uid/{uid}/plantas/)
   private inventarioSignal = signal<Planta[]>([]);
   readonly inventario = this.inventarioSignal.asReadonly();
 
@@ -207,112 +233,107 @@ export class PlantasService {
     authState(this.auth).subscribe(user => {
       this.uid = user?.uid ?? null;
       if (user) {
-        // 1. Carga inmediata desde localStorage
-        this.cargarDesdeStorage(user.uid);
-        // 2. Sincroniza con Firestore en segundo plano
-        this.sincronizarFirestore(user.uid);
+        this.cargarCatalogo();
+        this.cargarInventario(user.uid);
       } else {
         this.inventarioSignal.set([]);
+        this.catalogoSignal.set([]);
       }
     });
   }
 
-  // ── localStorage ─────────────────────────────────────────────────────────
-  private storageKey(uid: string) { return `plantas_${uid}`; }
-
-  private cargarDesdeStorage(uid: string) {
-    if (!isPlatformBrowser(this.platformId)) return;
+  // ── Catálogo ──────────────────────────────────────────────────────────────
+  async cargarCatalogo(): Promise<void> {
     try {
-      const raw = localStorage.getItem(this.storageKey(uid));
-      if (!raw) return;
-      const plantas: Planta[] = JSON.parse(raw).map((p: any) => ({
-        ...p,
-        f_siembra:  new Date(p.f_siembra),
-        f_recogida: new Date(p.f_recogida),
-      }));
-      this.inventarioSignal.set(plantas);
-    } catch { /* localStorage corrupto, ignorar */ }
+      const data = await firstValueFrom(
+        this.http.get<PlantaCatAiven[]>(`${environment.apiUrl}/plantas/`)
+      );
+      this.catalogoSignal.set(data ?? []);
+    } catch {
+      this.catalogoSignal.set([]);
+    }
   }
 
-  private guardarEnStorage(plantas: Planta[]) {
-    if (!isPlatformBrowser(this.platformId) || !this.uid) return;
+  // ── Inventario ────────────────────────────────────────────────────────────
+  async cargarInventario(uid: string): Promise<void> {
     try {
-      localStorage.setItem(this.storageKey(this.uid), JSON.stringify(plantas));
-    } catch { /* cuota excedida u otro error */ }
-  }
-
-  // ── Firestore (sincronización opcional) ───────────────────────────────────
-  private sincronizarFirestore(uid: string) {
-    const ref = collection(this.firestore, `usuarios/${uid}/plantas`);
-    collectionData(ref, { idField: 'firestoreId' }).subscribe({
-      next: (docs: any[]) => {
-        if (docs.length === 0) {
-          // Firestore vacío — sube las de localStorage si las hay
-          this.subirLocalAFirestore(uid);
-          return;
-        }
-        const plantas: Planta[] = docs.map(d => ({
-          ...d,
-          f_siembra:  d.f_siembra  instanceof Timestamp ? d.f_siembra.toDate()  : new Date(d.f_siembra),
-          f_recogida: d.f_recogida instanceof Timestamp ? d.f_recogida.toDate() : new Date(d.f_recogida),
-        }));
-        this.inventarioSignal.set(plantas);
-        this.guardarEnStorage(plantas);
-      },
-      error: (e) => {
-        console.warn('Firestore no disponible, usando localStorage:', e.message);
-        // Inventario ya cargado desde localStorage, no hacemos nada
-      }
-    });
-  }
-
-  private async subirLocalAFirestore(uid: string) {
-    if (!isPlatformBrowser(this.platformId)) return;
-    try {
-      const raw = localStorage.getItem(this.storageKey(uid));
-      if (!raw) return;
-      const plantas: Planta[] = JSON.parse(raw);
-      const ref = collection(this.firestore, `usuarios/${uid}/plantas`);
-      for (const p of plantas) {
-        await addDoc(ref, {
-          planta_id:     p.planta_id,
-          usuario_id:    uid,
-          nombre_planta: p.nombre_planta,
-          imagen_url:    p.imagen_url,
-          f_siembra:     Timestamp.fromDate(new Date(p.f_siembra)),
-          f_recogida:    Timestamp.fromDate(new Date(p.f_recogida)),
-          tipo_planta:   p.tipo_planta,
-          estado:        p.estado,
-          clima:         p.clima ?? null,
-        });
-      }
-    } catch (e) {
-      console.warn('No se pudo subir a Firestore:', e);
+      const data = await firstValueFrom(
+        this.http.get<PUsuarioDetallAiven[]>(
+          `${environment.apiUrl}/usuarios/by-uid/${uid}/plantas/`
+        )
+      );
+      this.inventarioSignal.set((data ?? []).map(d => this.mapPlanta(d)));
+    } catch {
+      this.inventarioSignal.set([]);
     }
   }
 
   // ── API pública ───────────────────────────────────────────────────────────
   async addPlanta(planta: Planta): Promise<void> {
-    const nuevaLista = [...this.inventarioSignal(), planta];
-    this.inventarioSignal.set(nuevaLista);
-    this.guardarEnStorage(nuevaLista);
-
     if (!this.uid) return;
-    try {
-      const ref = collection(this.firestore, `usuarios/${this.uid}/plantas`);
-      await addDoc(ref, {
-        planta_id:     planta.planta_id,
-        usuario_id:    this.uid,
-        nombre_planta: planta.nombre_planta,
-        imagen_url:    planta.imagen_url,
-        f_siembra:     Timestamp.fromDate(planta.f_siembra),
-        f_recogida:    Timestamp.fromDate(planta.f_recogida),
-        tipo_planta:   planta.tipo_planta,
-        estado:        planta.estado,
-        clima:         planta.clima ?? null,
-      });
-    } catch (e) {
-      console.warn('Planta guardada en local, fallo Firestore:', e);
+    await firstValueFrom(
+      this.http.post(
+        `${environment.apiUrl}/usuarios/by-uid/${this.uid}/plantas/`,
+        {
+          planta_id: planta.planta_id,
+          f_siembra: this.toISO(planta.f_siembra),
+          f_recogida: this.toISO(planta.f_recogida),
+          estado_crecimiento: planta.estado === 'ENFERMA' ? 'CRECIENDO' : planta.estado,
+        }
+      )
+    );
+    await this.cargarInventario(this.uid);
+  }
+
+  // ── Mapeo backend (PUsuarioDetall) → Planta ─────────────────────────────────
+  private mapPlanta(d: PUsuarioDetallAiven): Planta {
+    const f_siembra = new Date(d.f_siembra);
+    const f_recogida = d.f_recogida
+      ? new Date(d.f_recogida)
+      : this.calcularRecogida(f_siembra, d.nombre_planta);
+
+    return {
+      planta_id:     d.planta_id,
+      usuario_id:    0,
+      nombre_planta: d.nombre_planta,
+      imagen_url:    d.imagen_url ?? 'assets/images/placeholder.jpg',
+      f_siembra,
+      f_recogida,
+      tipo_planta:   this.mapTipoPlanta(d.tipo_planta),
+      estado:        this.mapEstado(d.estado_crecimiento),
+      clima:         d.clima ?? undefined,
+    };
+  }
+
+  private mapTipoPlanta(t: string): Planta['tipo_planta'] {
+    switch (t) {
+      case 'INTERIOR': return 'INTERIOR';
+      case 'EXTERIOR': return 'EXTERIOR';
+      case 'HUERTO':   return 'EXTERIOR';
+      default:         return 'EXTERIOR';
     }
+  }
+
+  private mapEstado(e: string): Planta['estado'] {
+    switch (e) {
+      case 'PLANTADA':  return 'PLANTADA';
+      case 'CRECIENDO': return 'CRECIENDO';
+      case 'LISTA':     return 'LISTA';
+      default:          return 'CRECIENDO';
+    }
+  }
+
+  private calcularRecogida(f_siembra: Date, nombre: string): Date {
+    const d = new Date(f_siembra);
+    d.setDate(d.getDate() + diasHastaCosecha(nombre));
+    return d;
+  }
+
+  // 'YYYY-MM-DD' en hora local
+  private toISO(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
 }
