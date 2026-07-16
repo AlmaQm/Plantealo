@@ -128,6 +128,11 @@ class Publicacion(BaseModel):
     class Config:
         from_attributes = True
 
+class PublicacionEdit(BaseModel):
+    usuario_id: str
+    categoria: str
+    descripcion: str
+
 class LikeToggle(BaseModel):
     usuario_id: str
 

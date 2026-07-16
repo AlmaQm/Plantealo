@@ -23,8 +23,56 @@ export class PublicacionCardComponent implements OnInit {
   procesandoLike = signal(false);
   enviandoComentario = signal(false);
 
+  editando = signal(false);
+  categoriaEdit = signal<Publicacion['categoria']>('HUERTO');
+  descripcionEdit = signal('');
+  guardandoEdicion = signal(false);
+  eliminando = signal(false);
+
+  readonly categorias: Publicacion['categoria'][] = ['HUERTO', 'RECETA', 'CONSEJO', 'COSECHA'];
+
   ngOnInit(): void {
     this.siguiendo = signal(this.publicacion.siguiendo);
+  }
+
+  get esPropia(): boolean {
+    return this.publicacion.usuario_id === this.comunidadService.miUid;
+  }
+
+  iniciarEdicion(): void {
+    this.categoriaEdit.set(this.publicacion.categoria);
+    this.descripcionEdit.set(this.publicacion.descripcion);
+    this.editando.set(true);
+  }
+
+  cancelarEdicion(): void {
+    this.editando.set(false);
+  }
+
+  async guardarEdicion(): Promise<void> {
+    const texto = this.descripcionEdit().trim();
+    if (!texto || this.guardandoEdicion()) return;
+    this.guardandoEdicion.set(true);
+    try {
+      await this.comunidadService.editarPublicacion(this.publicacion.publicacion_id, texto, this.categoriaEdit());
+      this.editando.set(false);
+    } catch (e) {
+      console.error('Error al editar la publicación:', e);
+    } finally {
+      this.guardandoEdicion.set(false);
+    }
+  }
+
+  async eliminar(): Promise<void> {
+    if (this.eliminando()) return;
+    if (!confirm('¿Eliminar esta publicación? No se puede deshacer.')) return;
+    this.eliminando.set(true);
+    try {
+      await this.comunidadService.eliminarPublicacion(this.publicacion.publicacion_id);
+    } catch (e) {
+      console.error('Error al eliminar la publicación:', e);
+      this.eliminando.set(false);
+    }
   }
 
   async toggleLike(): Promise<void> {

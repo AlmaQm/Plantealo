@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { Navbar } from './shared/components/navbar/navbar';
 import { ChatComponent } from './components/chat/chat';
+import { AuthService } from './services/auth';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,12 @@ import { ChatComponent } from './components/chat/chat';
 export class App {
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
+  private readonly authService = inject(AuthService);
+
+  // se mantiene suscrito durante toda la vida de la app para que el
+  // usuario quede cacheado en localStorage nada más loguearse, sin
+  // depender de visitar Perfil (única pantalla que lo consumía antes)
+  private readonly currentUser = toSignal(this.authService.currentUser$, { initialValue: null });
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(

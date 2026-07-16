@@ -41,6 +41,10 @@ export class ComunidadService {
 
   private uid: string | null = null;
 
+  get miUid(): string | null {
+    return this.auth.currentUser?.uid ?? null;
+  }
+
   private readonly feedSignal = signal<Publicacion[]>([]);
   readonly feed = this.feedSignal.asReadonly();
 
@@ -112,16 +116,19 @@ export class ComunidadService {
     categoria: Publicacion['categoria'],
     imagenFile?: File
   ): Promise<void> {
-    const usuario = this.authService.getStoredUser();
-    if (!this.uid || !usuario) {
+    const firebaseUser = this.auth.currentUser;
+    if (!firebaseUser) {
       throw new Error('Debes iniciar sesión para publicar');
     }
+    const usuario = this.authService.getStoredUser();
+    const nombre = usuario?.nombre || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Usuario';
+    const nombreUsuario = usuario?.nombre_usuario || firebaseUser.email?.split('@')[0] || 'usuario';
 
     const nuevaPub = await firstValueFrom(this.http.post<ApiPublicacion>(this.apiUrl + '/', {
-      usuario_id: this.uid,
-      nombre_usuario: usuario.nombre,
-      username: `@${usuario.nombre_usuario}`,
-      avatar_inicial: usuario.nombre.charAt(0).toUpperCase(),
+      usuario_id: firebaseUser.uid,
+      nombre_usuario: nombre,
+      username: `@${nombreUsuario}`,
+      avatar_inicial: nombre.charAt(0).toUpperCase(),
       categoria,
       descripcion,
       imagen_url: null
@@ -132,6 +139,36 @@ export class ComunidadService {
     if (imagenFile) {
       this.guardarImagenEnSegundoPlano(nuevaPub.publicacion_id, imagenFile);
     }
+  }
+
+  async editarPublicacion(
+    publicacionId: string,
+    descripcion: string,
+    categoria: Publicacion['categoria']
+  ): Promise<void> {
+    const firebaseUser = this.auth.currentUser;
+    if (!firebaseUser) {
+      throw new Error('Debes iniciar sesión para editar');
+    }
+    const actualizada = await firstValueFrom(
+      this.http.put<ApiPublicacion>(`${this.apiUrl}/${publicacionId}`, {
+        usuario_id: firebaseUser.uid,
+        categoria,
+        descripcion
+      })
+    );
+    this.actualizarEnFeed(actualizada);
+  }
+
+  async eliminarPublicacion(publicacionId: string): Promise<void> {
+    const firebaseUser = this.auth.currentUser;
+    if (!firebaseUser) {
+      throw new Error('Debes iniciar sesión para eliminar');
+    }
+    await firstValueFrom(
+      this.http.delete(`${this.apiUrl}/${publicacionId}`, { params: { usuario_id: firebaseUser.uid } })
+    );
+    this.feedSignal.update(feed => feed.filter(p => p.publicacion_id !== publicacionId));
   }
 
   private async guardarImagenEnSegundoPlano(publicacionId: number, imagenFile: File): Promise<void> {
@@ -169,14 +206,17 @@ export class ComunidadService {
   }
 
   async agregarComentario(publicacionId: string, texto: string): Promise<void> {
+    const firebaseUser = this.auth.currentUser;
+    if (!firebaseUser) return;
     const usuario = this.authService.getStoredUser();
-    if (!this.uid || !usuario) return;
+    const nombre = usuario?.nombre || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Usuario';
+    const nombreUsuario = usuario?.nombre_usuario || firebaseUser.email?.split('@')[0] || 'usuario';
 
     const actualizada = await firstValueFrom(
       this.http.post<ApiPublicacion>(`${this.apiUrl}/${publicacionId}/comentarios`, {
-        usuario_id: this.uid,
-        nombre_usuario: usuario.nombre,
-        username: `@${usuario.nombre_usuario}`,
+        usuario_id: firebaseUser.uid,
+        nombre_usuario: nombre,
+        username: `@${nombreUsuario}`,
         texto
       })
     );

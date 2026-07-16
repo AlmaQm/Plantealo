@@ -138,6 +138,20 @@ def listar_publicaciones(uid: Optional[str] = None, db: Session = Depends(get_db
 def crear_publicacion(publicacion: schemas.PublicacionCreate, db: Session = Depends(get_db)):
     return crud.crear_publicacion(db=db, publicacion=publicacion)
 
+@app.put("/publicaciones/{publicacion_id}", response_model=schemas.Publicacion)
+def editar_publicacion(publicacion_id: int, body: schemas.PublicacionEdit, db: Session = Depends(get_db)):
+    db_pub = crud.editar_publicacion(db, publicacion_id, body.usuario_id, body.categoria, body.descripcion)
+    if not db_pub:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
+    return crud.serializar_publicacion(db_pub, body.usuario_id)
+
+@app.delete("/publicaciones/{publicacion_id}")
+def eliminar_publicacion(publicacion_id: int, usuario_id: str, db: Session = Depends(get_db)):
+    ok = crud.eliminar_publicacion(db, publicacion_id, usuario_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
+    return {"status": "eliminada"}
+
 @app.patch("/publicaciones/{publicacion_id}/imagen", response_model=schemas.Publicacion)
 def actualizar_imagen_publicacion(publicacion_id: int, body: schemas.ImagenUpdate, db: Session = Depends(get_db)):
     db_pub = crud.actualizar_imagen_publicacion(db, publicacion_id, body.imagen_url)
