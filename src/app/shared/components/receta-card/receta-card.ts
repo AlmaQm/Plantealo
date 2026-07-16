@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RecetaHuerto } from '../../../models/interfaces';
+import { RecetasService } from '../../../services/recetas.service';
 import { getFaltantesIcono, getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
 
 @Component({
@@ -11,7 +12,10 @@ import { getFaltantesIcono, getFaltantesTexto, getFaltantesClase, formatTiempoPr
   styleUrls: ['./receta-card.scss']
 })
 export class RecetaCardComponent {
+  private readonly recetasService = inject(RecetasService);
+
   @Input() recipe!: RecetaHuerto;
+  @Input() usuarioId!: number;
   @Output() recipeClick = new EventEmitter<RecetaHuerto>();
 
   getTiempo(): string {
@@ -40,5 +44,24 @@ export class RecetaCardComponent {
 
   onCardClick(): void {
     this.recipeClick.emit(this.recipe);
+  }
+
+  toggleGuardar(event: Event): void {
+    event.stopPropagation();
+
+    const estabaGuardada = !!this.recipe.guardada;
+    // Optimistic update: refleja el cambio al instante, antes de confirmar con el servidor.
+    this.recipe.guardada = !estabaGuardada;
+
+    const peticion = estabaGuardada
+      ? this.recetasService.desguardarReceta(this.usuarioId, this.recipe.id_receta)
+      : this.recetasService.guardarReceta(this.usuarioId, this.recipe.id_receta);
+
+    peticion.subscribe({
+      error: (err) => {
+        console.error('Error al guardar/desguardar la receta:', err);
+        this.recipe.guardada = estabaGuardada; // revierte si falla
+      }
+    });
   }
 }

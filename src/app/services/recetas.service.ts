@@ -20,22 +20,22 @@ export class RecetasService {
     return this.http.get<number[]>(`${this.baseUrl}/usuarios/${usuarioId}/plantas/ids`);
   }
 
-  getFeed(idsPlantas: number[]): Observable<RecetaHuerto[]> {
-    const body: ConsultaHuertoRequest = { ids_plantas: idsPlantas };
+  getFeed(idsPlantas: number[], usuarioId?: number): Observable<RecetaHuerto[]> {
+    const body: ConsultaHuertoRequest = { ids_plantas: idsPlantas, usuario_id: usuarioId };
     return this.http.post<RecetaHuerto[]>(`${this.baseUrl}/recetas/feed`, body);
   }
 
-  buscarPorHuerto(idsPlantas: number[]): Observable<ClasificacionRecetasResponse> {
-    const body: ConsultaHuertoRequest = { ids_plantas: idsPlantas };
+  buscarPorHuerto(idsPlantas: number[], usuarioId?: number): Observable<ClasificacionRecetasResponse> {
+    const body: ConsultaHuertoRequest = { ids_plantas: idsPlantas, usuario_id: usuarioId };
     return this.http.post<ClasificacionRecetasResponse>(`${this.baseUrl}/recetas/buscar-por-huerto`, body);
   }
 
-  guardarReceta(idReceta: number, usuarioId: number): Observable<unknown> {
-    return this.http.post(`${this.baseUrl}/recetas/${idReceta}/guardar?usuario_id=${usuarioId}`, null);
+  guardarReceta(usuarioId: number, recetaId: number): Observable<unknown> {
+    return this.http.post(`${this.baseUrl}/usuarios/${usuarioId}/recetas-guardadas/${recetaId}`, null);
   }
 
-  desguardarReceta(idReceta: number, usuarioId: number): Observable<unknown> {
-    return this.http.delete(`${this.baseUrl}/recetas/${idReceta}/desguardar?usuario_id=${usuarioId}`);
+  desguardarReceta(usuarioId: number, recetaId: number): Observable<unknown> {
+    return this.http.delete(`${this.baseUrl}/usuarios/${usuarioId}/recetas-guardadas/${recetaId}`);
   }
 
   getRecetasGuardadas(usuarioId: number): Observable<RecetaBase[]> {

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case, select, insert, delete
-from typing import List
+from sqlalchemy import func, case, select, insert, delete, and_
+from typing import List, Optional
 import models
 import schemas
 
@@ -57,7 +57,7 @@ def crear_planta_catalogo(db: Session, planta: schemas.PlantaCatCreate):
 
 # --- LÓGICA PARA RECETAS (NIVEL 1: ¿QUÉ PUEDO COCINAR CON MI HUERTO? / FEED INTELIGENTE) ---
 
-def _resultados_recetas_con_faltantes(db: Session, ids_plantas: List[int]):
+def _resultados_recetas_con_faltantes(db: Session, ids_plantas: List[int], usuario_id: Optional[int] = None):
     # Como 'plantas' e 'ingredientes' comparten IDs, ids_plantas se usa directamente
     # como el conjunto de id_ingrediente disponibles para el usuario.
     subquery = (
@@ -84,13 +84,24 @@ def _resultados_recetas_con_faltantes(db: Session, ids_plantas: List[int]):
         "ingredientes_faltantes"
     )
 
+    # LEFT JOIN con recetas_guardadas filtrando por usuario_id: si no hay coincidencia
+    # (no la guardó, o usuario_id es None) la columna usuario_id llega NULL -> guardada=False.
+    guardada = models.recetas_guardadas.c.usuario_id.isnot(None).label("guardada")
+
     return (
-        db.query(models.Receta, ingredientes_faltantes)
+        db.query(models.Receta, ingredientes_faltantes, guardada)
         .outerjoin(subquery, models.Receta.id_receta == subquery.c.id_receta)
+        .outerjoin(
+            models.recetas_guardadas,
+            and_(
+                models.recetas_guardadas.c.id_receta == models.Receta.id_receta,
+                models.recetas_guardadas.c.usuario_id == usuario_id
+            )
+        )
         .all()
     )
 
-def _receta_a_schema_huerto(receta: models.Receta, faltantes: int) -> schemas.RecetaHuerto:
+def _receta_a_schema_huerto(receta: models.Receta, faltantes: int, guardada: bool = False) -> schemas.RecetaHuerto:
     return schemas.RecetaHuerto(
         id_receta=receta.id_receta,
         nombre_receta=receta.nombre_receta,
@@ -104,18 +115,21 @@ def _receta_a_schema_huerto(receta: models.Receta, faltantes: int) -> schemas.Re
         instrucciones=receta.instrucciones,
         tips=receta.tips,
         imagen_url=receta.imagen_url,
-        ingredientes_faltantes=int(faltantes)
+        ingredientes_faltantes=int(faltantes),
+        guardada=bool(guardada)
     )
 
-def clasificar_recetas_por_huerto(db: Session, ids_plantas: List[int]) -> schemas.ClasificacionRecetasResponse:
-    resultados = _resultados_recetas_con_faltantes(db, ids_plantas)
+def clasificar_recetas_por_huerto(
+    db: Session, ids_plantas: List[int], usuario_id: Optional[int] = None
+) -> schemas.ClasificacionRecetasResponse:
+    resultados = _resultados_recetas_con_faltantes(db, ids_plantas, usuario_id)
 
     puedes_cocinar = []
     te_falta_1 = []
     te_faltan_varios = []
 
-    for receta, faltantes in resultados:
-        receta_out = _receta_a_schema_huerto(receta, faltantes)
+    for receta, faltantes, guardada in resultados:
+        receta_out = _receta_a_schema_huerto(receta, faltantes, guardada)
 
         if receta_out.ingredientes_faltantes == 0:
             puedes_cocinar.append(receta_out)
@@ -130,12 +144,17 @@ def clasificar_recetas_por_huerto(db: Session, ids_plantas: List[int]) -> schema
         te_faltan_varios=te_faltan_varios
     )
 
-def get_feed_recetas_inteligente(db: Session, ids_plantas: List[int]) -> List[schemas.RecetaHuerto]:
+def get_feed_recetas_inteligente(
+    db: Session, ids_plantas: List[int], usuario_id: Optional[int] = None
+) -> List[schemas.RecetaHuerto]:
     # Si el usuario no tiene plantas, se usa un ID ficticio para que el cálculo
     # de faltantes equivalga al total de ingredientes de cada receta.
     ids_comparacion = ids_plantas if ids_plantas else [-1]
-    resultados = _resultados_recetas_con_faltantes(db, ids_comparacion)
-    return [_receta_a_schema_huerto(receta, faltantes) for receta, faltantes in resultados]
+    resultados = _resultados_recetas_con_faltantes(db, ids_comparacion, usuario_id)
+    return [
+        _receta_a_schema_huerto(receta, faltantes, guardada)
+        for receta, faltantes, guardada in resultados
+    ]
 
 # --- LÓGICA PARA RECETAS GUARDADAS ---
 

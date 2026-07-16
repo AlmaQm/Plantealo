@@ -101,13 +101,17 @@ def upload_catalogo_csv(file: UploadFile = File(...), db: Session = Depends(get_
 @app.post("/recetas/buscar-por-huerto", response_model=schemas.ClasificacionRecetasResponse)
 def buscar_recetas_por_huerto(consulta: schemas.ConsultaHuertoRequest, db: Session = Depends(get_db)):
     """Clasifica las recetas según los ingredientes que le faltan al usuario para completarlas."""
-    return crud.clasificar_recetas_por_huerto(db=db, ids_plantas=consulta.ids_plantas)
+    return crud.clasificar_recetas_por_huerto(
+        db=db, ids_plantas=consulta.ids_plantas, usuario_id=consulta.usuario_id
+    )
 
 
 @app.post("/recetas/feed", response_model=list[schemas.RecetaHuerto])
 def feed_recetas_inteligente(consulta: schemas.ConsultaHuertoRequest, db: Session = Depends(get_db)):
-    """Feed plano de recetas, cada una con los ingredientes que le faltan al usuario en ese momento."""
-    return crud.get_feed_recetas_inteligente(db=db, ids_plantas=consulta.ids_plantas)
+    """Feed plano de recetas, cada una con los ingredientes que le faltan al usuario y si ya la guardó."""
+    return crud.get_feed_recetas_inteligente(
+        db=db, ids_plantas=consulta.ids_plantas, usuario_id=consulta.usuario_id
+    )
 
 
 # --- CREACIÓN DE RECETAS ---
@@ -120,16 +124,16 @@ def crear_receta(receta: schemas.RecetaCreate, usuario_id: int, db: Session = De
 
 # --- RECETAS GUARDADAS ---
 
-@app.post("/recetas/{id_receta}/guardar")
-def guardar_receta_endpoint(id_receta: int, usuario_id: int, db: Session = Depends(get_db)):
-    """Guarda una receta en el perfil del usuario. usuario_id llega por query param hasta tener JWT."""
+@app.post("/usuarios/{usuario_id}/recetas-guardadas/{id_receta}")
+def guardar_receta_endpoint(usuario_id: int, id_receta: int, db: Session = Depends(get_db)):
+    """Guarda una receta en el perfil del usuario."""
     crud.guardar_receta(db=db, usuario_id=usuario_id, id_receta=id_receta)
     return {"status": "success", "detail": "Receta guardada correctamente."}
 
 
-@app.delete("/recetas/{id_receta}/desguardar")
-def desguardar_receta_endpoint(id_receta: int, usuario_id: int, db: Session = Depends(get_db)):
-    """Elimina una receta del perfil del usuario. usuario_id llega por query param hasta tener JWT."""
+@app.delete("/usuarios/{usuario_id}/recetas-guardadas/{id_receta}")
+def desguardar_receta_endpoint(usuario_id: int, id_receta: int, db: Session = Depends(get_db)):
+    """Elimina una receta del perfil del usuario."""
     crud.desguardar_receta(db=db, usuario_id=usuario_id, id_receta=id_receta)
     return {"status": "success", "detail": "Receta eliminada de guardados."}
 

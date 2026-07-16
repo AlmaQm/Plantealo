@@ -51,6 +51,7 @@
     <app-receta-card
       *ngFor="let recipe of filteredRecipes"
       [recipe]="recipe"
+      [usuarioId]="usuarioId"
       (recipeClick)="openRecipeDetail($event)">
     </app-receta-card>
 

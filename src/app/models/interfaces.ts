@@ -109,10 +109,12 @@ export interface RecetaBase {
 
 export interface RecetaHuerto extends RecetaBase {
   ingredientes_faltantes: number;
+  guardada?: boolean;
 }
 
 export interface ConsultaHuertoRequest {
   ids_plantas: number[];
+  usuario_id?: number;
 }
 
 export interface ClasificacionRecetasResponse {

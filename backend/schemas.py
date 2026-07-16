@@ -62,6 +62,7 @@ class PlantaCat(BaseModel):
 
 class ConsultaHuertoRequest(BaseModel):
     ids_plantas: List[int]
+    usuario_id: Optional[int] = None  # si se indica, marca guardada=True en las recetas que ya guardó
 
 class RecetaBase(BaseModel):
     id_receta: int
@@ -81,6 +82,7 @@ class RecetaBase(BaseModel):
 
 class RecetaHuerto(RecetaBase):
     ingredientes_faltantes: int
+    guardada: bool = False
 
 class ClasificacionRecetasResponse(BaseModel):
     puedes_cocinar: List[RecetaHuerto]

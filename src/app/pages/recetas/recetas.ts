@@ -27,6 +27,10 @@ export class RecetasComponent implements OnInit {
   searchTerm = '';
   cargando = false;
 
+  // TODO: sustituir por el usuario_id real una vez exista el mapeo entre
+  // el uid de Firebase (AuthService) y el usuario_id numérico de Postgres.
+  readonly usuarioId = 1;
+
   dietaUsuario: TipoDieta = 'OMNIVORA';
 
   readonly dietaChips: { value: TipoDieta; label: string }[] = [
@@ -48,13 +52,9 @@ export class RecetasComponent implements OnInit {
   }
 
   private cargarFeed(): void {
-    // TODO: sustituir por el usuario_id real una vez exista el mapeo entre
-    // el uid de Firebase (AuthService) y el usuario_id numérico de Postgres.
-    const usuarioId = 1;
-
     this.cargando = true;
-    this.recetasService.getPlantasUsuarioIds(usuarioId).pipe(
-      switchMap(idsPlantas => this.recetasService.getFeed(idsPlantas))
+    this.recetasService.getPlantasUsuarioIds(this.usuarioId).pipe(
+      switchMap(idsPlantas => this.recetasService.getFeed(idsPlantas, this.usuarioId))
     ).subscribe({
       next: (recetas) => {
         this.recipes = recetas;
