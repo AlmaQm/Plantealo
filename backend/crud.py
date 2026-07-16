@@ -108,6 +108,24 @@ def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate) -> sc
     db.refresh(db_pub)
     return serializar_publicacion(db_pub, publicacion.usuario_id)
 
+def editar_publicacion(db: Session, publicacion_id: int, usuario_id: str, categoria: str, descripcion: str) -> models.Publicacion | None:
+    db_pub = get_publicacion(db, publicacion_id)
+    if not db_pub or db_pub.usuario_id != usuario_id:
+        return None
+    db_pub.categoria = categoria
+    db_pub.descripcion = descripcion
+    db.commit()
+    db.refresh(db_pub)
+    return db_pub
+
+def eliminar_publicacion(db: Session, publicacion_id: int, usuario_id: str) -> bool:
+    db_pub = get_publicacion(db, publicacion_id)
+    if not db_pub or db_pub.usuario_id != usuario_id:
+        return False
+    db.delete(db_pub)
+    db.commit()
+    return True
+
 def actualizar_imagen_publicacion(db: Session, publicacion_id: int, imagen_url: str) -> models.Publicacion | None:
     db_pub = get_publicacion(db, publicacion_id)
     if not db_pub:

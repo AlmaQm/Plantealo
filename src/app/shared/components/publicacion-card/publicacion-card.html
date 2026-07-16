@@ -7,9 +7,22 @@
       <span class="pub-card__nombre">{{ publicacion.nombre_usuario }}</span>
       <span class="pub-card__username">{{ publicacion.username }}</span>
     </div>
-    <button class="pub-card__seguir" [class.siguiendo]="siguiendo()" (click)="toggleSeguir()">
-      {{ siguiendo() ? 'Siguiendo' : 'Seguir' }}
-    </button>
+    @if (esPropia) {
+      <button class="pub-card__icon-btn" title="Editar" (click)="iniciarEdicion()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+        </svg>
+      </button>
+      <button class="pub-card__icon-btn pub-card__icon-btn--danger" title="Eliminar" [disabled]="eliminando()" (click)="eliminar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+      </button>
+    } @else {
+      <button class="pub-card__seguir" [class.siguiendo]="siguiendo()" (click)="toggleSeguir()">
+        {{ siguiendo() ? 'Siguiendo' : 'Seguir' }}
+      </button>
+    }
   </div>
 
   <!-- Imagen con badge -->
@@ -41,14 +54,36 @@
   </div>
 
   <!-- Descripción -->
-  <div class="pub-card__desc" [class.expandida]="expandirDesc()">
-    <p>{{ publicacion.descripcion }}</p>
-    @if (!expandirDesc()) {
-      <button class="ver-mas" (click)="expandirDesc.set(true)">Ver más</button>
-    } @else {
-      <button class="ver-mas" (click)="expandirDesc.set(false)">Ver menos</button>
-    }
-  </div>
+  @if (editando()) {
+    <div class="pub-card__edicion">
+      <select
+        [ngModel]="categoriaEdit()"
+        (ngModelChange)="categoriaEdit.set($event)">
+        @for (c of categorias; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+      <textarea
+        rows="3"
+        [ngModel]="descripcionEdit()"
+        (ngModelChange)="descripcionEdit.set($event)"></textarea>
+      <div class="pub-card__edicion-acciones">
+        <button class="btn-cancelar" (click)="cancelarEdicion()" [disabled]="guardandoEdicion()">Cancelar</button>
+        <button class="btn-guardar" (click)="guardarEdicion()" [disabled]="!descripcionEdit().trim() || guardandoEdicion()">
+          {{ guardandoEdicion() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="pub-card__desc" [class.expandida]="expandirDesc()">
+      <p>{{ publicacion.descripcion }}</p>
+      @if (!expandirDesc()) {
+        <button class="ver-mas" (click)="expandirDesc.set(true)">Ver más</button>
+      } @else {
+        <button class="ver-mas" (click)="expandirDesc.set(false)">Ver menos</button>
+      }
+    </div>
+  }
 
   <!-- Comentarios desplegables -->
   <div class="pub-card__comentarios" [class.open]="mostrarComentarios()">

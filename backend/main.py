@@ -19,7 +19,7 @@ app = FastAPI(title="Plantealo API")
 #  Con regex el origen concreto se refleja, compatible con allow_credentials=True.)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=["http://localhost:4200", "http://localhost:4201"],
     allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
@@ -137,6 +137,20 @@ def listar_publicaciones(uid: Optional[str] = None, db: Session = Depends(get_db
 @app.post("/publicaciones/", response_model=schemas.Publicacion)
 def crear_publicacion(publicacion: schemas.PublicacionCreate, db: Session = Depends(get_db)):
     return crud.crear_publicacion(db=db, publicacion=publicacion)
+
+@app.put("/publicaciones/{publicacion_id}", response_model=schemas.Publicacion)
+def editar_publicacion(publicacion_id: int, body: schemas.PublicacionEdit, db: Session = Depends(get_db)):
+    db_pub = crud.editar_publicacion(db, publicacion_id, body.usuario_id, body.categoria, body.descripcion)
+    if not db_pub:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
+    return crud.serializar_publicacion(db_pub, body.usuario_id)
+
+@app.delete("/publicaciones/{publicacion_id}")
+def eliminar_publicacion(publicacion_id: int, usuario_id: str, db: Session = Depends(get_db)):
+    ok = crud.eliminar_publicacion(db, publicacion_id, usuario_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
+    return {"status": "eliminada"}
 
 @app.patch("/publicaciones/{publicacion_id}/imagen", response_model=schemas.Publicacion)
 def actualizar_imagen_publicacion(publicacion_id: int, body: schemas.ImagenUpdate, db: Session = Depends(get_db)):
