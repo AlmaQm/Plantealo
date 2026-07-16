@@ -66,11 +66,13 @@ class PUsuario(Base): # La planta personal del usuario
     __tablename__ = "p_usuario"
     planta_id = Column(Integer, primary_key=True, index=True)
     usuario_id = Column(Integer, ForeignKey("usuario.usuario_id"))
+    planta_cat_id = Column(Integer, ForeignKey("plantas.planta_id"))
     f_siembra = Column(Date, nullable=False)
     f_recogida = Column(Date)
     estado_crecimiento = Column(String(20)) # PLANTADA, CRECIENDO, LISTA
-    
+
     propietario = relationship("Usuario", back_populates="mis_plantas")
+    especie = relationship("PlantaCat")
 
 class Receta(Base):
     __tablename__ = "recetas"
@@ -87,6 +89,8 @@ class Receta(Base):
     instrucciones = Column(Text)
     tips = Column(String(50))
     imagen_url = Column(String(100))
+
+    ingredientes = relationship("Ingrediente", secondary=receta_ingredientes, backref="recetas")
 
 class Ingrediente(Base):
     __tablename__ = "ingredientes"

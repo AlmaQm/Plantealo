@@ -43,16 +43,20 @@
     
   </div>
   
+  <div *ngIf="cargando" class="cargando">
+    <p>Cargando recetas de tu huerto...</p>
+  </div>
+
   <div class="recetas-page__grid">
     @for (recipe of filteredRecipes; track recipe.id_receta) {
       <app-receta-card
         [recipe]="recipe"
-        [compatibilityPercentage]="getCompatibility(recipe)"
+        [usuarioId]="usuarioId"
         (recipeClick)="openRecipeDetail($event)">
       </app-receta-card>
     }
 
-    @if (filteredRecipes.length === 0) {
+    @if (!cargando && filteredRecipes.length === 0) {
       <div class="no-results">
         <p>No se encontraron recetas con estos filtros</p>
       </div>
@@ -62,7 +66,6 @@
   @if (selectedRecipe) {
     <app-receta-window
       [recipe]="selectedRecipe"
-      [gardenPlants]="gardenPlants"
       (close)="closeRecipeDetail()">
     </app-receta-window>
   }

@@ -91,3 +91,56 @@ export interface Publicacion {
   fecha: Date;
   siguiendo: boolean;
 }
+
+// --- API Backend (FastAPI) — Recetas ---
+
+export interface RecetaBase {
+  id_receta: number;
+  nombre_receta: string;
+  descripcion?: string;
+  tipo_dieta?: string;
+  estacion?: string;
+  categoria?: string;
+  tiempo_preparacion?: string;
+  dificultad?: string;
+  num_comensales?: number;
+  instrucciones?: string;
+  tips?: string;
+  imagen_url?: string;
+}
+
+export interface RecetaHuerto extends RecetaBase {
+  ingredientes_faltantes: number;
+  guardada?: boolean;
+}
+
+export interface ConsultaHuertoRequest {
+  ids_plantas: number[];
+  usuario_id?: number;
+}
+
+export interface ClasificacionRecetasResponse {
+  puedes_cocinar: RecetaHuerto[];
+  te_falta_1: RecetaHuerto[];
+  te_faltan_varios: RecetaHuerto[];
+}
+
+export interface IngredienteRecetaInput {
+  nombre_ingrediente: string;
+  cantidad: string;
+}
+
+export interface RecetaCreate {
+  nombre_receta: string;
+  descripcion?: string;
+  tipo_dieta?: string;
+  estacion?: string;
+  categoria?: string;
+  tiempo_preparacion?: string;
+  dificultad?: string;
+  num_comensales?: number;
+  instrucciones?: string;
+  tips?: string;
+  imagen_url?: string;
+  ingredientes: IngredienteRecetaInput[];
+}
