@@ -65,12 +65,17 @@ export class ChatComponent {
     const text = this.inputText().trim();
     if (!text || this.carregant()) return;
 
+    // Captura la imatge abans de netejar el signal, perquè la necessitem
+    // tant a la bombolla com al body de la petició.
+    const imatge = this.imatgeBase64();
+
     // 1. Missatge de l'usuari
     this.missatges.update(m => [...m, {
       rol: 'user',
       text,
-      imatge: this.imatgeBase64()
+      imatge
     }]);
+    this.imatgeBase64.set(null);  // la preview desapareix immediatament
     this.scrollAlFinal();
     // 2. Neteja l'input
     this.inputText.set('');
@@ -82,7 +87,7 @@ export class ChatComponent {
     const body = {
       mensaje: text,
       plantas: plantes,
-      imagen_base64: this.imatgeBase64(),
+      imagen_base64: imatge,
     };
 
     this.http.post<{ respuesta: string }>(`${environment.apiUrl}/chat/`, body).subscribe({
@@ -92,13 +97,11 @@ export class ChatComponent {
         this.scrollAlFinal();
         // 6. Fi de la càrrega
         this.carregant.set(false);
-        this.imatgeBase64.set(null);
       },
       error: (err) => {
         const detall = err?.error?.detail ?? 'No he podido conectar con el asistente.';
         this.missatges.update(m => [...m, { rol: 'assistant', text: `⚠️ ${detall}` }]);
         this.carregant.set(false);
-        this.imatgeBase64.set(null);
       },
     });
   }
