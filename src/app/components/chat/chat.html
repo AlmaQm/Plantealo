@@ -17,7 +17,14 @@
         <div class="bombolla"
              [class.bombolla--user]="m.rol === 'user'"
              [class.bombolla--assistant]="m.rol === 'assistant'">
-          {{ m.text }}
+          @if (m.imatge) {
+            <img [src]="'data:image/jpeg;base64,' + m.imatge"
+                 alt="Foto enviada"
+                 class="bombolla__imatge" />
+          }
+          @if (m.text) {
+            <span>{{ m.text }}</span>
+          }
         </div>
       }
 

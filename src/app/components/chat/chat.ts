@@ -8,6 +8,7 @@ import { environment } from '../../../environments/environment';
 interface Missatge {
   rol: 'assistant' | 'user';
   text: string;
+  imatge?: string | null;  // base64 de la imatge, si n'hi ha
 }
 
 @Component({
@@ -65,7 +66,11 @@ export class ChatComponent {
     if (!text || this.carregant()) return;
 
     // 1. Missatge de l'usuari
-    this.missatges.update(m => [...m, { rol: 'user', text }]);
+    this.missatges.update(m => [...m, {
+      rol: 'user',
+      text,
+      imatge: this.imatgeBase64()
+    }]);
     this.scrollAlFinal();
     // 2. Neteja l'input
     this.inputText.set('');
