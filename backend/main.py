@@ -210,9 +210,13 @@ def chat(req: ChatRequest):
         f"El usuario tiene actualmente estas plantas en su huerto: {plantas_txt}. "
         "Ofrece consejos prácticos y concretos sobre riego, cuidados, plagas, cosecha y clima "
         "adaptados a esas plantas. "
-        "Responde SIEMPRE en el mismo idioma en el que te escriba el usuario "
-        "(catalán, castellano, inglés, etc.). "
-        "Sé cercano, claro y directo."
+        "IMPORTANTE: Responde SIEMPRE y ÚNICAMENTE en el mismo idioma en el que te escriba "
+        "el usuario. Si el usuario escribe en catalán, responde en catalán. "
+        "Si escribe en castellano, responde en castellano. NUNCA respondas en inglés "
+        "ni en ningún otro idioma que no sea el del usuario. "
+        "NO uses markdown, asteriscos, negritas ni símbolos de formato. "
+        "Escribe en texto plano, de forma cercana y conversacional. "
+        "Sé directo y amigable, como si fuera un amigo jardinero."
     )
 
     # Con imagen → modelo de visión y contenido multimodal; sin imagen → texto puro.
@@ -240,13 +244,15 @@ def chat(req: ChatRequest):
             model=modelo,
             messages=mensajes,
             temperature=0.7,
-            max_tokens=1024,
+            max_tokens=2048,
         )
         respuesta = completion.choices[0].message.content or ""
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Error al contactar con Groq: {e}")
 
-    # Eliminar el bloc <think>...</think> que generen els models de raonament
-    respuesta = re.sub(r'<think>.*?</think>', '', respuesta, flags=re.DOTALL).strip()
+    # Eliminar <think>...</think> i qualsevol <think> sense tancar
+    respuesta = re.sub(r'<think>.*?</think>', '', respuesta, flags=re.DOTALL)
+    respuesta = re.sub(r'<think>.*$', '', respuesta, flags=re.DOTALL)
+    respuesta = respuesta.strip()
 
     return ChatResponse(respuesta=respuesta)
