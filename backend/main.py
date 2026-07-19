@@ -243,13 +243,18 @@ def chat(req: ChatRequest):
         {"role": "user", "content": contenido_usuario},
     ]
 
+    # reasoning_format només l'admet el model de visió (qwen), que raona amb
+    # <think>. El model de text (llama-3.3) el rebutja, així que només s'afegeix
+    # a la ruta d'imatge. "hidden" fa que Groq oculti el raonament del contingut.
+    extra_params = {"reasoning_format": "hidden"} if req.imagen_base64 else {}
     try:
         client = Groq(api_key=api_key)
         completion = client.chat.completions.create(
             model=modelo,
             messages=mensajes,
             temperature=0.5,
-            max_tokens=512,
+            max_tokens=1024,
+            **extra_params,
         )
         respuesta = completion.choices[0].message.content or ""
     except Exception as e:
