@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException
 import models
 import schemas
 
@@ -35,9 +37,24 @@ def upsert_usuario(db: Session, data: schemas.UsuarioSync):
             contrasena=None
         )
         db.add(usuario)
-    db.commit()
-    db.refresh(usuario)
-    return usuario
+    try:
+        db.commit()
+        db.refresh(usuario)
+        return usuario
+    except IntegrityError as e:
+        db.rollback()
+        detail = str(e.orig)
+        if 'nombre_usuario' in detail:
+            raise HTTPException(
+                status_code=409,
+                detail="El nombre de usuario ya está en uso"
+            )
+        if 'email' in detail:
+            raise HTTPException(
+                status_code=409,
+                detail="El email ya está registrado"
+            )
+        raise HTTPException(status_code=409, detail="Conflicto de datos")
 
 def crear_usuario(db: Session, usuario: schemas.UsuarioCreate):
     # 1. Preparamos el modelo con los datos que vienen del Schema

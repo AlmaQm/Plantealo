@@ -2,7 +2,7 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, from, switchMap, map, catchError, firstValueFrom } from 'rxjs';
+import { Observable, of, from, switchMap, map, catchError, firstValueFrom, timeout } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
@@ -125,6 +125,9 @@ export class AuthService {
                 tipo_dieta: perfil.tipo_dieta,
                 imagen_url: perfil.imagen_url ?? null,
               }
+            ).pipe(
+              timeout(5000),
+              catchError(() => of(null))
             )
           );
           if (res?.usuario_id) {
@@ -192,6 +195,9 @@ export class AuthService {
             tipo_dieta: data.tipo_dieta,
             imagen_url: imagen_url ?? null,
           }
+        ).pipe(
+          timeout(5000),
+          catchError(() => of(null))
         )
       );
       if (res?.usuario_id) {
