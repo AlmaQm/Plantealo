@@ -81,9 +81,16 @@ def get_plantas(db: Session, skip: int = 0, limit: int = 100):
 def crear_planta_usuario(db: Session, planta: schemas.PUsuarioCreate, usuario_id: int):
     db_planta = models.PUsuario(**planta.model_dump(), usuario_id=usuario_id)
     db.add(db_planta)
-    db.commit()
-    db.refresh(db_planta)
-    return db_planta
+    try:
+        db.commit()
+        db.refresh(db_planta)
+        return db_planta
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Esta planta ya está en tu inventario"
+        )
 
 def get_plantas_usuario(db, usuario_id: int):
     return (
