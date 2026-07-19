@@ -179,8 +179,11 @@ export class AuthService {
 
     // Paso 4: intentar escribir en Firestore (fallo no bloquea la sesión)
     try {
-      await setDoc(doc(this.firestore, `usuarios/${uid}`), usuario);
-    } catch { /* Firestore puede fallar, el usuario sigue registrado */ }
+      await Promise.race([
+        setDoc(doc(this.firestore, `usuarios/${uid}`), usuario),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+      ]);
+    } catch { /* Firestore puede fallar o tardar, el usuario sigue registrado */ }
 
     // Paso 5: sincronizar con Aiven (fallo no bloquea la sesión)
     try {
