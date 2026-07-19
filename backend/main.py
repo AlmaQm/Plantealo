@@ -8,6 +8,7 @@ from groq import Groq
 import models, schemas, crud, database
 import os
 import time
+import re
 
 load_dotenv()  # Asegura que GROQ_API_KEY y demás variables estén disponibles
 
@@ -176,10 +177,11 @@ def agregar_comentario(publicacion_id: int, comentario: schemas.ComentarioCreate
 
 # --- CHAT CON GROQ ---
 
-# Modelos de Groq (IDs verificados en la documentación de Groq):
-#   - Visión (acepta imágenes): meta-llama/llama-4-scout-17b-16e-instruct
+# Modelos de Groq (IDs verificados con client.models.list() el 2026-07-19):
+#   - Visión (acepta imágenes): qwen/qwen3.6-27b
+#     (los antiguos Llama 4 scout/maverick ya no están disponibles en la cuenta)
 #   - Texto puro:               llama-3.3-70b-versatile
-GROQ_MODELO_VISION = "meta-llama/llama-4-scout-17b-16e-instruct"
+GROQ_MODELO_VISION = "qwen/qwen3.6-27b"
 GROQ_MODELO_TEXTO = "llama-3.3-70b-versatile"
 
 
@@ -243,5 +245,8 @@ def chat(req: ChatRequest):
         respuesta = completion.choices[0].message.content or ""
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Error al contactar con Groq: {e}")
+
+    # Eliminar el bloc <think>...</think> que generen els models de raonament
+    respuesta = re.sub(r'<think>.*?</think>', '', respuesta, flags=re.DOTALL).strip()
 
     return ChatResponse(respuesta=respuesta)
