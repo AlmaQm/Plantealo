@@ -63,7 +63,11 @@ export class ChatComponent {
 
   enviarMissatge(): void {
     const text = this.inputText().trim();
-    if (!text || this.carregant()) return;
+    // Permet enviar si hi ha text O imatge (no cal text si s'adjunta foto)
+    if ((!text && !this.imatgeBase64()) || this.carregant()) return;
+
+    // Si només hi ha imatge sense text, usa un text per defecte
+    const textFinal = text || '📷';
 
     // Captura la imatge abans de netejar el signal, perquè la necessitem
     // tant a la bombolla com al body de la petició.
@@ -72,7 +76,7 @@ export class ChatComponent {
     // 1. Missatge de l'usuari
     this.missatges.update(m => [...m, {
       rol: 'user',
-      text,
+      text: textFinal,
       imatge
     }]);
     this.imatgeBase64.set(null);  // la preview desapareix immediatament
@@ -85,7 +89,7 @@ export class ChatComponent {
     // 4. Crida al backend
     const plantes = this.plantasService.inventario().map(p => p.nombre_planta);
     const body = {
-      mensaje: text,
+      mensaje: textFinal,
       plantas: plantes,
       imagen_base64: imatge,
     };
@@ -110,6 +114,8 @@ export class ChatComponent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
+
+    this.imatgeBase64.set(null);  // reset previ per forçar el re-render
 
     const reader = new FileReader();
     reader.onload = () => {

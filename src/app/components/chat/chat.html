@@ -28,17 +28,6 @@
         </div>
       }
 
-      @if (imatgeBase64()) {
-        <div class="bombolla bombolla--user bombolla--preview">
-          <img [src]="'data:image/jpeg;base64,' + imatgeBase64()"
-               alt="Foto adjunta"
-               class="bombolla__imatge" />
-          <button class="bombolla__eliminar"
-                  (click)="imatgeBase64.set(null)"
-                  aria-label="Eliminar foto">✕</button>
-        </div>
-      }
-
       @if (carregant()) {
         <div class="bombolla bombolla--assistant bombolla--carregant">
           <span class="punt"></span>
@@ -63,20 +52,32 @@
         </button>
         <input #fileInput type="file" accept="image/*" hidden (change)="seleccionarImatge($event)" />
 
-        <!-- Text -->
-        <input
-          class="chat-text"
-          type="text"
-          placeholder="Escribe un mensaje…"
-          [ngModel]="inputText()"
-          (ngModelChange)="inputText.set($event)"
-          (keyup.enter)="enviarMissatge()"
-          [disabled]="carregant()" />
+        <!-- Input integrat: foto adjunta (si n'hi ha) + text -->
+        <div class="chat-footer__input-wrapper">
+          @if (imatgeBase64()) {
+            <div class="chat-footer__foto-preview">
+              <img [src]="'data:image/jpeg;base64,' + imatgeBase64()"
+                   alt="Foto adjunta"
+                   class="chat-footer__foto-img" />
+              <button type="button" class="chat-footer__foto-eliminar"
+                      (click)="imatgeBase64.set(null)"
+                      aria-label="Eliminar foto">✕</button>
+            </div>
+          }
+          <input
+            class="chat-footer__text"
+            type="text"
+            placeholder="Escribe un mensaje…"
+            [ngModel]="inputText()"
+            (ngModelChange)="inputText.set($event)"
+            (keyup.enter)="enviarMissatge()"
+            [disabled]="carregant()" />
+        </div>
 
         <!-- Enviar -->
         <button type="button" class="chat-enviar"
                 (click)="enviarMissatge()"
-                [disabled]="carregant() || !inputText().trim()">
+                [disabled]="carregant() || (!inputText().trim() && !imatgeBase64())">
           Enviar
         </button>
       </div>
