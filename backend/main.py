@@ -206,10 +206,15 @@ def chat(req: ChatRequest):
 
     plantas_txt = ", ".join(req.plantas) if req.plantas else "ninguna planta registrada todavía"
     system_prompt = (
+        "Eres un asistente visual y experto en jardinería. "
+        "PUEDES ver y analizar imágenes que te envíe el usuario. "
+        "Cuando el usuario adjunta una foto, descríbela y analízala. "
         "Eres un asistente experto en jardinería y horticultura para la app Plantéalo. "
         f"El usuario tiene actualmente estas plantas en su huerto: {plantas_txt}. "
         "Ofrece consejos prácticos y concretos sobre riego, cuidados, plagas, cosecha y clima "
         "adaptados a esas plantas. "
+        "Responde de forma BREVE y CONCISA, máximo 3-4 frases. "
+        "Ve directo al problema y la solución, sin introducciones largas. "
         "IMPORTANTE: Responde SIEMPRE y ÚNICAMENTE en el mismo idioma en el que te escriba "
         "el usuario. Si el usuario escribe en catalán, responde en catalán. "
         "Si escribe en castellano, responde en castellano. NUNCA respondas en inglés "
@@ -243,8 +248,8 @@ def chat(req: ChatRequest):
         completion = client.chat.completions.create(
             model=modelo,
             messages=mensajes,
-            temperature=0.7,
-            max_tokens=2048,
+            temperature=0.5,
+            max_tokens=512,
         )
         respuesta = completion.choices[0].message.content or ""
     except Exception as e:
