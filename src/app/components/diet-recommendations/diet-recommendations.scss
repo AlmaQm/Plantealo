@@ -1,5 +1,18 @@
 @use 'styles/model-d-home' as *;
 
+// Recomanació de recepta (secció "Esta semana")
+.recs-receta {
+  margin-top: 14px;
+}
+
+.recs-receta-label {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: $md-ink;
+  margin-bottom: 8px;
+}
+
 .recs-header {
   display: flex;
   align-items: center;

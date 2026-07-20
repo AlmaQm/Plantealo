@@ -1,8 +1,13 @@
-import { Component, OnInit, ViewChild, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonModal } from '@ionic/angular/standalone';
+import { switchMap } from 'rxjs';
 import { PlantasService, diasHastaCosecha, getTipoPlanta } from '../../services/plantas';
-import { Planta as PlantaHuerto } from '../../models/interfaces';
+import { AuthService } from '../../services/auth';
+import { RecetasService } from '../../services/recetas.service';
+import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
+import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
+import { Planta as PlantaHuerto, RecetaHuerto } from '../../models/interfaces';
 import { LucideIcon, LucideDynamicIcon, LucideSnowflake, LucideFlower2, LucideSun, LucideLeaf, LucideSprout, LucideCalendarDays, LucideCheck } from '@lucide/angular';
 
 interface Planta {
@@ -177,7 +182,7 @@ const MESES_CORTOS = ['E','F','M','A','M','J','J','A','S','O','N','D'];
 @Component({
   selector: 'app-diet-recommendations',
   standalone: true,
-  imports: [CommonModule, IonModal, LucideDynamicIcon, LucideSprout, LucideCheck],
+  imports: [CommonModule, IonModal, LucideDynamicIcon, LucideSprout, LucideCheck, RecetaCardComponent, RecetaWindowComponent],
   templateUrl: './diet-recommendations.html',
   styleUrls: ['./diet-recommendations.scss'],
 })
@@ -196,6 +201,13 @@ export class DietRecommendationsComponent implements OnInit {
   plantadaReciente = signal<string | null>(null);
   private confirmTimer: any;
 
+  // Recomanació de recepta amb el sistema de recetes de l'Alma (RecetaHuerto)
+  private readonly authService = inject(AuthService);
+  private readonly recetasService = inject(RecetasService);
+  recetaRecomendada: RecetaHuerto | null = null;
+  usuarioId = 1;
+  mostrarRecetaModal = signal(false);
+
   constructor(private plantasService: PlantasService) {}
 
   ngOnInit() {
@@ -206,10 +218,33 @@ export class DietRecommendationsComponent implements OnInit {
     this.estacionIcon = ESTACION_ICONOS[this.mesActual];
     this.plantas = CALENDARIO[this.mesActual] ?? [];
     this.temporadas = this.buildTemporadas();
+    this.usuarioId = this.authService.getStoredUser()?.usuario_id ?? 1;
+    this.cargarRecetaRecomendada();
   }
 
   seleccionarMes(i: number) {
     this.mesSeleccionado.set(i + 1);
+  }
+
+  // Recomana una recepta segons l'hort de l'usuari, usant el feed de l'Alma.
+  private cargarRecetaRecomendada(): void {
+    this.recetasService.getPlantasUsuarioIds(this.usuarioId).pipe(
+      switchMap(idsPlantas => this.recetasService.getFeed(idsPlantas, this.usuarioId))
+    ).subscribe({
+      next: (recetas) => {
+        // El backend ja retorna el feed ordenat; agafem la primera (millor match).
+        this.recetaRecomendada = recetas[0] ?? null;
+      },
+      error: () => { this.recetaRecomendada = null; },
+    });
+  }
+
+  abrirReceta(): void {
+    this.mostrarRecetaModal.set(true);
+  }
+
+  cerrarReceta(): void {
+    this.mostrarRecetaModal.set(false);
   }
 
   private buildTemporadas(): Temporada[] {

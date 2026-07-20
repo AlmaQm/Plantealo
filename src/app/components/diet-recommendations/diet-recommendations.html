@@ -27,6 +27,25 @@
   }
 </div>
 
+<!-- RECOMANACIÓ DE RECEPTA amb el sistema de recetes de l'Alma -->
+@if (recetaRecomendada) {
+  <div class="recs-receta">
+    <span class="recs-receta-label">Receta con tu huerto</span>
+    <app-receta-card
+      [recipe]="recetaRecomendada"
+      [usuarioId]="usuarioId"
+      (recipeClick)="abrirReceta()">
+    </app-receta-card>
+  </div>
+}
+
+@if (mostrarRecetaModal()) {
+  <app-receta-window
+    [recipe]="recetaRecomendada"
+    (close)="cerrarReceta()">
+  </app-receta-window>
+}
+
 <!-- MODAL CALENDARIO -->
 <ion-modal #calModal class="cal-modal" [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true">
   <ng-template>
