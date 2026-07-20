@@ -115,8 +115,6 @@ export class ChatComponent {
     const file = input.files?.[0];
     if (!file) return;
 
-    this.imatgeBase64.set(null);  // reset previ per forçar el re-render
-
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
