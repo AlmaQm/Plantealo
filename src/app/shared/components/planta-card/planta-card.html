@@ -14,6 +14,19 @@
       </div>
     </div>
 
+    <button class="planta-card__eliminar"
+            (click)="eliminar($event)"
+            aria-label="Eliminar planta">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+           viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        <path d="M10 11v6M14 11v6"/>
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+      </svg>
+    </button>
+
     <span class="planta-card__arrow" [class.rotated]="expanded()">›</span>
   </div>
 
@@ -36,6 +49,20 @@
           <span class="cuidado-item__icon">📅</span>
           <span>Plantada: <strong>{{ formatFecha(planta.f_siembra) }}</strong></span>
         </div>
+
+        @if (planta.freq_riego) {
+          <div class="cuidado-item">
+            <span class="cuidado-item__icon">💧</span>
+            <span>Frecuencia de riego: <strong>Cada {{ planta.freq_riego }} {{ planta.freq_riego === 1 ? 'día' : 'días' }}</strong></span>
+          </div>
+        }
+
+        @if (planta.caracteristicas) {
+          <div class="cuidado-item">
+            <span class="cuidado-item__icon">📋</span>
+            <span>Características: <strong>{{ planta.caracteristicas }}</strong></span>
+          </div>
+        }
       </div>
     </div>
 

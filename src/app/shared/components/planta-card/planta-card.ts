@@ -1,6 +1,7 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Planta } from '../../../models/interfaces';
+import { PlantasService } from '../../../services/plantas';
 
 @Component({
   selector: 'app-planta-card',
@@ -10,12 +11,21 @@ import { Planta } from '../../../models/interfaces';
   styleUrls: ['./planta-card.scss']
 })
 export class PlantaCardComponent {
+  private plantasService = inject(PlantasService);
+
   @Input() planta!: Planta;
 
   expanded = signal(false);
 
   toggle(): void {
     this.expanded.update(v => !v);
+  }
+
+  eliminar(event: Event): void {
+    event.stopPropagation(); // evita que s'expandeixi la card
+    const nom = this.planta.nombre_planta;
+    if (!confirm(`¿Estás seguro de que deseas eliminar ${nom} de tu huerto?`)) return;
+    this.plantasService.deletePlanta(this.planta.planta_id);
   }
 
   getEstadoLabel(): string {

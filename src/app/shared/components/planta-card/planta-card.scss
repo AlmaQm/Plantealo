@@ -88,6 +88,22 @@
     }
   }
 
+  &__eliminar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    border-radius: 6px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
   &__detalle {
     max-height: 0;
     overflow: hidden;
