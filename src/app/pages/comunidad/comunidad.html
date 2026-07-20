@@ -40,21 +40,22 @@
       </select>
 
       <label class="campo-label campo-label--mt">Imagen</label>
-      <div class="upload-zone" (click)="fileInput.click()">
-        <svg class="upload-zone__icono" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="1.5"
-             stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <polyline points="21 15 16 10 5 21"/>
-        </svg>
-        <span class="upload-zone__texto">Haz clic para subir una imagen</span>
+      <div class="upload-zone" [class.upload-zone--has-image]="nuevaImagenPreview()" (click)="fileInput.click()">
+        @if (nuevaImagenPreview()) {
+          <img class="upload-zone__preview" [src]="nuevaImagenPreview()" alt="Vista previa">
+        } @else {
+          <svg class="upload-zone__icono" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span class="upload-zone__texto">Haz clic para subir una imagen</span>
+        }
         <input #fileInput type="file" accept="image/*" class="upload-input"
                (change)="onImagenSeleccionada($event)">
       </div>
-      @if (nuevaImagenPreview()) {
-        <img class="imagen-preview" [src]="nuevaImagenPreview()" alt="Vista previa">
-      }
 
       <label class="campo-label campo-label--mt">Descripción</label>
       <textarea
