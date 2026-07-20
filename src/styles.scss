@@ -456,6 +456,26 @@ ion-modal.detalle-modal {
   margin-top: 1px;
 }
 
+.detalle-siembra {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detalle-siembra-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $md-ink-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.detalle-siembra-meses {
+  font-size: 0.76rem;
+  color: $md-ink-muted;
+}
+
 /* ===== ICONOS LUCIDE DE TIEMPO ===== */
 /* Regla global a propósito: los <path> del icono "cloud-sun" los inserta Lucide
    dinámicamente vía Renderer2 en un componente sin view encapsulation, así que un

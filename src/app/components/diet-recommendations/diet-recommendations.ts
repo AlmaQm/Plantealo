@@ -304,4 +304,13 @@ export class DietRecommendationsComponent implements OnInit {
   getDescripcion(nombre: string): string {
     return DESCRIPCIONES[nombre] ?? DESCRIPCION_GENERICA;
   }
+
+  getMesesSiembra(nombre: string): number[] {
+    return this.temporadas.find(t => t.nombre === nombre)?.meses ?? [];
+  }
+
+  getMesesSiembraTexto(nombre: string): string {
+    const meses = this.getMesesSiembra(nombre);
+    return meses.map(m => MESES[m - 1]).join(', ');
+  }
 }

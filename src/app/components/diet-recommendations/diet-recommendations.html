@@ -124,6 +124,19 @@
             <svg lucideSprout class="detalle-consejo-icon"></svg>
             <span>{{ v.consejo }}</span>
           </div>
+
+          <div class="detalle-siembra">
+            <span class="detalle-siembra-label">Época de siembra</span>
+            <div class="cal-bar">
+              @for (m of mesesCortos; track m; let i = $index) {
+                <span class="cal-seg"
+                  [class.seg-on]="getMesesSiembra(v.nombre).includes(i + 1)"
+                  [class.seg-cur]="i + 1 === mesActual">
+                </span>
+              }
+            </div>
+            <span class="detalle-siembra-meses">{{ getMesesSiembraTexto(v.nombre) }}</span>
+          </div>
         </div>
       </div>
     }
