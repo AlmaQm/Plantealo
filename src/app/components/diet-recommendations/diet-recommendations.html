@@ -27,6 +27,25 @@
   }
 </div>
 
+@if (recetaRecomendada) {
+  <div class="recs-receta">
+    <span class="recs-receta-label">Receta con la cosecha de {{ mesNombre }}</span>
+    <app-receta-card
+      [recipe]="recetaRecomendada"
+      [compatibilityPercentage]="recetaCompatibilidad"
+      (recipeClick)="abrirReceta()">
+    </app-receta-card>
+  </div>
+}
+
+@if (mostrarRecetaModal()) {
+  <app-receta-window
+    [recipe]="recetaRecomendada"
+    [gardenPlants]="gardenPlantsMes"
+    (close)="cerrarReceta()">
+  </app-receta-window>
+}
+
 <!-- MODAL CALENDARIO -->
 <ion-modal #calModal class="cal-modal" [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true">
   <ng-template>

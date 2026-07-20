@@ -118,3 +118,16 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* RECOMENDACIÓN DE RECETA — debajo de las cards de verduras del mes */
+.recs-receta {
+  margin-top: 14px;
+}
+
+.recs-receta-label {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: $md-ink;
+  margin-bottom: 8px;
+}

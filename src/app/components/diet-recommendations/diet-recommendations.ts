@@ -2,7 +2,11 @@ import { Component, OnInit, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonModal } from '@ionic/angular/standalone';
 import { PlantasService, diasHastaCosecha, getTipoPlanta } from '../../services/plantas';
-import { Planta as PlantaHuerto } from '../../models/interfaces';
+import { RecipesService } from '../../services/recipes';
+import { RECETAS_LOCALES } from '../../data/recetas-locales';
+import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
+import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
+import { Planta as PlantaHuerto, Recipe, GardenPlant } from '../../models/interfaces';
 import { LucideIcon, LucideDynamicIcon, LucideSnowflake, LucideFlower2, LucideSun, LucideLeaf, LucideSprout, LucideCalendarDays, LucideCheck } from '@lucide/angular';
 
 interface Planta {
@@ -212,7 +216,7 @@ const MESES_CORTOS = ['E','F','M','A','M','J','J','A','S','O','N','D'];
 @Component({
   selector: 'app-diet-recommendations',
   standalone: true,
-  imports: [CommonModule, IonModal, LucideDynamicIcon, LucideSprout, LucideCheck],
+  imports: [CommonModule, IonModal, LucideDynamicIcon, LucideSprout, LucideCheck, RecetaCardComponent, RecetaWindowComponent],
   templateUrl: './diet-recommendations.html',
   styleUrls: ['./diet-recommendations.scss'],
 })
@@ -234,7 +238,12 @@ export class DietRecommendationsComponent implements OnInit {
 
   verduraSeleccionada = signal<Planta | null>(null);
 
-  constructor(private plantasService: PlantasService) {}
+  recetaRecomendada: Recipe | null = null;
+  recetaCompatibilidad = 0;
+  gardenPlantsMes: GardenPlant[] = [];
+  mostrarRecetaModal = signal(false);
+
+  constructor(private plantasService: PlantasService, private recipesService: RecipesService) {}
 
   ngOnInit() {
     this.mesActual = new Date().getMonth() + 1;
@@ -244,6 +253,37 @@ export class DietRecommendationsComponent implements OnInit {
     this.estacionIcon = ESTACION_ICONOS[this.mesActual];
     this.plantas = CALENDARIO[this.mesActual] ?? [];
     this.temporadas = this.buildTemporadas();
+    this.calcularRecetaRecomendada();
+  }
+
+  private calcularRecetaRecomendada(): void {
+    this.gardenPlantsMes = this.plantas.map((p, i): GardenPlant => ({
+      id: String(i), name: p.nombre, quantity: 1, unit: 'unidad',
+    }));
+    const estacionActual = this.estacion.toUpperCase();
+
+    let mejor: Recipe | null = null;
+    let mejorScore = -1;
+    for (const receta of RECETAS_LOCALES) {
+      const actualizada = this.recipesService.updateGardenCompatibility(receta, this.gardenPlantsMes);
+      const pct = this.recipesService.calculateCompatibility(actualizada);
+      const score = pct + (actualizada.estacion === estacionActual ? 5 : 0);
+      if (score > mejorScore) {
+        mejorScore = score;
+        mejor = actualizada;
+      }
+    }
+
+    this.recetaRecomendada = mejor;
+    this.recetaCompatibilidad = mejor ? this.recipesService.calculateCompatibility(mejor) : 0;
+  }
+
+  abrirReceta(): void {
+    this.mostrarRecetaModal.set(true);
+  }
+
+  cerrarReceta(): void {
+    this.mostrarRecetaModal.set(false);
   }
 
   seleccionarMes(i: number) {
