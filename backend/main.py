@@ -228,11 +228,11 @@ def chat(req: ChatRequest):
     if req.imagen_base64:
         modelo = GROQ_MODELO_VISION
         contenido_usuario = [
-            {"type": "text", "text": req.mensaje},
             {
                 "type": "image_url",
                 "image_url": {"url": f"data:image/jpeg;base64,{req.imagen_base64}"},
             },
+            {"type": "text", "text": req.mensaje},
         ]
     else:
         modelo = GROQ_MODELO_TEXTO
@@ -243,18 +243,13 @@ def chat(req: ChatRequest):
         {"role": "user", "content": contenido_usuario},
     ]
 
-    # reasoning_format només l'admet el model de visió (qwen), que raona amb
-    # <think>. El model de text (llama-3.3) el rebutja, així que només s'afegeix
-    # a la ruta d'imatge. "hidden" fa que Groq oculti el raonament del contingut.
-    extra_params = {"reasoning_format": "hidden"} if req.imagen_base64 else {}
     try:
         client = Groq(api_key=api_key)
         completion = client.chat.completions.create(
             model=modelo,
             messages=mensajes,
             temperature=0.5,
-            max_tokens=1024,
-            **extra_params,
+            max_tokens=2048,
         )
         respuesta = completion.choices[0].message.content or ""
     except Exception as e:
@@ -264,5 +259,8 @@ def chat(req: ChatRequest):
     respuesta = re.sub(r'<think>.*?</think>', '', respuesta, flags=re.DOTALL)
     respuesta = re.sub(r'<think>.*$', '', respuesta, flags=re.DOTALL)
     respuesta = respuesta.strip()
+
+    if not respuesta:
+        respuesta = "Lo siento, no he podido analizar la imagen. Inténtalo de nuevo."
 
     return ChatResponse(respuesta=respuesta)
