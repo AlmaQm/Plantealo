@@ -88,8 +88,8 @@
 
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, timer } from 'rxjs';
-import { shareReplay, catchError, retry } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { switchMap, shareReplay, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
    LucideIcon,
@@ -106,6 +106,7 @@ import {
 })
 export class WeatherService {
 
+   private readonly apiKey = environment.aemetApiKey;
    private weatherData$?: Observable<any[]>;
    weatherError = signal<string | null>(null);
 
@@ -127,19 +128,18 @@ export class WeatherService {
          return this.weatherData$;
       }
 
-      const url = `${environment.apiUrl}/tiempo`;
+      const url =
+         `/api-aemet/opendata/api/prediccion/especifica/municipio/diaria/08019?api_key=${this.apiKey}`;
 
-      this.weatherData$ = this.http.get<any[]>(url).pipe(
+      this.weatherData$ = this.http.get<any>(url).pipe(
 
-         // nuestro backend ya cachea y hace de intermediario con AEMET;
-         // aun asi reintentamos por si hay un fallo puntual de red.
-         retry({ count: 2, delay: (_err, retryCount) => timer(retryCount * 1000) }),
+         switchMap(res => this.http.get<any[]>(res.datos)),
 
          shareReplay(1),
 
          catchError(err => {
             console.error('ERROR AEMET:', err);
-            this.weatherError.set('No se ha podido cargar el tiempo ahora mismo. Inténtalo de nuevo en unos minutos.');
+            this.weatherError.set('No se ha podido cargar el tiempo. Inténtalo más tarde.');
             return of([]);
          })
 
