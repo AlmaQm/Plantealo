@@ -5,9 +5,11 @@ from pydantic import BaseModel
 from typing import Optional, List
 from dotenv import load_dotenv
 from groq import Groq
+import httpx
 import models, schemas, crud, database
 import os
 import time
+import json
 
 load_dotenv()  # Asegura que GROQ_API_KEY y demás variables estén disponibles
 
@@ -172,6 +174,51 @@ def agregar_comentario(publicacion_id: int, comentario: schemas.ComentarioCreate
     if not resultado:
         raise HTTPException(status_code=404, detail="Publicación no encontrada")
     return resultado
+
+
+# --- TIEMPO (AEMET) ---
+# La key vive solo aqui (no en el frontend) y la llamada real a AEMET se
+# cachea: asi da igual cuantos usuarios abran la app a la vez, solo
+# gastamos cuota de AEMET una vez cada CACHE_TTL_SEGUNDOS. Si AEMET falla,
+# servimos la ultima respuesta buena que tengamos en vez de nada.
+AEMET_MUNICIPIO = "08019"
+AEMET_CACHE_TTL_SEGUNDOS = 30 * 60
+
+_tiempo_cache: dict = {"datos": None, "timestamp": 0.0}
+
+@app.get("/tiempo")
+def get_tiempo():
+    api_key = os.getenv("AEMET_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="AEMET_API_KEY no está configurada en el servidor.")
+
+    ahora = time.time()
+    if _tiempo_cache["datos"] is not None and (ahora - _tiempo_cache["timestamp"]) < AEMET_CACHE_TTL_SEGUNDOS:
+        return _tiempo_cache["datos"]
+
+    try:
+        with httpx.Client(timeout=10) as client:
+            r1 = client.get(
+                f"https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/diaria/{AEMET_MUNICIPIO}",
+                params={"api_key": api_key},
+            )
+            r1.raise_for_status()
+            # AEMET responde en ISO-8859-15, no UTF-8; Response.json() de httpx
+            # decodifica el contenido como UTF-8 igualmente y revienta con
+            # tildes/ñ, asi que decodificamos los bytes a mano con el codec
+            # correcto antes de parsear el JSON.
+            datos_url = json.loads(r1.content.decode("ISO-8859-15"))["datos"]
+            r2 = client.get(datos_url)
+            r2.raise_for_status()
+            datos = json.loads(r2.content.decode("ISO-8859-15"))
+    except Exception as e:
+        if _tiempo_cache["datos"] is not None:
+            return _tiempo_cache["datos"]
+        raise HTTPException(status_code=502, detail=f"No se ha podido obtener el tiempo de AEMET: {e}")
+
+    _tiempo_cache["datos"] = datos
+    _tiempo_cache["timestamp"] = ahora
+    return datos
 
 
 # --- CHAT CON GROQ ---
