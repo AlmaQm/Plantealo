@@ -16,7 +16,7 @@
 
 <div class="recs-grid">
   @for (planta of plantas; track planta.nombre) {
-    <div class="rec-card">
+    <div class="rec-card" (click)="abrirDetalle(planta)">
       <img [src]="planta.imagen" [alt]="planta.nombre" class="rec-img" />
       <div class="rec-overlay"></div>
       <div class="rec-info">
@@ -103,5 +103,29 @@
       </div>
 
     </div>
+  </ng-template>
+</ion-modal>
+
+<!-- MODAL DETALLE DE VERDURA -->
+<ion-modal #detalleModal class="detalle-modal">
+  <ng-template>
+    @if (verduraSeleccionada(); as v) {
+      <div class="detalle-wrap">
+        <img [src]="v.imagen" [alt]="v.nombre" class="detalle-img" />
+        <button class="detalle-close" (click)="detalleModal.dismiss()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <div class="detalle-body">
+          <h2 class="detalle-nombre">{{ v.nombre }}</h2>
+          <p class="detalle-texto">{{ getDescripcion(v.nombre) }}</p>
+          <div class="detalle-consejo-box">
+            <svg lucideSprout class="detalle-consejo-icon"></svg>
+            <span>{{ v.consejo }}</span>
+          </div>
+        </div>
+      </div>
+    }
   </ng-template>
 </ion-modal>
