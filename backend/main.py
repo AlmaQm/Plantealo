@@ -110,6 +110,30 @@ def add_planta_by_uid(firebase_uid: str, planta: schemas.PUsuarioCreate, db: Ses
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return crud.crear_planta_usuario(db=db, planta=planta, usuario_id=usuario.usuario_id)
 
+@app.delete("/usuarios/by-uid/{firebase_uid}/plantas/{planta_id}")
+def eliminar_planta_usuario(
+    firebase_uid: str,
+    planta_id: int,
+    db: Session = Depends(get_db)
+):
+    usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    print(f"DELETE: firebase_uid={firebase_uid}, planta_id={planta_id}, usuario={usuario.usuario_id if usuario else None}")
+
+    planta = db.query(models.PUsuario).filter(
+        models.PUsuario.usuario_id == usuario.usuario_id,
+        models.PUsuario.planta_id == planta_id
+    ).first()
+
+    if not planta:
+        raise HTTPException(status_code=404, detail="Planta no encontrada")
+
+    db.delete(planta)
+    db.commit()
+    return {"mensaje": "Planta eliminada correctamente"}
+
 @app.get("/usuarios/{usuario_id}/plantas/", response_model=List[schemas.PUsuarioDetall])
 def get_plantas_de_usuario(usuario_id: int, db: Session = Depends(get_db)):
     filas = crud.get_plantas_usuario(db, usuario_id)

@@ -1,21 +1,40 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Planta } from '../../../models/interfaces';
+import { PlantasService } from '../../../services/plantas';
+import { ConfirmModalComponent } from '../confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-planta-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmModalComponent],
   templateUrl: './planta-card.html',
   styleUrls: ['./planta-card.scss']
 })
 export class PlantaCardComponent {
+  private plantasService = inject(PlantasService);
+
   @Input() planta!: Planta;
 
   expanded = signal(false);
+  mostrarConfirm = signal(false);
 
   toggle(): void {
     this.expanded.update(v => !v);
+  }
+
+  eliminar(event: Event): void {
+    event.stopPropagation(); // evita que s'expandeixi la card
+    this.mostrarConfirm.set(true);
+  }
+
+  confirmarEliminar(): void {
+    this.plantasService.deletePlanta(this.planta.planta_id);
+    this.mostrarConfirm.set(false);
+  }
+
+  cancelarEliminar(): void {
+    this.mostrarConfirm.set(false);
   }
 
   getEstadoLabel(): string {

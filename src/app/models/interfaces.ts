@@ -23,6 +23,8 @@ export interface Planta {
   tipo_planta: 'INTERIOR' | 'EXTERIOR' | 'TODAS' | 'HUERTO';
   estado: 'PLANTADA' | 'CRECIENDO' | 'LISTA' | 'ENFERMA';
   clima?: string;
+  freq_riego?: number;
+  caracteristicas?: string;
 }
 
 export interface Recipe {
