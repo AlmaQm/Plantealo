@@ -239,7 +239,12 @@ def chat(req: ChatRequest):
             }
             for img_b64 in imatges
         ]
-        contenido_usuario.append({"type": "text", "text": req.mensaje})
+        # Avís explícit al model que hi ha imatges adjuntes
+        texto_con_aviso = (
+            f"[El usuario ha adjuntado {len(imatges)} imagen(es). "
+            f"Por favor, analízalas.] {req.mensaje}"
+        )
+        contenido_usuario.append({"type": "text", "text": texto_con_aviso})
     else:
         modelo = GROQ_MODELO_TEXTO
         contenido_usuario = req.mensaje
