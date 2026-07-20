@@ -44,12 +44,10 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly http = inject(HttpClient);
 
-  // 🔥 currentUser$ - NOMÉS llegeix de localStorage i sincronitza amb Aiven
+  // currentUser$ - NOMÉS llegeix de localStorage i sincronitza amb Aiven
   readonly currentUser$: Observable<Usuario | null> = isPlatformBrowser(this.platformId)
     ? authState(this.auth).pipe(
         switchMap(fbUser => {
-          console.log('🔍 [currentUser$] fbUser:', fbUser?.uid || 'null');
-          
           if (!fbUser) {
             this.clearStoredUser();
             return of(null);
@@ -57,29 +55,26 @@ export class AuthService {
 
           // Obtenir usuari de localStorage
           let usuario = this.getStoredUser();
-          
+
           // Si no hi ha dades a localStorage, intentar sincronitzar amb Aiven
           if (!usuario) {
-            console.warn('⚠️ [currentUser$] No hi ha usuari a localStorage');
             // Intentar obtenir de Aiven pel uid
             return from(this.syncUserFromAiven(fbUser.uid, fbUser.email || ''));
           }
 
           // Si tenim usuari a localStorage, sincronitzar amb Aiven per actualitzar
-          console.log('✅ [currentUser$] Usuari de localStorage:', usuario);
           this.syncWithAiven(usuario, fbUser.uid).catch(err => {
             console.error('❌ [currentUser$] Error sincronitzant:', err);
           });
-          
+
           return of(usuario);
         })
       )
     : of(null);
 
-  // 🔥 Sincronitzar usuari des de Aiven pel seu uid
+  // Sincronitzar usuari des de Aiven pel seu uid
   private async syncUserFromAiven(uid: string, email: string): Promise<Usuario | null> {
     try {
-      console.log('📤 [syncUserFromAiven] Buscant usuari per uid:', uid);
       const res = await firstValueFrom(
         this.http.get<Usuario>(`${environment.apiUrl}/usuarios/by-uid/${uid}`).pipe(
           timeout(5000),
@@ -89,15 +84,13 @@ export class AuthService {
           })
         )
       );
-      
+
       if (res) {
-        console.log('✅ [syncUserFromAiven] Usuari trobat:', res);
         this.saveStoredUser(res);
         return res;
       }
-      
+
       // Si no existeix a Aiven, crear un usuari mínim
-      console.warn('⚠️ [syncUserFromAiven] Usuari no trobat a Aiven, creant-ne un de nou');
       const nuevoUsuario: Usuario = {
         uid,
         email,
@@ -106,22 +99,21 @@ export class AuthService {
         tipo_dieta: 'OMNIVORA',
         fechaRegistro: new Date(),
       };
-      
+
       // Intentar sync per crear-lo
       await this.syncWithAiven(nuevoUsuario, uid);
       this.saveStoredUser(nuevoUsuario);
       return nuevoUsuario;
-      
+
     } catch (err) {
       console.error('❌ [syncUserFromAiven] Error general:', err);
       return null;
     }
   }
 
-  // 🔥 Sincronitzar amb Aiven (POST /usuarios/sync)
+  // Sincronitzar amb Aiven (POST /usuarios/sync)
   private async syncWithAiven(usuario: Usuario, uid: string): Promise<void> {
     try {
-      console.log('📤 [syncWithAiven] Sincronitzant usuari:', usuario);
       const payload = {
         firebase_uid: uid,
         nombre: usuario.nombre || '',
@@ -130,7 +122,7 @@ export class AuthService {
         tipo_dieta: usuario.tipo_dieta || 'OMNIVORA',
         imagen_url: usuario.imagen_url || null,
       };
-      
+
       const res = await firstValueFrom(
         this.http.post<{ usuario_id: number }>(
           `${environment.apiUrl}/usuarios/sync`,
@@ -146,13 +138,10 @@ export class AuthService {
           })
         )
       );
-      
+
       if (res?.usuario_id) {
         usuario.usuario_id = res.usuario_id;
         this.saveStoredUser(usuario);
-        console.log('✅ [syncWithAiven] Sincronitzat! usuario_id:', res.usuario_id);
-      } else {
-        console.warn('⚠️ [syncWithAiven] No s\'ha rebut usuario_id');
       }
     } catch (err) {
       console.error('❌ [syncWithAiven] Error inesperat:', err);
@@ -163,9 +152,7 @@ export class AuthService {
     if (!isPlatformBrowser(this.platformId)) return null;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      const user = raw ? (JSON.parse(raw) as Usuario) : null;
-      console.log('📖 [getStoredUser] Retornant:', user);
-      return user;
+      return raw ? (JSON.parse(raw) as Usuario) : null;
     } catch (err) {
       console.error('❌ [getStoredUser] Error:', err);
       return null;
@@ -175,14 +162,12 @@ export class AuthService {
   private saveStoredUser(usuario: Usuario): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(usuario));
-      console.log('💾 [saveStoredUser] Guardat:', usuario);
     }
   }
 
   private clearStoredUser(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(STORAGE_KEY);
-      console.log('🗑️ [clearStoredUser] Eliminat');
     }
   }
 
@@ -191,11 +176,8 @@ export class AuthService {
       setPersistence(this.auth, browserLocalPersistence).catch(() => {});
     }
     if (isPlatformBrowser(this.platformId)) {
-      console.log('🚀 [constructor] Subscrivint a currentUser$...');
       this.currentUser$.subscribe({
-        next: (user) => {
-          console.log('👤 [currentUser$ subscription] Usuari rebut:', user);
-        },
+        next: () => {},
         error: (err) => {
           console.error('❌ [currentUser$ subscription] Error:', err);
         }
@@ -204,10 +186,8 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<void> {
-    console.log('🔑 [login] Intentant login per:', email);
     try {
       await signInWithEmailAndPassword(this.auth, email, password);
-      console.log('✅ [login] Usuari autenticat a Firebase');
     } catch (error) {
       console.error('❌ [login] Error:', error);
       throw new Error(mapAuthError(error as { code?: string }));
@@ -219,8 +199,6 @@ export class AuthService {
     password: string,
     avatarFile?: File
   ): Promise<void> {
-    console.log('📝 [register] Iniciant registre per:', data.email);
-
     // Paso 1: crear usuario en Firebase Auth
     let uid: string;
     try {
@@ -228,7 +206,6 @@ export class AuthService {
         this.auth, data.email, password
       );
       uid = credential.user.uid;
-      console.log('✅ [register] Pas 1 - Usuari creat a Firebase Auth, uid:', uid);
     } catch (error) {
       console.error('❌ [register] Error creant usuari a Firebase:', error);
       throw new Error(mapAuthError(error as { code?: string }));
@@ -245,14 +222,10 @@ export class AuthService {
       fechaRegistro: new Date(),
     };
 
-    console.log('📦 [register] Usuari creat:', usuario);
-
     // Paso 3: guardar en localStorage
     this.saveStoredUser(usuario);
-    console.log('✅ [register] Pas 3 - Usuari guardat a localStorage');
 
-    // 🔥 Paso 4: Sincronitzar DIRECTAMENT amb Aiven (sense Firestore)
-    console.log('📤 [register] Pas 4 - Sincronitzant amb Aiven...');
+    // Paso 4: Sincronitzar DIRECTAMENT amb Aiven (sense Firestore)
     try {
       const payload = {
         firebase_uid: uid,
@@ -262,9 +235,6 @@ export class AuthService {
         tipo_dieta: data.tipo_dieta,
         imagen_url: data.imagen_url || null,
       };
-      
-      console.log('📤 [register] Payload:', payload);
-      console.log('📤 [register] URL:', `${environment.apiUrl}/usuarios/sync`);
 
       const res = await firstValueFrom(
         this.http.post<{ usuario_id: number }>(
@@ -281,27 +251,19 @@ export class AuthService {
           })
         )
       );
-      
-      console.log('✅ [register] Resposta sync:', res);
-      
+
       if (res?.usuario_id) {
         usuario.usuario_id = res.usuario_id;
         this.saveStoredUser(usuario);
-        console.log('✅ [register] usuario_id guardat a localStorage:', res.usuario_id);
-      } else {
-        console.warn('⚠️ [register] No s\'ha rebut usuario_id');
       }
     } catch (err) {
       console.error('❌ [register] Error inesperat en sync:', err);
     }
-
-    console.log('✅ [register] Registre completat!');
   }
 
   async logout(): Promise<void> {
     this.clearStoredUser();
     await signOut(this.auth);
     await this.router.navigate(['/login']);
-    console.log('✅ [logout] Usuari desconnectat');
   }
 }
