@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 interface Missatge {
   rol: 'assistant' | 'user';
   text: string;
-  imatges?: string[];  // base64 de les imatges adjuntes, si n'hi ha
+  imatge?: string | null;  // base64 de la imatge, si n'hi ha
 }
 
 @Component({
@@ -33,7 +33,7 @@ export class ChatComponent {
   missatges = signal<Missatge[]>([]);
   inputText = signal('');
   carregant = signal(false);
-  imatges = signal<string[]>([]);
+  imatgeBase64 = signal<string | null>(null);
 
   constructor() {
     // Quan el panell s'obre i encara no hi ha cap missatge, mostra la benvinguda.
@@ -63,23 +63,23 @@ export class ChatComponent {
 
   enviarMissatge(): void {
     const text = this.inputText().trim();
-    // Permet enviar si hi ha text O almenys una imatge
-    if ((!text && !this.imatges().length) || this.carregant()) return;
+    // Permet enviar si hi ha text O imatge (no cal text si s'adjunta foto)
+    if ((!text && !this.imatgeBase64()) || this.carregant()) return;
 
-    // Si només hi ha imatges sense text, usa un text per defecte
+    // Si només hi ha imatge sense text, usa un text per defecte
     const textFinal = text || '📷';
 
-    // Captura les imatges abans de netejar el signal, perquè les necessitem
+    // Captura la imatge abans de netejar el signal, perquè la necessitem
     // tant a la bombolla com al body de la petició.
-    const imatges = this.imatges();
+    const imatge = this.imatgeBase64();
 
     // 1. Missatge de l'usuari
     this.missatges.update(m => [...m, {
       rol: 'user',
       text: textFinal,
-      imatges
+      imatge
     }]);
-    this.imatges.set([]);  // la preview desapareix immediatament
+    this.imatgeBase64.set(null);  // la preview desapareix immediatament
     this.scrollAlFinal();
     // 2. Neteja l'input
     this.inputText.set('');
@@ -91,8 +91,7 @@ export class ChatComponent {
     const body = {
       mensaje: textFinal,
       plantas: plantes,
-      imagen_base64: null,
-      imagenes_base64: imatges,
+      imagen_base64: imatge,
     };
 
     this.http.post<{ respuesta: string }>(`${environment.apiUrl}/chat/`, body).subscribe({
@@ -113,26 +112,20 @@ export class ChatComponent {
 
   seleccionarImatge(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const files = input.files;
-    if (!files || files.length === 0) return;
+    const file = input.files?.[0];
+    if (!file) return;
 
-    Array.from(files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        // reader dona "data:image/xxx;base64,XXXX"; el backend només vol la part base64
-        const base64 = result.includes(',') ? result.split(',')[1] : result;
-        this.imatges.update(arr => [...arr, base64]);
-      };
-      reader.readAsDataURL(file);
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // reader dona "data:image/xxx;base64,XXXX"; el backend només vol la part base64
+      const base64 = result.includes(',') ? result.split(',')[1] : result;
+      this.imatgeBase64.set(base64);
+    };
+    reader.readAsDataURL(file);
 
-    // Permet tornar a triar els mateixos fitxers després
+    // Permet tornar a triar el mateix fitxer després
     input.value = '';
-  }
-
-  eliminarImatge(index: number): void {
-    this.imatges.update(arr => arr.filter((_, i) => i !== index));
   }
 
   onTancar(): void {

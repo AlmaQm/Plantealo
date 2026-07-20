@@ -17,9 +17,9 @@
         <div class="bombolla"
              [class.bombolla--user]="m.rol === 'user'"
              [class.bombolla--assistant]="m.rol === 'assistant'">
-          @for (img of m.imatges ?? []; track $index) {
-            <img [src]="'data:image/jpeg;base64,' + img"
-                 alt="Foto"
+          @if (m.imatge) {
+            <img [src]="'data:image/jpeg;base64,' + m.imatge"
+                 alt="Foto enviada"
                  class="bombolla__imatge" />
           }
           @if (m.text) {
@@ -43,29 +43,25 @@
       <div class="chat-input-row">
         <!-- Botó foto (obre l'input de fitxer ocult) -->
         <button type="button" class="chat-foto-btn"
-                (click)="fileInput.click()" [disabled]="carregant()" aria-label="Adjuntar foto">
+                (click)="fileInput.click()" aria-label="Adjuntar foto">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
             <circle cx="12" cy="13" r="4"/>
           </svg>
         </button>
-        <input #fileInput type="file" accept="image/*" multiple hidden (change)="seleccionarImatge($event)" />
+        <input #fileInput type="file" accept="image/*" hidden (change)="seleccionarImatge($event)" />
 
-        <!-- Input integrat: fotos adjuntes (si n'hi ha) + text -->
+        <!-- Input integrat: foto adjunta (si n'hi ha) + text -->
         <div class="chat-footer__input-wrapper">
-          @if (imatges().length > 0) {
-            <div class="chat-footer__fotos-preview">
-              @for (img of imatges(); track $index) {
-                <div class="chat-footer__foto-preview">
-                  <img [src]="'data:image/jpeg;base64,' + img"
-                       alt="Foto adjunta"
-                       class="chat-footer__foto-img" />
-                  <button type="button" class="chat-footer__foto-eliminar"
-                          (click)="eliminarImatge($index)"
-                          aria-label="Eliminar foto">✕</button>
-                </div>
-              }
+          @if (imatgeBase64()) {
+            <div class="chat-footer__foto-preview">
+              <img [src]="'data:image/jpeg;base64,' + imatgeBase64()"
+                   alt="Foto adjunta"
+                   class="chat-footer__foto-img" />
+              <button type="button" class="chat-footer__foto-eliminar"
+                      (click)="imatgeBase64.set(null)"
+                      aria-label="Eliminar foto">✕</button>
             </div>
           }
           <input
@@ -81,7 +77,7 @@
         <!-- Enviar -->
         <button type="button" class="chat-enviar"
                 (click)="enviarMissatge()"
-                [disabled]="carregant() || (!inputText().trim() && !imatges().length)">
+                [disabled]="carregant() || (!inputText().trim() && !imatgeBase64())">
           Enviar
         </button>
       </div>

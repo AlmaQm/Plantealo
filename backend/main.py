@@ -188,8 +188,7 @@ GROQ_MODELO_TEXTO = "llama-3.3-70b-versatile"
 class ChatRequest(BaseModel):
     mensaje: str
     plantas: List[str] = []
-    imagenes_base64: List[str] = []  # llista d'imatges (preferent)
-    imagen_base64: Optional[str] = None  # camp antic, deprecat (compatibilitat)
+    imagen_base64: Optional[str] = None
 
 
 class ChatResponse(BaseModel):
@@ -222,29 +221,19 @@ def chat(req: ChatRequest):
         "ni en ningún otro idioma que no sea el del usuario. "
         "NO uses markdown, asteriscos, negritas ni símbolos de formato. "
         "Escribe en texto plano, de forma cercana y conversacional. "
-        "Sé directo y amigable, como si fuera un amigo jardinero. "
-        "Si el usuario envía varias imágenes, analízalas TODAS y "
-        "comenta cada una brevemente antes de dar tu consejo general."
+        "Sé directo y amigable, como si fuera un amigo jardinero."
     )
 
-    # Con imagen(es) → modelo de visión y contenido multimodal; sin imagen → texto puro.
-    # Preferim la llista nova imagenes_base64; si està buida, usem el camp antic.
-    imatges = req.imagenes_base64 or ([req.imagen_base64] if req.imagen_base64 else [])
-    if imatges:
+    # Con imagen → modelo de visión y contenido multimodal; sin imagen → texto puro.
+    if req.imagen_base64:
         modelo = GROQ_MODELO_VISION
         contenido_usuario = [
+            {"type": "text", "text": req.mensaje},
             {
                 "type": "image_url",
-                "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"},
-            }
-            for img_b64 in imatges
+                "image_url": {"url": f"data:image/jpeg;base64,{req.imagen_base64}"},
+            },
         ]
-        # Avís explícit al model que hi ha imatges adjuntes
-        texto_con_aviso = (
-            f"[El usuario ha adjuntado {len(imatges)} imagen(es). "
-            f"Por favor, analízalas.] {req.mensaje}"
-        )
-        contenido_usuario.append({"type": "text", "text": texto_con_aviso})
     else:
         modelo = GROQ_MODELO_TEXTO
         contenido_usuario = req.mensaje
@@ -257,7 +246,7 @@ def chat(req: ChatRequest):
     # reasoning_format només l'admet el model de visió (qwen), que raona amb
     # <think>. El model de text (llama-3.3) el rebutja, així que només s'afegeix
     # a la ruta d'imatge. "hidden" fa que Groq oculti el raonament del contingut.
-    extra_params = {"reasoning_format": "hidden"} if imatges else {}
+    extra_params = {"reasoning_format": "hidden"} if req.imagen_base64 else {}
     try:
         client = Groq(api_key=api_key)
         completion = client.chat.completions.create(
