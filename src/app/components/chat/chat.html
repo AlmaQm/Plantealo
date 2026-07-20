@@ -17,7 +17,14 @@
         <div class="bombolla"
              [class.bombolla--user]="m.rol === 'user'"
              [class.bombolla--assistant]="m.rol === 'assistant'">
-          {{ m.text }}
+          @if (m.imatge) {
+            <img [src]="'data:image/jpeg;base64,' + m.imatge"
+                 alt="Foto enviada"
+                 class="bombolla__imatge" />
+          }
+          @if (m.text) {
+            <span>{{ m.text }}</span>
+          }
         </div>
       }
 
@@ -32,13 +39,6 @@
 
     <!-- Footer -->
     <div class="chat-panel__footer">
-      @if (imatgeBase64()) {
-        <div class="chat-preview">
-          <img [src]="'data:image/jpeg;base64,' + imatgeBase64()" alt="Imatge seleccionada" />
-          <button type="button" class="chat-preview__treure"
-                  (click)="imatgeBase64.set(null)" aria-label="Treure imatge">✕</button>
-        </div>
-      }
 
       <div class="chat-input-row">
         <!-- Botó foto (obre l'input de fitxer ocult) -->
@@ -52,20 +52,32 @@
         </button>
         <input #fileInput type="file" accept="image/*" hidden (change)="seleccionarImatge($event)" />
 
-        <!-- Text -->
-        <input
-          class="chat-text"
-          type="text"
-          placeholder="Escribe un mensaje…"
-          [ngModel]="inputText()"
-          (ngModelChange)="inputText.set($event)"
-          (keyup.enter)="enviarMissatge()"
-          [disabled]="carregant()" />
+        <!-- Input integrat: foto adjunta (si n'hi ha) + text -->
+        <div class="chat-footer__input-wrapper">
+          @if (imatgeBase64()) {
+            <div class="chat-footer__foto-preview">
+              <img [src]="'data:image/jpeg;base64,' + imatgeBase64()"
+                   alt="Foto adjunta"
+                   class="chat-footer__foto-img" />
+              <button type="button" class="chat-footer__foto-eliminar"
+                      (click)="imatgeBase64.set(null)"
+                      aria-label="Eliminar foto">✕</button>
+            </div>
+          }
+          <input
+            class="chat-footer__text"
+            type="text"
+            placeholder="Escribe un mensaje…"
+            [ngModel]="inputText()"
+            (ngModelChange)="inputText.set($event)"
+            (keyup.enter)="enviarMissatge()"
+            [disabled]="carregant()" />
+        </div>
 
         <!-- Enviar -->
         <button type="button" class="chat-enviar"
                 (click)="enviarMissatge()"
-                [disabled]="carregant() || !inputText().trim()">
+                [disabled]="carregant() || (!inputText().trim() && !imatgeBase64())">
           Enviar
         </button>
       </div>

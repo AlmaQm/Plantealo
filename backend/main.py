@@ -10,6 +10,7 @@ import models, schemas, crud, database
 import os
 import time
 import json
+import re
 
 load_dotenv()  # Asegura que GROQ_API_KEY y demás variables estén disponibles
 
@@ -223,10 +224,11 @@ def get_tiempo():
 
 # --- CHAT CON GROQ ---
 
-# Modelos de Groq (IDs verificados en la documentación de Groq):
-#   - Visión (acepta imágenes): meta-llama/llama-4-scout-17b-16e-instruct
+# Modelos de Groq (IDs verificados con client.models.list() el 2026-07-19):
+#   - Visión (acepta imágenes): qwen/qwen3.6-27b
+#     (los antiguos Llama 4 scout/maverick ya no están disponibles en la cuenta)
 #   - Texto puro:               llama-3.3-70b-versatile
-GROQ_MODELO_VISION = "meta-llama/llama-4-scout-17b-16e-instruct"
+GROQ_MODELO_VISION = "qwen/qwen3.6-27b"
 GROQ_MODELO_TEXTO = "llama-3.3-70b-versatile"
 
 
@@ -251,24 +253,33 @@ def chat(req: ChatRequest):
 
     plantas_txt = ", ".join(req.plantas) if req.plantas else "ninguna planta registrada todavía"
     system_prompt = (
+        "Eres un asistente visual y experto en jardinería. "
+        "PUEDES ver y analizar imágenes que te envíe el usuario. "
+        "Cuando el usuario adjunta una foto, descríbela y analízala. "
         "Eres un asistente experto en jardinería y horticultura para la app Plantéalo. "
         f"El usuario tiene actualmente estas plantas en su huerto: {plantas_txt}. "
         "Ofrece consejos prácticos y concretos sobre riego, cuidados, plagas, cosecha y clima "
         "adaptados a esas plantas. "
-        "Responde SIEMPRE en el mismo idioma en el que te escriba el usuario "
-        "(catalán, castellano, inglés, etc.). "
-        "Sé cercano, claro y directo."
+        "Responde de forma BREVE y CONCISA, máximo 3-4 frases. "
+        "Ve directo al problema y la solución, sin introducciones largas. "
+        "IMPORTANTE: Responde SIEMPRE y ÚNICAMENTE en el mismo idioma en el que te escriba "
+        "el usuario. Si el usuario escribe en catalán, responde en catalán. "
+        "Si escribe en castellano, responde en castellano. NUNCA respondas en inglés "
+        "ni en ningún otro idioma que no sea el del usuario. "
+        "NO uses markdown, asteriscos, negritas ni símbolos de formato. "
+        "Escribe en texto plano, de forma cercana y conversacional. "
+        "Sé directo y amigable, como si fuera un amigo jardinero."
     )
 
     # Con imagen → modelo de visión y contenido multimodal; sin imagen → texto puro.
     if req.imagen_base64:
         modelo = GROQ_MODELO_VISION
         contenido_usuario = [
-            {"type": "text", "text": req.mensaje},
             {
                 "type": "image_url",
                 "image_url": {"url": f"data:image/jpeg;base64,{req.imagen_base64}"},
             },
+            {"type": "text", "text": req.mensaje},
         ]
     else:
         modelo = GROQ_MODELO_TEXTO
@@ -284,11 +295,19 @@ def chat(req: ChatRequest):
         completion = client.chat.completions.create(
             model=modelo,
             messages=mensajes,
-            temperature=0.7,
-            max_tokens=1024,
+            temperature=0.5,
+            max_tokens=2048,
         )
         respuesta = completion.choices[0].message.content or ""
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Error al contactar con Groq: {e}")
+
+    # Eliminar <think>...</think> i qualsevol <think> sense tancar
+    respuesta = re.sub(r'<think>.*?</think>', '', respuesta, flags=re.DOTALL)
+    respuesta = re.sub(r'<think>.*$', '', respuesta, flags=re.DOTALL)
+    respuesta = respuesta.strip()
+
+    if not respuesta:
+        respuesta = "Lo siento, no he podido analizar la imagen. Inténtalo de nuevo."
 
     return ChatResponse(respuesta=respuesta)
