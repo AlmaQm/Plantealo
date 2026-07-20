@@ -49,6 +49,11 @@ export class WeatherCardComponent implements OnInit {
   currentDay = 0;
   private touchStartX = 0;
   private touchStartY = 0;
+  // Arrastre con ratón (desktop): mismas reglas que el swipe táctil, para
+  // poder cambiar de día sin flechas visibles también sin pantalla táctil.
+  private mouseStartX = 0;
+  private mouseStartY = 0;
+  private isDragging = false;
 
   constructor(public weatherService: WeatherService) { }
 
@@ -82,6 +87,27 @@ export class WeatherCardComponent implements OnInit {
     if (Math.abs(deltaY) > Math.abs(deltaX)) return;
     if (deltaX < 0) this.nextDay(total);
     else this.prevDay();
+  }
+
+  onMouseDown(event: MouseEvent) {
+    this.isDragging = true;
+    this.mouseStartX = event.clientX;
+    this.mouseStartY = event.clientY;
+  }
+
+  onMouseUp(event: MouseEvent, total: number) {
+    if (!this.isDragging) return;
+    this.isDragging = false;
+    const deltaX = event.clientX - this.mouseStartX;
+    const deltaY = event.clientY - this.mouseStartY;
+    if (Math.abs(deltaX) < 40) return;
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+    if (deltaX < 0) this.nextDay(total);
+    else this.prevDay();
+  }
+
+  onMouseLeave() {
+    this.isDragging = false;
   }
 
   getDayName(fecha: string): string {

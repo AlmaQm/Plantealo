@@ -1,48 +1,78 @@
-﻿@use 'styles/variables' as *;
+@use 'styles/variables' as *;
+@use 'styles/model-d-home' as *;
 
 .weather-container {
    user-select: none;
 }
 
 .weather-error {
-   background: white;
-   border: 1.5px solid $green-1;
-   border-radius: 22px;
+   background: $md-surface;
+   border-radius: $md-radius-xl;
+   box-shadow: $md-shadow;
    padding: 14px 16px;
    font-size: 0.82rem;
    font-weight: 600;
-   color: $green-6;
+   color: $md-ink-muted;
    text-align: center;
 }
 
 .weather-box {
-   background: white;
-   border: 1.5px solid $green-1;
-   border-radius: 22px;
-   padding: 16px 10px;
+   // Variante 2 "split con divisor": card plana, icono+temperatura a la
+   // izquierda, aviso de riego + stats en columna a la derecha, separados
+   // por una línea fina en tono tierra.
+   background: $md-surface;
+   border-radius: $md-radius-xl;
+   box-shadow: $md-shadow;
+   padding: 18px;
    display: flex;
    align-items: center;
    gap: 6px;
+   cursor: grab;
+
+   &:active {
+      cursor: grabbing;
+   }
 }
 
 .weather-main {
    flex: 1;
    min-width: 0;
-}
-
-.temp-top {
    display: flex;
    align-items: center;
-   gap: 10px;
+   gap: 16px;
+}
+
+.weather-left {
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start;
+   gap: 2px;
+   flex-shrink: 0;
+}
+
+.weather-divider {
+   width: 1px;
+   align-self: stretch;
+   background: $md-earth-soft;
+}
+
+.weather-right {
+   flex: 1;
+   min-width: 0;
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+   justify-content: center;
 }
 
 .weather-icon-svg {
-   width: 2.6rem;
-   height: 2.6rem;
+   width: 1.9rem;
+   height: 1.9rem;
    stroke-width: 1.6;
    color: $sky-1;
    flex-shrink: 0;
 
+   // Mapeo semántico del tiempo (sol/lluvia): variables compartidas, sin tocar.
    &.is-sun {
       color: $sun-1;
    }
@@ -52,37 +82,32 @@
    }
 }
 
-.temp-block {
-   min-width: 0;
-}
-
 .temp-current {
-   font-size: 2.6rem;
-   font-weight: 800;
+   font-size: 1.7rem;
+   font-weight: 700;
    line-height: 1;
-   color: $earth-9;
+   color: $md-ink;
+   margin-top: 2px;
 }
 
 .cond-label {
-   font-size: 0.68rem;
+   font-size: 0.62rem;
    font-weight: 700;
    letter-spacing: 0.04em;
    text-transform: uppercase;
-   color: $green-6;
-   margin-top: 2px;
+   color: $md-ink-muted;
 }
 
 .advice-line {
    display: flex;
    align-items: center;
-   gap: 6px;
-   margin-top: 10px;
-   font-size: 0.92rem;
+   gap: 7px;
+   font-size: 0.82rem;
    font-weight: 700;
-   color: $green-7;
+   color: $md-accent;
 
    &.bad {
-      color: $earth-9;
+      color: $md-danger;
    }
 }
 
@@ -94,15 +119,15 @@
 
 .sub-stats {
    display: flex;
-   gap: 14px;
-   margin-top: 6px;
-   font-size: 0.74rem;
-   color: $green-5;
+   flex-direction: column;
+   gap: 5px;
+   font-size: 0.72rem;
+   color: $md-ink-muted;
 
    span {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
    }
 }
 
@@ -113,17 +138,19 @@
 }
 
 .nav-arrow {
+   // Oculto: el carrusel se navega por swipe (ya implementado vía
+   // touchstart/touchmove/touchend en el HTML), sin flechas visibles.
+   display: none;
    flex-shrink: 0;
-   background: $green-1;
+   background: $md-surface-2;
    border: none;
-   border-radius: 50%;
+   border-radius: $md-radius-md;
    width: 28px;
    height: 28px;
-   display: flex;
    align-items: center;
    justify-content: center;
    cursor: pointer;
-   color: $green-6;
+   color: $md-accent;
    transition: background 0.2s, transform 0.15s;
 
    svg {
@@ -132,7 +159,7 @@
    }
 
    &:hover:not(:disabled) {
-      background: $green-2;
+      background: $md-accent-soft;
    }
 
    &:disabled {
@@ -143,4 +170,3 @@
    &--left:hover:not(:disabled) { transform: translateX(-2px); }
    &--right:hover:not(:disabled) { transform: translateX(2px); }
 }
-

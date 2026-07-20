@@ -9,7 +9,10 @@
          <div class="weather-box"
             (touchstart)="onTouchStart($event)"
             (touchmove)="onTouchMove($event)"
-            (touchend)="onTouchEnd($event, weather[0].prediccion.dia.length)">
+            (touchend)="onTouchEnd($event, weather[0].prediccion.dia.length)"
+            (mousedown)="onMouseDown($event)"
+            (mouseup)="onMouseUp($event, weather[0].prediccion.dia.length)"
+            (mouseleave)="onMouseLeave()">
 
             <button class="nav-arrow nav-arrow--left" [disabled]="currentDay === 0" (click)="prevDay()">
                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -19,29 +22,31 @@
 
             <div class="weather-main">
 
-               <div class="temp-top">
+               <div class="weather-left">
                   <svg class="weather-icon-svg"
                      [class.is-sun]="weatherService.getIconoDia(dia) === weatherService.iconoSol"
                      [class.is-rain]="weatherService.esLluvia(weatherService.getIconoDia(dia))"
                      [lucideIcon]="weatherService.getIconoDia(dia)"></svg>
-                  <div class="temp-block">
-                     <div class="temp-current">{{ dia.temperatura.maxima }}°</div>
-                     <div class="cond-label">{{ weatherService.getDescripcionDia(dia) }}</div>
+                  <div class="temp-current">{{ dia.temperatura.maxima }}°</div>
+                  <div class="cond-label">{{ weatherService.getDescripcionDia(dia) }}</div>
+               </div>
+
+               <div class="weather-divider"></div>
+
+               <div class="weather-right">
+                  <div class="advice-line"
+                     [class.bad]="!weatherService.isGoodDayToWater(dia.temperatura.maxima, weatherService.getPrecipitacion(dia))">
+                     @if (weatherService.isGoodDayToWater(dia.temperatura.maxima, weatherService.getPrecipitacion(dia))) {
+                        <svg lucideSprout class="advice-icon"></svg> Buen día para regar
+                     } @else {
+                        <svg lucideBan class="advice-icon"></svg> No riegues hoy
+                     }
                   </div>
-               </div>
 
-               <div class="advice-line"
-                  [class.bad]="!weatherService.isGoodDayToWater(dia.temperatura.maxima, weatherService.getPrecipitacion(dia))">
-                  @if (weatherService.isGoodDayToWater(dia.temperatura.maxima, weatherService.getPrecipitacion(dia))) {
-                     <svg lucideSprout class="advice-icon"></svg> Buen día para regar
-                  } @else {
-                     <svg lucideBan class="advice-icon"></svg> No riegues hoy
-                  }
-               </div>
-
-               <div class="sub-stats">
-                  <span><svg lucideSnowflake class="stat-icon"></svg> Mín {{ dia.temperatura.minima }}°C</span>
-                  <span><svg lucideCloudRain class="stat-icon"></svg> {{ weatherService.getPrecipitacion(dia) }}% lluvia</span>
+                  <div class="sub-stats">
+                     <span><svg lucideSnowflake class="stat-icon"></svg> Mín {{ dia.temperatura.minima }}°C</span>
+                     <span><svg lucideCloudRain class="stat-icon"></svg> {{ weatherService.getPrecipitacion(dia) }}% lluvia</span>
+                  </div>
                </div>
 
             </div>
