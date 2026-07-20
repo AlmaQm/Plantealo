@@ -1,22 +1,22 @@
-﻿@use 'styles/variables' as *;
+@use 'styles/model-d-home' as *;
+
+.summary-title {
+   color: $md-ink;
+   font-size: 1.1rem;
+   font-weight: 700;
+   margin: 0 0 12px 0;
+}
 
 .summary-box {
-   background-color: white;
-   border-radius: 24px; // Muy redondeado como la imagen
-   padding: 24px;
-   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+   background-color: $md-surface;
+   border-radius: $md-radius-xl;
+   padding: 22px;
+   box-shadow: $md-shadow;
    width: 100%;
    box-sizing: border-box;
 
-   h3 {
-      color: $green-7;
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin: 0 0 24px 0;
-   }
-
    .stat-row {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
 
       &:last-child {
          margin-bottom: 0;
@@ -29,15 +29,14 @@
          margin-bottom: 8px;
 
          .label-text {
-            color: $green-7;
-            font-size: 0.9rem;
+            color: $md-ink;
+            font-size: 0.88rem;
             font-weight: 500;
          }
 
          .label-value {
-            color: $green-7;
-            font-size: 0.9rem;
-            opacity: 0.8;
+            color: $md-ink-muted;
+            font-size: 0.88rem;
          }
       }
 
@@ -45,15 +44,15 @@
          width: 100%;
 
          .progress-bar-bg {
-            height: 8px; // Grosor de la barra
-            background-color: #e2e0d8; // El color grisÃ¡ceo/tierra claro de fondo
+            height: 8px;
+            background-color: $md-surface-2;
             border-radius: 10px;
             overflow: hidden;
             width: 100%;
 
             .progress-bar-fill {
                height: 100%;
-               background-color: $earth-9; // El color oscuro de la barra llena
+               background-color: $md-accent;
                border-radius: 10px;
                transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             }

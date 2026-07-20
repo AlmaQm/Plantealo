@@ -1,0 +1,53 @@
+@use 'styles/variables' as *;
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+  &__mensaje {
+    font-size: 15px;
+    color: $green-7;
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  &__botons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  &__btn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &--cancel {
+      background: $green-1;
+      color: $green-6;
+    }
+
+    &--confirm {
+      background: $green-6;
+      color: white;
+    }
+  }
+}

@@ -1,0 +1,44 @@
+// ==========================================================================
+// MODELO D — "Terracotta Paper"
+// Tokens exclusivos del reskin de Home (pantalla + sus componentes hijos
+// exclusivos: weather-card, calendar-week, task-item, summary-card,
+// diet-recommendations, incluido su modal de calendario en styles.scss).
+//
+// No sustituye ni modifica styles/variables.scss (compartido por todas las
+// páginas) — es un set de tokens nuevo, usado únicamente por los archivos
+// exclusivos de Home.
+// ==========================================================================
+
+// Neutros — sin blanco puro en ninguna superficie
+$md-bg:          #ece0c9; // fondo de pantalla, tan cálido
+$md-surface:     #ffffff; // tarjetas — blanco, a petición expresa (excepción a la regla "sin blanco puro")
+$md-surface-2:   #b5b884; // superficie secundaria / fondos de barra
+
+// Tinta
+$md-ink:         #322920;
+$md-ink-muted:   #7d715a;
+
+// Acento — oliva apagado, único acento de acción
+$md-accent:       #565c46;
+$md-accent-hover: #454a38;
+$md-accent-soft:  #e1e2d0;
+$md-on-accent:    #f7efdf; // texto/iconos sobre fondo de acento (nunca blanco puro)
+
+// Tierra — clay, uso puntual y secundario (nunca protagonista)
+$md-earth:      #ad7548;
+$md-earth-soft: #efdcc0;
+
+// Alerta — reservado a estados que realmente necesitan advertir (planta enferma, etc.)
+$md-danger:      #9c4c39;
+$md-danger-soft: #edd9ce;
+
+// Separación puramente tonal: sin bordes, sombra casi imperceptible
+$md-shadow: 0 1px 2px rgba(50, 41, 32, 0.03), 0 6px 14px rgba(50, 41, 32, 0.04);
+
+// Radios — nunca círculos perfectos en controles, esquinas contenidas
+$md-radius-sm: 6px;  // badges/tags
+$md-radius-md: 10px; // botones, iconos pequeños, chips
+$md-radius-lg: 14px; // cards estándar
+$md-radius-xl: 16px; // cards hero (weather, resumen)
+
+$md-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;

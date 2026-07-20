@@ -1,5 +1,9 @@
 @use '@angular/material' as mat;
+@use 'sass:color';
 @use 'styles/variables' as *;
+// Exclusivo del modal de calendario de app-diet-recommendations (Home). No se
+// referencia desde ninguna otra página — ver rama nuevofront / reskin Modelo D.
+@use 'styles/model-d-home' as *;
 
 /* ===== ANGULAR MATERIAL THEME ===== */
 html {
@@ -73,11 +77,11 @@ input, button, textarea, select {
 
 button { cursor: pointer; }
 
-/* ===== MODAL CALENDARIO TEMPORADAS ===== */
+/* ===== MODAL CALENDARIO TEMPORADAS — Modelo D ===== */
 
 /* el wrapper interno de ion-modal tiene su propio radio/fondo; si no coincide
-   con el de .cal-wrap, sus esquinas cuadradas asoman como puntas blancas
-   por encima de la cabecera redondeada */
+   con el de .cal-wrap, sus esquinas cuadradas asoman como puntas por encima
+   de la cabecera redondeada */
 ion-modal.cal-modal {
   --border-radius: 20px;
   --background: transparent;
@@ -89,14 +93,14 @@ ion-modal.cal-modal {
   top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
   flex-direction: column;
-  background: #f5efe6;
+  background: $md-bg;
   overflow: hidden;
   border-radius: 20px 20px 0 0;
 }
 
-/* CABECERA con gradiente */
+/* CABECERA — color sólido de marca, sin gradiente decorativo */
 .cal-header {
-  background: linear-gradient(135deg, #354024 0%, #4c3d19 100%);
+  background: $md-accent;
   padding: 18px 16px 16px;
   display: flex;
   align-items: center;
@@ -114,40 +118,40 @@ ion-modal.cal-modal {
 .cal-header-icon {
   width: 2rem;
   height: 2rem;
-  color: #e9f5db;
+  color: $md-on-accent;
   flex-shrink: 0;
 }
 
 .cal-header-title {
   font-size: 1.05rem;
-  font-weight: 800;
-  color: white;
+  font-weight: 700;
+  color: $md-on-accent;
   margin: 0;
   line-height: 1.2;
 }
 
 .cal-header-sub {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.6);
+  color: rgba($md-on-accent, 0.7);
   margin: 2px 0 0;
 }
 
 .cal-close {
-  background: rgba(255,255,255,0.15);
+  background: rgba($md-on-accent, 0.18);
   border: none;
-  border-radius: 50%;
+  border-radius: $md-radius-md;
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: white;
+  color: $md-on-accent;
   flex-shrink: 0;
   transition: background 0.2s;
 
   svg { width: 14px; height: 14px; }
-  &:active { background: rgba(255,255,255,0.3); }
+  &:active { background: rgba($md-on-accent, 0.3); }
 }
 
 /* LEYENDA DE COLORES */
@@ -156,8 +160,7 @@ ion-modal.cal-modal {
   flex-wrap: wrap;
   gap: 6px 14px;
   padding: 8px 14px;
-  background: #f5efe6;
-  border-bottom: 1.5px solid #e5d7c4;
+  background: $md-surface-2;
   flex-shrink: 0;
 }
 
@@ -167,7 +170,7 @@ ion-modal.cal-modal {
   gap: 6px;
   font-size: 0.65rem;
   font-weight: 600;
-  color: #4c3d19;
+  color: $md-ink;
 }
 
 .cal-dot {
@@ -175,13 +178,12 @@ ion-modal.cal-modal {
   height: 11px;
   border-radius: 3px;
   flex-shrink: 0;
-  border: 1px solid rgba(76, 61, 25, 0.15);
 }
 
 /* mismos colores que .cal-seg, para que la leyenda coincida con la barra real */
-.dot-on  { background: #b5c99a; }
-.dot-now { background: #354024; border-color: #354024; }
-.dot-off { background: #e5d7c4; }
+.dot-on  { background: color.adjust($md-accent, $lightness: 30%); }
+.dot-now { background: $md-accent; }
+.dot-off { background: $md-surface; }
 
 /* CABECERA DE MESES (sticky) */
 .cal-months-header {
@@ -189,8 +191,7 @@ ion-modal.cal-modal {
   align-items: center;
   gap: 8px;
   padding: 8px 12px 6px;
-  background: #f5efe6;
-  border-bottom: 1.5px solid #e5d7c4;
+  background: $md-surface;
   flex-shrink: 0;
   position: sticky;
   top: 0;
@@ -212,7 +213,7 @@ ion-modal.cal-modal {
   text-align: center;
   font-size: 0.55rem;
   font-weight: 700;
-  color: #718355;
+  color: $md-ink-muted;
   padding: 3px 0;
   border-radius: 3px;
   line-height: 1;
@@ -220,12 +221,12 @@ ion-modal.cal-modal {
   transition: background 0.15s, color 0.15s;
 
   &.es-hoy {
-    box-shadow: inset 0 -2px 0 #718355;
+    box-shadow: inset 0 -2px 0 $md-accent;
   }
 
   &.es-seleccionado {
-    background: #354024;
-    color: white;
+    background: $md-accent;
+    color: $md-on-accent;
     border-radius: 4px;
     box-shadow: none;
   }
@@ -249,15 +250,15 @@ ion-modal.cal-modal {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: white;
+  background: $md-surface;
   border-radius: 12px;
   padding: 9px 10px;
   border: 1.5px solid transparent;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background 0.15s;
 
   &.plantable {
-    border-color: #b5c99a;
-    background: linear-gradient(135deg, white 70%, #e9f5db);
+    border-color: $md-accent;
+    background: linear-gradient(135deg, $md-surface 70%, $md-accent-soft);
   }
 
   &:last-child {
@@ -291,7 +292,7 @@ ion-modal.cal-modal {
 .cal-plant-name {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #4c3d19;
+  color: $md-ink;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -300,18 +301,19 @@ ion-modal.cal-modal {
 .cal-now-badge {
   font-size: 0.58rem;
   font-weight: 700;
-  color: #354024;
-  background: #e9f5db;
-  border: 1px solid #b5c99a;
+  color: $md-accent;
+  background: $md-accent-soft;
+  border: 1px solid $md-accent;
   padding: 3px 8px;
-  border-radius: 8px;
+  border-radius: $md-radius-sm;
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
 
   &:active {
-    background: #b5c99a;
+    background: $md-accent;
+    color: $md-on-accent;
     transform: scale(0.96);
   }
 }
@@ -319,10 +321,10 @@ ion-modal.cal-modal {
 .cal-added-badge {
   font-size: 0.58rem;
   font-weight: 700;
-  color: white;
-  background: #354024;
+  color: $md-on-accent;
+  background: $md-accent;
   padding: 3px 8px;
-  border-radius: 8px;
+  border-radius: $md-radius-sm;
   white-space: nowrap;
   flex-shrink: 0;
   display: inline-flex;
@@ -339,11 +341,11 @@ ion-modal.cal-modal {
 .cal-epoca-badge {
   font-size: 0.58rem;
   font-weight: 700;
-  color: #354024;
-  background: #e9f5db;
-  border: 1px solid #b5c99a;
+  color: $md-accent;
+  background: $md-accent-soft;
+  border: 1px solid $md-accent;
   padding: 3px 8px;
-  border-radius: 8px;
+  border-radius: $md-radius-sm;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -358,11 +360,11 @@ ion-modal.cal-modal {
   flex: 1;
   height: 8px;
   border-radius: 2px;
-  background: #e5d7c4;
+  background: $md-surface-2;
 
-  &.seg-on  { background: #b5c99a; }
-  &.seg-sel { background: #354024; }
-  &.seg-cur { background: #cfbb99; }
+  &.seg-on  { background: color.adjust($md-accent, $lightness: 30%); }
+  &.seg-sel { background: $md-accent; }
+  &.seg-cur { background: $md-earth-soft; }
 }
 
 /* ===== ICONOS LUCIDE DE TIEMPO ===== */
@@ -373,6 +375,13 @@ ion-modal.cal-modal {
    sol (rayos + arco), el 6º es la nube. */
 .weather-icon-svg.lucide-cloud-sun path:nth-of-type(-n + 5) {
   stroke: $sun-1;
+}
+
+/* Día activo de la franja semanal (Home): el sol también pasa a blanco,
+   igual que el resto del icono/texto sobre el fondo oliva claro. Misma
+   razón de fondo que la regla de arriba — necesita el mismo alcance global. */
+.day.active .weather-icon-svg.lucide-cloud-sun path:nth-of-type(-n + 5) {
+  stroke: #ffffff;
 }
 
 /* ===== ANGULAR ESPECÍFICO ===== */

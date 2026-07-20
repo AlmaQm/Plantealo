@@ -324,6 +324,18 @@ export class PlantasService {
     await this.cargarInventario(this.uid);
   }
 
+  deletePlanta(plantaId: number): void {
+    const uid = this.uid;
+    if (!uid) return;
+
+    this.http.delete(
+      `${environment.apiUrl}/usuarios/by-uid/${uid}/plantas/${plantaId}`
+    ).subscribe({
+      next: () => this.cargarInventario(uid),
+      error: (err) => console.error('Error eliminant planta', err),
+    });
+  }
+
   // ── Mapeo backend (PUsuarioDetall) → Planta ─────────────────────────────────
   private mapPlanta(d: PUsuarioDetallAiven): Planta {
     const f_siembra = new Date(d.f_siembra);
@@ -341,6 +353,8 @@ export class PlantasService {
       tipo_planta:   this.mapTipoPlanta(d.tipo_planta),
       estado:        this.mapEstado(d.estado_crecimiento),
       clima:         d.clima ?? undefined,
+      freq_riego:    d.freq_riego,
+      caracteristicas: d.caracteristicas ?? undefined,
     };
   }
 

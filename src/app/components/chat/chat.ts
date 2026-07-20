@@ -8,6 +8,7 @@ import { environment } from '../../../environments/environment';
 interface Missatge {
   rol: 'assistant' | 'user';
   text: string;
+  imatge?: string | null;  // base64 de la imatge, si n'hi ha
 }
 
 @Component({
@@ -62,10 +63,23 @@ export class ChatComponent {
 
   enviarMissatge(): void {
     const text = this.inputText().trim();
-    if (!text || this.carregant()) return;
+    // Permet enviar si hi ha text O imatge (no cal text si s'adjunta foto)
+    if ((!text && !this.imatgeBase64()) || this.carregant()) return;
+
+    // Si només hi ha imatge sense text, usa un text per defecte
+    const textFinal = text || '📷';
+
+    // Captura la imatge abans de netejar el signal, perquè la necessitem
+    // tant a la bombolla com al body de la petició.
+    const imatge = this.imatgeBase64();
 
     // 1. Missatge de l'usuari
-    this.missatges.update(m => [...m, { rol: 'user', text }]);
+    this.missatges.update(m => [...m, {
+      rol: 'user',
+      text: textFinal,
+      imatge
+    }]);
+    this.imatgeBase64.set(null);  // la preview desapareix immediatament
     this.scrollAlFinal();
     // 2. Neteja l'input
     this.inputText.set('');
@@ -75,9 +89,9 @@ export class ChatComponent {
     // 4. Crida al backend
     const plantes = this.plantasService.inventario().map(p => p.nombre_planta);
     const body = {
-      mensaje: text,
+      mensaje: textFinal,
       plantas: plantes,
-      imagen_base64: this.imatgeBase64(),
+      imagen_base64: imatge,
     };
 
     this.http.post<{ respuesta: string }>(`${environment.apiUrl}/chat/`, body).subscribe({
@@ -87,13 +101,11 @@ export class ChatComponent {
         this.scrollAlFinal();
         // 6. Fi de la càrrega
         this.carregant.set(false);
-        this.imatgeBase64.set(null);
       },
       error: (err) => {
         const detall = err?.error?.detail ?? 'No he podido conectar con el asistente.';
         this.missatges.update(m => [...m, { rol: 'assistant', text: `⚠️ ${detall}` }]);
         this.carregant.set(false);
-        this.imatgeBase64.set(null);
       },
     });
   }

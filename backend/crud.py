@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func, case, select, insert, delete, and_
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException
 from typing import List, Optional
 import models
 import schemas
@@ -36,9 +38,24 @@ def upsert_usuario(db: Session, data: schemas.UsuarioSync):
             contrasena=None
         )
         db.add(usuario)
-    db.commit()
-    db.refresh(usuario)
-    return usuario
+    try:
+        db.commit()
+        db.refresh(usuario)
+        return usuario
+    except IntegrityError as e:
+        db.rollback()
+        detail = str(e.orig)
+        if 'nombre_usuario' in detail:
+            raise HTTPException(
+                status_code=409,
+                detail="El nombre de usuario ya está en uso"
+            )
+        if 'email' in detail:
+            raise HTTPException(
+                status_code=409,
+                detail="El email ya está registrado"
+            )
+        raise HTTPException(status_code=409, detail="Conflicto de datos")
 
 def crear_usuario(db: Session, usuario: schemas.UsuarioCreate):
     db_usuario = models.Usuario(
@@ -61,9 +78,16 @@ def get_plantas(db: Session, skip: int = 0, limit: int = 100):
 def crear_planta_usuario(db: Session, planta: schemas.PUsuarioCreate, usuario_id: int):
     db_planta = models.PUsuario(**planta.model_dump(), usuario_id=usuario_id)
     db.add(db_planta)
-    db.commit()
-    db.refresh(db_planta)
-    return db_planta
+    try:
+        db.commit()
+        db.refresh(db_planta)
+        return db_planta
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Esta planta ya está en tu inventario"
+        )
 
 def get_plantas_usuario(db, usuario_id: int):
     return (
