@@ -46,12 +46,12 @@ class PUsuarioBase(BaseModel):
     estado_crecimiento: str
 
 class PUsuarioCreate(PUsuarioBase):
-    planta_cat_id: int  # especie del catálogo (plantas.planta_id) que se está plantando
+    planta_id: int  # especie del catálogo (plantas.planta_id) que se está plantando
 
 class PUsuario(PUsuarioBase):
+    id: int
     planta_id: int
     usuario_id: int
-    planta_cat_id: Optional[int] = None
     class Config:
         from_attributes = True
 

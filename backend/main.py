@@ -16,13 +16,13 @@ load_dotenv()  # Asegura que GROQ_API_KEY y demás variables estén disponibles
 app = FastAPI(title="Plantealo API")
 
 # --- CORS ---
-# localhost:4200 para desarrollo; regex para cualquier subdominio *.onrender.com
-# (Starlette no soporta comodines en allow_origins, por eso el subdominio va por regex.
-#  Con regex el origen concreto se refleja, compatible con allow_credentials=True.)
+# localhost:4200 y 127.0.0.1:4200 explícitos para desarrollo local; regex solo
+# para cualquier subdominio *.onrender.com en producción (Starlette no soporta
+# comodines en allow_origins, por eso ese caso va por regex).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
-    allow_origin_regex=r"https://.*\.onrender\.com|http://(localhost|127\.0\.0\.1):\d+",
+    allow_origins=["http://localhost:4200", "http://127.0.0.1:4200"],
+    allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

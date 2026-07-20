@@ -68,7 +68,7 @@ def crear_planta_usuario(db: Session, planta: schemas.PUsuarioCreate, usuario_id
 def get_plantas_usuario(db, usuario_id: int):
     return (
         db.query(models.PUsuario, models.PlantaCat)
-        .join(models.PlantaCat, models.PUsuario.planta_cat_id == models.PlantaCat.planta_id)
+        .join(models.PlantaCat, models.PUsuario.planta_id == models.PlantaCat.planta_id)
         .filter(models.PUsuario.usuario_id == usuario_id)
         .all()
     )
@@ -162,11 +162,8 @@ def crear_comentario(db: Session, publicacion_id: int, comentario: schemas.Comen
 
 def get_plantas_ids_usuario(db: Session, usuario_id: int) -> List[int]:
     filas = (
-        db.query(models.PUsuario.planta_cat_id)
-        .filter(
-            models.PUsuario.usuario_id == usuario_id,
-            models.PUsuario.planta_cat_id.isnot(None)
-        )
+        db.query(models.PUsuario.planta_id)
+        .filter(models.PUsuario.usuario_id == usuario_id)
         .distinct()
         .all()
     )
