@@ -2,7 +2,7 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, from, switchMap, map, catchError, firstValueFrom, timeout } from 'rxjs';
+import { Observable, of, from, switchMap, catchError, firstValueFrom, timeout } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
@@ -14,11 +14,6 @@ import {
   browserLocalPersistence,
   setPersistence,
 } from 'firebase/auth';
-
-import { Firestore, doc } from '@angular/fire/firestore';
-import { setDoc, getDoc } from 'firebase/firestore';
-
-import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 
 import { Usuario } from '../models/interfaces';
 
@@ -45,40 +40,134 @@ const STORAGE_KEY = 'plantealo_user';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly auth = inject(Auth);
-  private readonly firestore = inject(Firestore);
-  private readonly storage = inject(Storage);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly http = inject(HttpClient);
 
+  // 🔥 currentUser$ - NOMÉS llegeix de localStorage i sincronitza amb Aiven
   readonly currentUser$: Observable<Usuario | null> = isPlatformBrowser(this.platformId)
     ? authState(this.auth).pipe(
-        switchMap(user => {
-          if (!user) {
+        switchMap(fbUser => {
+          console.log('🔍 [currentUser$] fbUser:', fbUser?.uid || 'null');
+          
+          if (!fbUser) {
             this.clearStoredUser();
             return of(null);
           }
-          const docRef = doc(this.firestore, `usuarios/${user.uid}`);
-          return from(getDoc(docRef)).pipe(
-            map(snap => {
-              const usuario = snap.exists() ? (snap.data() as Usuario) : null;
-              if (usuario) this.saveStoredUser(usuario);
-              // Si Firestore no tiene el doc, usar localStorage
-              return usuario ?? this.getStoredUser();
-            }),
-            // Si Firestore falla (reglas, sin conexión), usar localStorage
-            catchError(() => of(this.getStoredUser()))
-          );
+
+          // Obtenir usuari de localStorage
+          let usuario = this.getStoredUser();
+          
+          // Si no hi ha dades a localStorage, intentar sincronitzar amb Aiven
+          if (!usuario) {
+            console.warn('⚠️ [currentUser$] No hi ha usuari a localStorage');
+            // Intentar obtenir de Aiven pel uid
+            return from(this.syncUserFromAiven(fbUser.uid, fbUser.email || ''));
+          }
+
+          // Si tenim usuari a localStorage, sincronitzar amb Aiven per actualitzar
+          console.log('✅ [currentUser$] Usuari de localStorage:', usuario);
+          this.syncWithAiven(usuario, fbUser.uid).catch(err => {
+            console.error('❌ [currentUser$] Error sincronitzant:', err);
+          });
+          
+          return of(usuario);
         })
       )
     : of(null);
+
+  // 🔥 Sincronitzar usuari des de Aiven pel seu uid
+  private async syncUserFromAiven(uid: string, email: string): Promise<Usuario | null> {
+    try {
+      console.log('📤 [syncUserFromAiven] Buscant usuari per uid:', uid);
+      const res = await firstValueFrom(
+        this.http.get<Usuario>(`${environment.apiUrl}/usuarios/by-uid/${uid}`).pipe(
+          timeout(5000),
+          catchError((err) => {
+            console.error('❌ [syncUserFromAiven] Error:', err);
+            return of(null);
+          })
+        )
+      );
+      
+      if (res) {
+        console.log('✅ [syncUserFromAiven] Usuari trobat:', res);
+        this.saveStoredUser(res);
+        return res;
+      }
+      
+      // Si no existeix a Aiven, crear un usuari mínim
+      console.warn('⚠️ [syncUserFromAiven] Usuari no trobat a Aiven, creant-ne un de nou');
+      const nuevoUsuario: Usuario = {
+        uid,
+        email,
+        nombre: email.split('@')[0] || 'Usuario',
+        nombre_usuario: email.split('@')[0] || 'usuario',
+        tipo_dieta: 'OMNIVORA',
+        fechaRegistro: new Date(),
+      };
+      
+      // Intentar sync per crear-lo
+      await this.syncWithAiven(nuevoUsuario, uid);
+      this.saveStoredUser(nuevoUsuario);
+      return nuevoUsuario;
+      
+    } catch (err) {
+      console.error('❌ [syncUserFromAiven] Error general:', err);
+      return null;
+    }
+  }
+
+  // 🔥 Sincronitzar amb Aiven (POST /usuarios/sync)
+  private async syncWithAiven(usuario: Usuario, uid: string): Promise<void> {
+    try {
+      console.log('📤 [syncWithAiven] Sincronitzant usuari:', usuario);
+      const payload = {
+        firebase_uid: uid,
+        nombre: usuario.nombre || '',
+        nombre_usuario: usuario.nombre_usuario || '',
+        email: usuario.email || '',
+        tipo_dieta: usuario.tipo_dieta || 'OMNIVORA',
+        imagen_url: usuario.imagen_url || null,
+      };
+      
+      const res = await firstValueFrom(
+        this.http.post<{ usuario_id: number }>(
+          `${environment.apiUrl}/usuarios/sync`,
+          payload
+        ).pipe(
+          timeout(5000),
+          catchError((err) => {
+            console.error('❌ [syncWithAiven] Error:', err);
+            if (err.status === 422) {
+              console.error('❌ [syncWithAiven] Error 422 - Dades invàlides:', err.error);
+            }
+            return of(null);
+          })
+        )
+      );
+      
+      if (res?.usuario_id) {
+        usuario.usuario_id = res.usuario_id;
+        this.saveStoredUser(usuario);
+        console.log('✅ [syncWithAiven] Sincronitzat! usuario_id:', res.usuario_id);
+      } else {
+        console.warn('⚠️ [syncWithAiven] No s\'ha rebut usuario_id');
+      }
+    } catch (err) {
+      console.error('❌ [syncWithAiven] Error inesperat:', err);
+    }
+  }
 
   getStoredUser(): Usuario | null {
     if (!isPlatformBrowser(this.platformId)) return null;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as Usuario) : null;
-    } catch {
+      const user = raw ? (JSON.parse(raw) as Usuario) : null;
+      console.log('📖 [getStoredUser] Retornant:', user);
+      return user;
+    } catch (err) {
+      console.error('❌ [getStoredUser] Error:', err);
       return null;
     }
   }
@@ -86,12 +175,14 @@ export class AuthService {
   private saveStoredUser(usuario: Usuario): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(usuario));
+      console.log('💾 [saveStoredUser] Guardat:', usuario);
     }
   }
 
   private clearStoredUser(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(STORAGE_KEY);
+      console.log('🗑️ [clearStoredUser] Eliminat');
     }
   }
 
@@ -99,47 +190,26 @@ export class AuthService {
     if (typeof window !== 'undefined') {
       setPersistence(this.auth, browserLocalPersistence).catch(() => {});
     }
+    if (isPlatformBrowser(this.platformId)) {
+      console.log('🚀 [constructor] Subscrivint a currentUser$...');
+      this.currentUser$.subscribe({
+        next: (user) => {
+          console.log('👤 [currentUser$ subscription] Usuari rebut:', user);
+        },
+        error: (err) => {
+          console.error('❌ [currentUser$ subscription] Error:', err);
+        }
+      });
+    }
   }
 
   async login(email: string, password: string): Promise<void> {
+    console.log('🔑 [login] Intentant login per:', email);
     try {
-      const credential = await signInWithEmailAndPassword(this.auth, email, password);
-      // Sincronitzar amb Aiven llegint el perfil de Firestore (no depèn de localStorage)
-      try {
-        const uid = credential.user.uid;
-
-        // Llegir perfil de Firestore (font de veritat, funciona en qualsevol dispositiu)
-        const docRef = doc(this.firestore, `usuarios/${uid}`);
-        const snap = await getDoc(docRef);
-
-        if (snap.exists()) {
-          const perfil = snap.data() as any;
-          const res = await firstValueFrom(
-            this.http.post<{ usuario_id: number }>(
-              `${environment.apiUrl}/usuarios/sync`,
-              {
-                firebase_uid: uid,
-                nombre: perfil.nombre,
-                nombre_usuario: perfil.nombre_usuario,
-                email: perfil.email,
-                tipo_dieta: perfil.tipo_dieta,
-                imagen_url: perfil.imagen_url ?? null,
-              }
-            ).pipe(
-              timeout(5000),
-              catchError(() => of(null))
-            )
-          );
-          if (res?.usuario_id) {
-            const stored = this.getStoredUser();
-            if (stored) {
-              stored.usuario_id = res.usuario_id;
-              this.saveStoredUser(stored);
-            }
-          }
-        }
-      } catch { /* no bloquegem el login */ }
+      await signInWithEmailAndPassword(this.auth, email, password);
+      console.log('✅ [login] Usuari autenticat a Firebase');
     } catch (error) {
+      console.error('❌ [login] Error:', error);
       throw new Error(mapAuthError(error as { code?: string }));
     }
   }
@@ -149,76 +219,89 @@ export class AuthService {
     password: string,
     avatarFile?: File
   ): Promise<void> {
-    // Paso 1: crear usuario en Firebase Auth (único paso que puede lanzar error)
+    console.log('📝 [register] Iniciant registre per:', data.email);
+
+    // Paso 1: crear usuario en Firebase Auth
     let uid: string;
     try {
       const credential = await createUserWithEmailAndPassword(
         this.auth, data.email, password
       );
       uid = credential.user.uid;
+      console.log('✅ [register] Pas 1 - Usuari creat a Firebase Auth, uid:', uid);
     } catch (error) {
+      console.error('❌ [register] Error creant usuari a Firebase:', error);
       throw new Error(mapAuthError(error as { code?: string }));
     }
 
-    // Paso 2: subir avatar si existe (fallo no bloquea el registro)
-    let imagen_url: string | undefined = data.imagen_url;
-    if (avatarFile) {
-      try { imagen_url = await this.uploadAvatar(avatarFile, uid); }
-      catch { /* continúa sin imagen */ }
-    }
-
+    // Paso 2: crear objeto usuario
     const usuario: Usuario = {
-      uid, nombre: data.nombre, nombre_usuario: data.nombre_usuario,
-      email: data.email, tipo_dieta: data.tipo_dieta,
-      ...(imagen_url ? { imagen_url } : {}),
+      uid,
+      nombre: data.nombre,
+      nombre_usuario: data.nombre_usuario,
+      email: data.email,
+      tipo_dieta: data.tipo_dieta,
+      imagen_url: data.imagen_url,
       fechaRegistro: new Date(),
     };
 
-    // Paso 3: guardar en localStorage inmediatamente (siempre disponible)
+    console.log('📦 [register] Usuari creat:', usuario);
+
+    // Paso 3: guardar en localStorage
     this.saveStoredUser(usuario);
+    console.log('✅ [register] Pas 3 - Usuari guardat a localStorage');
 
-    // Paso 4: intentar escribir en Firestore (fallo no bloquea la sesión)
+    // 🔥 Paso 4: Sincronitzar DIRECTAMENT amb Aiven (sense Firestore)
+    console.log('📤 [register] Pas 4 - Sincronitzant amb Aiven...');
     try {
-      await Promise.race([
-        setDoc(doc(this.firestore, `usuarios/${uid}`), usuario),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-      ]);
-    } catch { /* Firestore puede fallar o tardar, el usuario sigue registrado */ }
+      const payload = {
+        firebase_uid: uid,
+        nombre: data.nombre,
+        nombre_usuario: data.nombre_usuario,
+        email: data.email,
+        tipo_dieta: data.tipo_dieta,
+        imagen_url: data.imagen_url || null,
+      };
+      
+      console.log('📤 [register] Payload:', payload);
+      console.log('📤 [register] URL:', `${environment.apiUrl}/usuarios/sync`);
 
-    // Paso 5: sincronizar con Aiven (fallo no bloquea la sesión)
-    try {
       const res = await firstValueFrom(
         this.http.post<{ usuario_id: number }>(
           `${environment.apiUrl}/usuarios/sync`,
-          {
-            firebase_uid: uid,
-            nombre: data.nombre,
-            nombre_usuario: data.nombre_usuario,
-            email: data.email,
-            tipo_dieta: data.tipo_dieta,
-            imagen_url: imagen_url ?? null,
-          }
+          payload
         ).pipe(
           timeout(5000),
-          catchError(() => of(null))
+          catchError((err) => {
+            console.error('❌ [register] Error en sync:', err);
+            if (err.status === 422) {
+              console.error('❌ [register] Error 422 - Dades invàlides:', err.error);
+            }
+            return of(null);
+          })
         )
       );
+      
+      console.log('✅ [register] Resposta sync:', res);
+      
       if (res?.usuario_id) {
         usuario.usuario_id = res.usuario_id;
         this.saveStoredUser(usuario);
+        console.log('✅ [register] usuario_id guardat a localStorage:', res.usuario_id);
+      } else {
+        console.warn('⚠️ [register] No s\'ha rebut usuario_id');
       }
-    } catch { /* Aiven pot fallar, la sessió segueix */ }
+    } catch (err) {
+      console.error('❌ [register] Error inesperat en sync:', err);
+    }
+
+    console.log('✅ [register] Registre completat!');
   }
 
   async logout(): Promise<void> {
     this.clearStoredUser();
     await signOut(this.auth);
     await this.router.navigate(['/login']);
-  }
-
-  async uploadAvatar(file: File, uid: string): Promise<string> {
-    const storageRef = ref(this.storage, `avatares/${uid}`);
-    await uploadBytes(storageRef, file);
-    return getDownloadURL(storageRef);
+    console.log('✅ [logout] Usuari desconnectat');
   }
 }

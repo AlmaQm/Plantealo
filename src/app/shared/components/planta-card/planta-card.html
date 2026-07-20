@@ -37,29 +37,56 @@
       <div class="detalle-seccion__items">
         @if (planta.clima) {
           <div class="cuidado-item">
-            <span class="cuidado-item__icon">🌡️</span>
+            <span class="cuidado-item__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+              </svg>
+            </span>
             <span>Clima <strong>{{ planta.clima }}</strong></span>
           </div>
         }
         <div class="cuidado-item">
-          <span class="cuidado-item__icon">🌿</span>
+          <span class="cuidado-item__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+            </svg>
+          </span>
           <span>Cosecha: <strong>{{ formatFecha(planta.f_recogida) }}</strong></span>
         </div>
         <div class="cuidado-item">
-          <span class="cuidado-item__icon">📅</span>
+          <span class="cuidado-item__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </span>
           <span>Plantada: <strong>{{ formatFecha(planta.f_siembra) }}</strong></span>
         </div>
 
         @if (planta.freq_riego) {
           <div class="cuidado-item">
-            <span class="cuidado-item__icon">💧</span>
+            <span class="cuidado-item__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/>
+              </svg>
+            </span>
             <span>Frecuencia de riego: <strong>Cada {{ planta.freq_riego }} {{ planta.freq_riego === 1 ? 'día' : 'días' }}</strong></span>
           </div>
         }
 
         @if (planta.caracteristicas) {
           <div class="cuidado-item">
-            <span class="cuidado-item__icon">📋</span>
+            <span class="cuidado-item__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="8"/>
+                <line x1="12" y1="12" x2="12" y2="16"/>
+              </svg>
+            </span>
             <span>Características: <strong>{{ planta.caracteristicas }}</strong></span>
           </div>
         }
@@ -75,4 +102,10 @@
     </div>
 
   </div>
+
+  <app-confirm-modal
+    [visible]="mostrarConfirm()"
+    [mensaje]="'¿Estás seguro de que deseas eliminar ' + planta.nombre_planta + ' de tu huerto?'"
+    (confirmar)="confirmarEliminar()"
+    (cancelar)="cancelarEliminar()" />
 </div>

@@ -2,11 +2,12 @@ import { Component, Input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Planta } from '../../../models/interfaces';
 import { PlantasService } from '../../../services/plantas';
+import { ConfirmModalComponent } from '../confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-planta-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmModalComponent],
   templateUrl: './planta-card.html',
   styleUrls: ['./planta-card.scss']
 })
@@ -16,6 +17,7 @@ export class PlantaCardComponent {
   @Input() planta!: Planta;
 
   expanded = signal(false);
+  mostrarConfirm = signal(false);
 
   toggle(): void {
     this.expanded.update(v => !v);
@@ -23,9 +25,16 @@ export class PlantaCardComponent {
 
   eliminar(event: Event): void {
     event.stopPropagation(); // evita que s'expandeixi la card
-    const nom = this.planta.nombre_planta;
-    if (!confirm(`¿Estás seguro de que deseas eliminar ${nom} de tu huerto?`)) return;
+    this.mostrarConfirm.set(true);
+  }
+
+  confirmarEliminar(): void {
     this.plantasService.deletePlanta(this.planta.planta_id);
+    this.mostrarConfirm.set(false);
+  }
+
+  cancelarEliminar(): void {
+    this.mostrarConfirm.set(false);
   }
 
   getEstadoLabel(): string {

@@ -120,6 +120,8 @@ def eliminar_planta_usuario(
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
+    print(f"DELETE: firebase_uid={firebase_uid}, planta_id={planta_id}, usuario={usuario.usuario_id if usuario else None}")
+
     planta = db.query(models.PUsuario).filter(
         models.PUsuario.usuario_id == usuario.usuario_id,
         models.PUsuario.planta_id == planta_id
