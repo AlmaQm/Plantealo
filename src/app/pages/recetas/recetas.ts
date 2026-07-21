@@ -39,9 +39,9 @@ export class RecetasComponent implements OnInit {
   dietaUsuario: TipoDieta = 'OMNIVORA';
 
   readonly dietaChips: { value: TipoDieta; label: string }[] = [
-    { value: 'VEGETARIANA', label: '🥬 Vegetariana' },
-    { value: 'VEGANA',      label: '🌱 Vegana'      },
-    { value: 'OMNIVORA',    label: '🍖 Omnívora'    }
+    { value: 'OMNIVORA',    label: 'Omnívora'    },
+    { value: 'VEGETARIANA', label: 'Vegetariana' },
+    { value: 'VEGANA',      label: 'Vegana'      }
   ];
 
   // Vacío a propósito: sin dieta preseleccionada se muestran todas las recetas
@@ -59,6 +59,9 @@ export class RecetasComponent implements OnInit {
 
   // Selección múltiple: vacío = todas las categorías.
   categoriasActivas = new Set<CategoriaFiltro>();
+
+  // Panel plegable de filtros dentro del sticky header (dieta + categoría).
+  readonly filtrosAbiertos = signal(false);
 
   ngOnInit(): void {
     // Solo para el texto del subtítulo ("...preferencias Omnívora"); ya NO
@@ -99,23 +102,24 @@ export class RecetasComponent implements OnInit {
     this.applyFilters();
   }
 
-  toggleDieta(dieta: TipoDieta): void {
-    if (dieta === 'OMNIVORA') {
-      // Omnívora = dieta libre: limpia cualquier filtro de dieta activo.
-      this.dietasActivas = new Set();
-      this.applyFilters();
-      return;
-    }
-    // Vegetariana/Vegana son exclusivas entre sí y desmarcan Omnívora
-    // automáticamente (Omnívora no se guarda en el Set, se deriva de que
-    // esté vacío; ver isDietaActiva()).
-    const yaActiva = this.dietasActivas.has(dieta);
-    this.dietasActivas = new Set(yaActiva ? [] : [dieta]);
-    this.applyFilters();
+  toggleFiltros(): void {
+    this.filtrosAbiertos.update(v => !v);
   }
 
-  isDietaActiva(dieta: TipoDieta): boolean {
-    return dieta === 'OMNIVORA' ? this.dietasActivas.size === 0 : this.dietasActivas.has(dieta);
+  filtrosActivos(): number {
+    return this.dietasActivas.size + this.categoriasActivas.size;
+  }
+
+  toggleDieta(dieta: TipoDieta): void {
+    // Selección múltiple libre, igual que toggleCategoria(): cada dieta se
+    // marca/desmarca de forma independiente, sin exclusividad ni cascada.
+    if (this.dietasActivas.has(dieta)) {
+      this.dietasActivas.delete(dieta);
+    } else {
+      this.dietasActivas.add(dieta);
+    }
+    this.dietasActivas = new Set(this.dietasActivas);
+    this.applyFilters();
   }
 
   onSearchChange(): void {
@@ -137,12 +141,11 @@ export class RecetasComponent implements OnInit {
       );
     }
 
-    // Inclusión: Vegana ve solo veganas; Vegetariana ve vegetarianas + veganas;
-    // sin dieta activa se ven todas (omnívoras, vegetarianas y veganas).
-    if (this.dietasActivas.has('VEGANA')) {
-      result = result.filter(r => r.tipo_dieta === 'VEGANA');
-    } else if (this.dietasActivas.has('VEGETARIANA')) {
-      result = result.filter(r => r.tipo_dieta === 'VEGETARIANA' || r.tipo_dieta === 'VEGANA');
+    // Selección múltiple libre: sin filtro activo se ven todas; con uno o
+    // más marcados, solo las recetas cuyo tipo_dieta coincida con alguno
+    // de los seleccionados (mismo patrón que categoriasActivas).
+    if (this.dietasActivas.size > 0) {
+      result = result.filter(r => this.dietasActivas.has(r.tipo_dieta as TipoDieta));
     }
 
     result.sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);

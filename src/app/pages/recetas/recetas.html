@@ -23,7 +23,7 @@
     @for (chip of dietaChips; track chip.value) {
       <button
         class="dieta-chip"
-        [class.active]="isDietaActiva(chip.value)"
+        [class.active]="dietasActivas.has(chip.value)"
         (click)="toggleDieta(chip.value)">
         {{ chip.label }}
       </button>
