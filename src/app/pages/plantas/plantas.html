@@ -1,17 +1,14 @@
 <div class="plantas-page">
 
-  <header class="plantas-page__header">
-    <div>
-      <h1 class="plantas-page__titulo">Inventario</h1>
-      <p class="plantas-page__contador">{{ plantasFiltradas().length }} plantas</p>
+  <app-page-header
+    [titulo]="'Inventario'"
+    [subtitulo]="plantasFiltradas().length + ' plantas'">
+    <div class="plantas-page__filtros">
+      <button class="filtro-btn" [class.active]="filtroActivo() === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
+      <button class="filtro-btn" [class.active]="filtroActivo() === 'INTERIOR'" (click)="setFiltro('INTERIOR')">Interior</button>
+      <button class="filtro-btn" [class.active]="filtroActivo() === 'EXTERIOR'" (click)="setFiltro('EXTERIOR')">Exterior</button>
     </div>
-  </header>
-
-  <div class="plantas-page__filtros">
-    <button class="filtro-btn" [class.active]="filtroActivo() === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
-    <button class="filtro-btn" [class.active]="filtroActivo() === 'INTERIOR'" (click)="setFiltro('INTERIOR')">Interior</button>
-    <button class="filtro-btn" [class.active]="filtroActivo() === 'EXTERIOR'" (click)="setFiltro('EXTERIOR')">Exterior</button>
-  </div>
+  </app-page-header>
 
   <div class="plantas-page__lista">
     @if (plantasFiltradas().length === 0) {

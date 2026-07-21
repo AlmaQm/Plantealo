@@ -31,7 +31,7 @@ html, body {
   padding: 0;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   background-color: $earth-0;
 }
 
@@ -499,7 +499,7 @@ router-outlet { display: none; }
 app-root {
   display: block;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 app-home,
@@ -514,5 +514,5 @@ app-register {
   width: 100%;
   min-height: 100vh;
   background-color: $earth-0;
-  overflow-x: hidden;
+  overflow-x: clip;
 }

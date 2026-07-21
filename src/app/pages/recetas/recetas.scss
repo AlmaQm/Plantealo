@@ -6,9 +6,7 @@
   min-height: 100vh;
   background-color: $earth-1;
   
-  &__header {
-    padding: 8px 0 16px;
-  }
+  // El header el pinta <app-page-header>; les dieta-chips van al seu ng-content.
 
   &__titulo {
     font-size: 28px;

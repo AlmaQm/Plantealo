@@ -16,6 +16,15 @@
   margin: 0 auto;
 }
 
+:host header {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background-color: $md-bg; // fons real de la pàgina (no $earth-1)
+  padding: 20px 20px 10px;
+  margin: 0 -20px;
+}
+
 header {
   display: flex;
   justify-content: space-between;

@@ -1,11 +1,9 @@
 <div class="comunidad-page">
 
-  <header class="comunidad-page__header">
-    <div>
-      <h1 class="comunidad-page__titulo">Comunidad</h1>
-      <p class="comunidad-page__subtitulo">Comparte y descubre con otros jardineros</p>
-    </div>
-  </header>
+  <app-page-header
+    [titulo]="'Comunidad'"
+    [subtitulo]="'Comparte y descubre con otros jardineros'">
+  </app-page-header>
 
   <div class="comunidad-page__feed">
     @for (pub of feed(); track pub.publicacion_id) {

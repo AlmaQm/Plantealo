@@ -1,0 +1,9 @@
+<header class="page-header"
+        [class.page-header--md]="bg() === 'md-bg'"
+        [class.page-header--earth]="bg() === 'earth-1'">
+  <h1 class="page-header__titulo">{{ titulo() }}</h1>
+  @if (subtitulo()) {
+    <p class="page-header__subtitulo">{{ subtitulo() }}</p>
+  }
+  <ng-content></ng-content>
+</header>

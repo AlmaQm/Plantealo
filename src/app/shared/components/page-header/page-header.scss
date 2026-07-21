@@ -1,0 +1,37 @@
+@use 'styles/model-d-home' as *;
+@use 'styles/variables' as vars;
+
+.page-header {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  padding: 20px 16px 12px;
+  margin: 0 -16px;
+
+  &--earth {
+    background-color: vars.$earth-1;
+  }
+  &--md {
+    background-color: $md-bg;
+  }
+
+  &__titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: $md-ink;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  &__subtitulo {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $md-ink-muted;
+    margin: 4px 0 0;
+  }
+}

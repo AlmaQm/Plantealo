@@ -1,48 +1,31 @@
 <div class="recetas-page">
 
-  <header class="recetas-page__header">
-    <div>
-      <h1 class="recetas-page__titulo">Recetas</h1>
-      <p class="recetas-page__subtitulo">Basadas en tu huerto y preferencias {{ getDietaText() }}</p>
+  <app-page-header
+    [titulo]="'Recetas'"
+    [subtitulo]="'Basadas en tu huerto y preferencias ' + getDietaText()">
+    <div class="recetas-page__dieta-chips">
+      @for (chip of dietaChips; track chip.value) {
+        <button
+          class="dieta-chip"
+          [class.active]="dietasActivas.has(chip.value)"
+          (click)="toggleDieta(chip.value)">
+          {{ chip.label }}
+        </button>
+      }
     </div>
-  </header>
-  
-  <!-- <div class="recetas-page__search">
-    <div class="search-box">
-      <input 
-        type="text" 
-        [(ngModel)]="searchTerm" 
-        (ngModelChange)="onSearchChange()"
-        placeholder="Buscar recetas por nombre o ingredientes..."
-        class="search-input">
-      <span class="search-icon">🔍</span>
-    </div>
-  </div> -->
-  
-  <div class="recetas-page__dieta-chips">
-    @for (chip of dietaChips; track chip.value) {
-      <button
-        class="dieta-chip"
-        [class.active]="dietasActivas.has(chip.value)"
-        (click)="toggleDieta(chip.value)">
-        {{ chip.label }}
-      </button>
-    }
-  </div>
 
-  <div class="recetas-page__filters">
-    <div class="search-box">
-      <input 
-        type="text" 
-        [(ngModel)]="searchTerm" 
-        (ngModelChange)="onSearchChange()"
-        placeholder="Buscar recetas..."
-        class="search-input">
+    <div class="recetas-page__filters">
+      <div class="search-box">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+          placeholder="Buscar recetas..."
+          class="search-input">
+      </div>
     </div>
-    
-    
-  </div>
-  
+  </app-page-header>
+
   <div *ngIf="cargando" class="cargando">
     <p>Cargando recetas de tu huerto...</p>
   </div>

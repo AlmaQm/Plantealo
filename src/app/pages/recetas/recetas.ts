@@ -6,6 +6,7 @@ import { RecetasService } from '../../services/recetas.service';
 import { AuthService } from '../../services/auth';
 import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 import { RecetaHuerto } from '../../models/interfaces';
 
 type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
@@ -13,7 +14,7 @@ type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
 @Component({
   selector: 'app-recetas',
   standalone: true,
-  imports: [CommonModule, FormsModule, RecetaCardComponent, RecetaWindowComponent],
+  imports: [CommonModule, FormsModule, RecetaCardComponent, RecetaWindowComponent, PageHeaderComponent],
   templateUrl: './recetas.html',
   styleUrls: ['./recetas.scss']
 })
