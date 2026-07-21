@@ -146,7 +146,7 @@ export class RecetasComponent implements OnInit {
     // más marcados, solo las recetas cuyo tipo_dieta coincida con alguno
     // de los seleccionados (mismo patrón que categoriasActivas).
     if (this.dietasActivas.size > 0) {
-      result = result.filter(r => this.dietasActivas.has(r.tipo_dieta as TipoDieta));
+      result = result.filter(r => this.dietasActivas.has((r.tipo_dieta ?? '').toUpperCase().trim() as TipoDieta));
     }
 
     result.sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);

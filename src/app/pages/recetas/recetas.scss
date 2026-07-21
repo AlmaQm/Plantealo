@@ -6,7 +6,7 @@
   min-height: 100vh;
   background-color: $earth-1;
   
-  // El header el pinta <app-page-header>; les dieta-chips van al seu ng-content.
+  // El header el pinta <app-page-header>; cercador i panell de filtres van al seu ng-content.
 
   &__search {
     margin-bottom: 8px;
