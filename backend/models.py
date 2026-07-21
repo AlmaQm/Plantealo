@@ -74,6 +74,8 @@ class PUsuario(Base): # La planta personal del usuario
     f_siembra = Column(Date, nullable=False)
     f_recogida = Column(Date)
     estado_crecimiento = Column(String(20)) # PLANTADA, CRECIENDO, LISTA
+    ultimo_riego = Column(Date, nullable=True)
+    f_cosecha = Column(Date, nullable=True)
 
     __table_args__ = (
         UniqueConstraint('planta_id', 'usuario_id', name='uq_p_usuario_planta_usuario'),

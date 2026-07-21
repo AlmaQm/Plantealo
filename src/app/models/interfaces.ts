@@ -1,5 +1,6 @@
 export interface GardenTask {
   id: number;
+  tipo: 'RIEGO' | 'COSECHA' | 'ENFERMA';
   icon: string;
   image: string;
   title: string;
@@ -25,6 +26,8 @@ export interface Planta {
   clima?: string;
   freq_riego?: number;
   caracteristicas?: string;
+  ultimo_riego?: Date | null;
+  f_cosecha?: Date | null;
 }
 
 export interface Recipe {

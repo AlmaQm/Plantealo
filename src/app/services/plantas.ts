@@ -162,13 +162,27 @@ export function diasEntreRiegos(nombre: string): number {
   return DIAS_RIEGO[nombre] ?? 3;
 }
 
-// ─── Próximo riego según días transcurridos desde la siembra ─────────────────
+// ─── Próximo riego: 0 = toca hoy, negativo = atrasado esos días, positivo = días que faltan ──
 export function diasHastaProximoRiego(planta: Planta): number {
   const intervalo = planta.freq_riego ?? diasEntreRiegos(planta.nombre_planta);
+
+  if (planta.ultimo_riego) {
+    // Ya se ha regado alguna vez: el ciclo se ancla a esa fecha real, no a la siembra,
+    // así que si no se marca el riego, se queda "atrasado" en vez de saltarse el día.
+    const transcurridos = Math.floor((Date.now() - new Date(planta.ultimo_riego).getTime()) / 86_400_000);
+    return intervalo - transcurridos;
+  }
+
   const transcurridos = Math.floor((Date.now() - new Date(planta.f_siembra).getTime()) / 86_400_000);
   if (transcurridos <= 0) return intervalo;
   const resto = transcurridos % intervalo;
   return resto === 0 ? 0 : intervalo - resto;
+}
+
+// ─── ¿Esa fecha es el día de hoy? (para saber si una tarea se marcó hoy) ─────
+export function esHoy(fecha: Date | null | undefined): boolean {
+  if (!fecha) return false;
+  return new Date(fecha).toDateString() === new Date().toDateString();
 }
 
 // ─── Estado calculado según fechas reales ────────────────────────────────────
@@ -206,6 +220,8 @@ interface PUsuarioDetallAiven {
   f_siembra: string;
   f_recogida: string | null;
   estado_crecimiento: string;
+  ultimo_riego: string | null;
+  f_cosecha: string | null;
   nombre_planta: string;
   tipo_planta: string;
   freq_riego: number;
@@ -336,6 +352,28 @@ export class PlantasService {
     });
   }
 
+  async marcarRiego(plantaId: number, regado: boolean): Promise<void> {
+    if (!this.uid) return;
+    await firstValueFrom(
+      this.http.patch(
+        `${environment.apiUrl}/usuarios/by-uid/${this.uid}/plantas/${plantaId}/riego`,
+        { regado }
+      )
+    );
+    await this.cargarInventario(this.uid);
+  }
+
+  async marcarCosecha(plantaId: number, cosechado: boolean): Promise<void> {
+    if (!this.uid) return;
+    await firstValueFrom(
+      this.http.patch(
+        `${environment.apiUrl}/usuarios/by-uid/${this.uid}/plantas/${plantaId}/cosecha`,
+        { cosechado }
+      )
+    );
+    await this.cargarInventario(this.uid);
+  }
+
   // ── Mapeo backend (PUsuarioDetall) → Planta ─────────────────────────────────
   private mapPlanta(d: PUsuarioDetallAiven): Planta {
     const f_siembra = new Date(d.f_siembra);
@@ -355,6 +393,8 @@ export class PlantasService {
       clima:         d.clima ?? undefined,
       freq_riego:    d.freq_riego,
       caracteristicas: d.caracteristicas ?? undefined,
+      ultimo_riego:  d.ultimo_riego ? new Date(d.ultimo_riego) : null,
+      f_cosecha:     d.f_cosecha ? new Date(d.f_cosecha) : null,
     };
   }
 
