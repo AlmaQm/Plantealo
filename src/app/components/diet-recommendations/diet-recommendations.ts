@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, signal, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, signal, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { IonModal } from '@ionic/angular/standalone';
 import { switchMap } from 'rxjs';
@@ -17,6 +18,41 @@ interface Planta {
 }
 
 const IMG = (f: string) => `/assets/images/${f}`;
+
+const DESCRIPCIONES: Record<string, string> = {
+  'Habas':          'Legumbre de sabor suave e intenso valor proteico, rica en fibra y hierro. Aguanta bien el frío y mejora el suelo fijando nitrógeno.',
+  'Guisantes':      'Legumbre dulce que se come tierna o seca, fuente de proteína vegetal y vitamina C. Necesita un tutor donde trepar y suelo fresco.',
+  'Ajos':           'Bulbo aromático con propiedades antibacterianas, imprescindible en la cocina mediterránea. Se planta por dientes y tarda varios meses en madurar.',
+  'Espinacas':      'Hoja verde muy rica en hierro, ácido fólico y vitamina A. Crece rápido en clima fresco y no tolera bien el calor fuerte.',
+  'Lechugas':       'Hortaliza de hoja fresca y baja en calorías, ideal para ensaladas. Prefiere temperaturas suaves y riego constante.',
+  'Cebollas':       'Bulbo de sabor intenso, base de infinidad de recetas, con propiedades antioxidantes. Ciclo largo, se siembra en semillero y luego se trasplanta.',
+  'Tomates':        'Fruto rico en licopeno y vitamina C, uno de los cultivos estrella del huerto. Necesita calor, tutor y riego regular para dar buena cosecha.',
+  'Pimientos':      'Fruto muy rico en vitamina C, dulce o picante según la variedad. Le gusta el calor y tarda bastante en germinar.',
+  'Berenjenas':     'Hortaliza de piel morada y carne esponjosa, con potasio y fibra. Exige mucho calor y un suelo bien abonado.',
+  'Zanahorias':     'Raíz dulce y crujiente, muy rica en betacaroteno (vitamina A). Necesita suelo suelto y profundo para crecer recta.',
+  'Rábanos':        'Raíz picante de ciclo muy rápido, perfecta para quien empieza en el huerto. Lista para cosechar en solo 3-4 semanas.',
+  'Fresas':         'Fruto rojo dulce y muy rico en vitamina C y antioxidantes. Planta perenne que da mejor cosecha a partir del segundo año.',
+  'Puerros':        'Hortaliza de sabor suave, pariente de la cebolla, buena fuente de fibra. Ciclo largo, se trasplanta cuando el plantón tiene unos 15 cm.',
+  'Rúcula':         'Hoja de sabor picante y aromático, rica en vitamina K. Crece muy rápido y se puede cosechar varias veces.',
+  'Perejil':        'Hierba aromática muy usada como condimento, alta en vitamina C y hierro. Germina lento pero luego rebrota tras cada corte.',
+  'Cilantro':       'Hierba de aroma intenso, habitual en cocinas de todo el mundo. No tolera bien el trasplante, mejor sembrarla directa.',
+  'Menta':          'Planta aromática refrescante, usada en infusiones y cocina. Muy invasiva, se recomienda cultivarla en maceta.',
+  'Romero':         'Arbusto aromático mediterráneo, resistente a la sequía. Aporta aroma a carnes y panes y atrae polinizadores.',
+  'Pepinos':        'Hortaliza fresca con un 96% de agua, ideal para hidratarse en verano. Necesita calor y riego abundante.',
+  'Calabacines':    'Hortaliza versátil y muy productiva, baja en calorías. Una sola planta puede dar fruto durante semanas.',
+  'Judías verdes':  'Vaina tierna rica en fibra y vitaminas, se cosecha antes de que madure la semilla. Le gusta el calor suave y el riego regular.',
+  'Albahaca':       'Hierba aromática clave en la cocina mediterránea, buena compañera de los tomates. Prefiere sol pleno y calor.',
+  'Tomillo':        'Arbusto aromático muy resistente a la sequía, usado en infusiones y como condimento. Prefiere suelos secos y soleados.',
+  'Orégano':        'Hierba aromática intensa, base de la cocina italiana y griega. Muy resistente una vez establecida.',
+  'Cebollino':      'Hierba de sabor suave a cebolla, rica en vitamina K. Rebrota rápido tras cada corte, ideal en maceta.',
+  'Kale':           'Col rizada muy nutritiva, rica en vitamina K, C y antioxidantes. Mejora de sabor con las primeras heladas.',
+  'Acelgas':        'Hoja verde de tallo carnoso, rica en magnesio y vitamina A. Muy productiva y resistente al calor.',
+  'Brócoli':        'Col de inflorescencia verde, muy rica en vitamina C y fibra. Necesita espacio y temperaturas suaves para formar bien la cabeza.',
+  'Coliflor':       'Col de cabeza blanca compacta, fuente de vitamina C y fibra. Exigente en espacio y agua constante.',
+  'Remolacha':      'Raíz dulce de color intenso, rica en folatos y antioxidantes. Tolera bien el frío y necesita riego constante para raíces tiernas.',
+};
+
+const DESCRIPCION_GENERICA = 'Una planta ideal para tu huerto en esta época del año. Consulta el consejo de siembra para sacarle el máximo partido.';
 
 const CALENDARIO: Record<number, Planta[]> = {
   1: [
@@ -188,6 +224,7 @@ const MESES_CORTOS = ['E','F','M','A','M','J','J','A','S','O','N','D'];
 })
 export class DietRecommendationsComponent implements OnInit {
   @ViewChild('calModal') calModal!: IonModal;
+  @ViewChild('detalleModal') detalleModal!: IonModal;
 
   plantas: Planta[] = [];
   temporadas: Temporada[] = [];
@@ -201,11 +238,15 @@ export class DietRecommendationsComponent implements OnInit {
   plantadaReciente = signal<string | null>(null);
   private confirmTimer: any;
 
+  verduraSeleccionada = signal<Planta | null>(null);
+
   // Recomanació de recepta amb el sistema de recetes de l'Alma (RecetaHuerto)
   private readonly authService = inject(AuthService);
   private readonly recetasService = inject(RecetasService);
+  private readonly destroyRef = inject(DestroyRef);
   recetaRecomendada: RecetaHuerto | null = null;
-  usuarioId = 1;
+  usuarioId = 0;
+  private dietaUsuario = 'OMNIVORA';
   mostrarRecetaModal = signal(false);
 
   constructor(private plantasService: PlantasService) {}
@@ -218,25 +259,48 @@ export class DietRecommendationsComponent implements OnInit {
     this.estacionIcon = ESTACION_ICONOS[this.mesActual];
     this.plantas = CALENDARIO[this.mesActual] ?? [];
     this.temporadas = this.buildTemporadas();
-    this.usuarioId = this.authService.getStoredUser()?.usuario_id ?? 1;
-    this.cargarRecetaRecomendada();
+
+    // Esperamos al usuario real (currentUser$ sincroniza con Aiven de forma async);
+    // leer localStorage aquí de forma síncrona daba usuario_id=undefined en la
+    // primera carga y acababa recomendando recetas del huerto de otro usuario.
+    this.authService.currentUser$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(usuario => {
+      if (usuario?.usuario_id) {
+        this.usuarioId = usuario.usuario_id;
+        this.dietaUsuario = usuario.tipo_dieta || 'OMNIVORA';
+        this.cargarRecetaRecomendada();
+      } else {
+        this.recetaRecomendada = null;
+      }
+    });
   }
 
   seleccionarMes(i: number) {
     this.mesSeleccionado.set(i + 1);
   }
 
-  // Recomana una recepta segons l'hort de l'usuari, usant el feed de l'Alma.
+  // Recomana una recepta segons l'hort de l'usuari, usant el feed de l'Alma:
+  // se descarta lo que no encaje con su dieta (misma jerarquía que la página
+  // de Recetas: vegana ve solo veganas, vegetariana ve vegetarianas+veganas)
+  // y de lo que queda se coge la que menos ingredientes le falten.
   private cargarRecetaRecomendada(): void {
     this.recetasService.getPlantasUsuarioIds(this.usuarioId).pipe(
       switchMap(idsPlantas => this.recetasService.getFeed(idsPlantas, this.usuarioId))
     ).subscribe({
       next: (recetas) => {
-        // El backend ja retorna el feed ordenat; agafem la primera (millor match).
-        this.recetaRecomendada = recetas[0] ?? null;
+        const compatibles = recetas.filter(r => this.encajaConDieta(r.tipo_dieta));
+        const [mejor] = [...compatibles].sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);
+        this.recetaRecomendada = mejor ?? null;
       },
       error: () => { this.recetaRecomendada = null; },
     });
+  }
+
+  private encajaConDieta(tipoDietaReceta?: string): boolean {
+    if (this.dietaUsuario === 'VEGANA') return tipoDietaReceta === 'VEGANA';
+    if (this.dietaUsuario === 'VEGETARIANA') return tipoDietaReceta === 'VEGETARIANA' || tipoDietaReceta === 'VEGANA';
+    return true; // OMNIVORA ve todas
   }
 
   abrirReceta(): void {
@@ -291,5 +355,23 @@ export class DietRecommendationsComponent implements OnInit {
 
   abrirCalendario() {
     this.calModal.present();
+  }
+
+  abrirDetalle(planta: Planta) {
+    this.verduraSeleccionada.set(planta);
+    this.detalleModal.present();
+  }
+
+  getDescripcion(nombre: string): string {
+    return DESCRIPCIONES[nombre] ?? DESCRIPCION_GENERICA;
+  }
+
+  getMesesSiembra(nombre: string): number[] {
+    return this.temporadas.find(t => t.nombre === nombre)?.meses ?? [];
+  }
+
+  getMesesSiembraTexto(nombre: string): string {
+    const meses = this.getMesesSiembra(nombre);
+    return meses.map(m => MESES[m - 1]).join(', ');
   }
 }
