@@ -41,19 +41,23 @@ export class HomeComponent {
   tasks = computed<GardenTask[]>(() => {
     const done = this.completedIds();
     return this.plantasService.inventario()
-      .map(p => {
-        const estado = calcularEstado(p);
-        const dias   = diasRestantes(p);
-        const riego  = diasHastaProximoRiego(p);
-        return {
-          id:          p.planta_id,
-          icon:        ICONOS[estado] ?? '🌿',
-          image:       p.imagen_url,
-          title:       p.nombre_planta,
-          description: this.descripcion(estado, dias, riego),
-          completed:   done.has(p.planta_id),
-        };
-      })
+      .map(p => ({
+        p,
+        estado: calcularEstado(p),
+        dias:   diasRestantes(p),
+        riego:  diasHastaProximoRiego(p),
+      }))
+      // solo mostramos la planta hoy si hay algo accionable: toca regar,
+      // está lista para cosechar o necesita atención por enfermedad.
+      .filter(({ estado, riego }) => estado === 'ENFERMA' || estado === 'LISTA' || riego === 0)
+      .map(({ p, estado, dias }) => ({
+        id:          p.planta_id,
+        icon:        ICONOS[estado] ?? '🌿',
+        image:       p.imagen_url,
+        title:       p.nombre_planta,
+        description: this.descripcion(estado, dias),
+        completed:   done.has(p.planta_id),
+      }))
       .sort((a, b) => {
         const ua = URGENCIA[this.estadoDesdeTitulo(a)] ?? 9;
         const ub = URGENCIA[this.estadoDesdeTitulo(b)] ?? 9;
@@ -91,7 +95,7 @@ export class HomeComponent {
     });
   }
 
-  private descripcion(estado: string, dias: number, diasRiego: number): string {
+  private descripcion(estado: string, dias: number): string {
     switch (estado) {
       case 'LISTA':     return dias < 0
                           ? `Lista para cosechar — no esperes más`
@@ -101,9 +105,7 @@ export class HomeComponent {
         const cosecha = dias > 0
           ? `Lista en ${dias} día${dias === 1 ? '' : 's'}`
           : 'Revisa si está lista';
-        return diasRiego === 0
-          ? `Riega hoy · ${cosecha}`
-          : `Próximo riego en ${diasRiego} día${diasRiego === 1 ? '' : 's'} · ${cosecha}`;
+        return `Riega hoy · ${cosecha}`;
       }
       case 'ENFERMA':   return 'Necesita atención urgente';
       default:          return 'Revisar estado';

@@ -164,7 +164,7 @@ export function diasEntreRiegos(nombre: string): number {
 
 // ─── Próximo riego según días transcurridos desde la siembra ─────────────────
 export function diasHastaProximoRiego(planta: Planta): number {
-  const intervalo = diasEntreRiegos(planta.nombre_planta);
+  const intervalo = planta.freq_riego ?? diasEntreRiegos(planta.nombre_planta);
   const transcurridos = Math.floor((Date.now() - new Date(planta.f_siembra).getTime()) / 86_400_000);
   if (transcurridos <= 0) return intervalo;
   const resto = transcurridos % intervalo;
