@@ -44,6 +44,8 @@ class PUsuarioBase(BaseModel):
     f_siembra: date
     f_recogida: Optional[date] = None
     estado_crecimiento: str
+    ultimo_riego: Optional[date] = None
+    f_cosecha: Optional[date] = None
 
 class PUsuarioCreate(PUsuarioBase):
     planta_id: int  # especie del catálogo (plantas.planta_id) que se está plantando
@@ -54,6 +56,13 @@ class PUsuario(PUsuarioBase):
     usuario_id: int
     class Config:
         from_attributes = True
+
+# Marcar riego / cosecha hechos (o deshacer el check)
+class RiegoUpdate(BaseModel):
+    regado: bool = True
+
+class CosechaUpdate(BaseModel):
+    cosechado: bool = True
 
 # Planta Catálogo
 class PlantaCatCreate(BaseModel):
@@ -86,6 +95,8 @@ class PUsuarioDetall(BaseModel):
     f_siembra: date
     f_recogida: Optional[date] = None
     estado_crecimiento: str
+    ultimo_riego: Optional[date] = None
+    f_cosecha: Optional[date] = None
     # Camps del catàleg (PlantaCat)
     nombre_planta: str
     tipo_planta: str

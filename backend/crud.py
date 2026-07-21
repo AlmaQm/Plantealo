@@ -3,6 +3,7 @@ from sqlalchemy import func, case, select, insert, delete, and_
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 from typing import List, Optional
+from datetime import date
 import models
 import schemas
 
@@ -96,6 +97,30 @@ def get_plantas_usuario(db, usuario_id: int):
         .filter(models.PUsuario.usuario_id == usuario_id)
         .all()
     )
+
+def _get_planta_usuario(db: Session, usuario_id: int, planta_id: int):
+    return db.query(models.PUsuario).filter(
+        models.PUsuario.usuario_id == usuario_id,
+        models.PUsuario.planta_id == planta_id
+    ).first()
+
+def marcar_riego(db: Session, usuario_id: int, planta_id: int, regado: bool):
+    planta = _get_planta_usuario(db, usuario_id, planta_id)
+    if not planta:
+        return None
+    planta.ultimo_riego = date.today() if regado else None
+    db.commit()
+    db.refresh(planta)
+    return planta
+
+def marcar_cosecha(db: Session, usuario_id: int, planta_id: int, cosechado: bool):
+    planta = _get_planta_usuario(db, usuario_id, planta_id)
+    if not planta:
+        return None
+    planta.f_cosecha = date.today() if cosechado else None
+    db.commit()
+    db.refresh(planta)
+    return planta
 
 # --- LÓGICA PARA COMUNIDAD ---
 

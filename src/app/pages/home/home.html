@@ -23,7 +23,11 @@
             @for (t of tasksVisibles(); track t.id) {
                <app-task-item [task]="t" (toggle)="toggleTask($event)"></app-task-item>
             } @empty {
-               <p class="tasks-empty">No tienes plantas en tu huerto aún. ¡Añade alguna!</p>
+               @if (totalPlantas() === 0) {
+                  <p class="tasks-empty">No tienes plantas en tu huerto aún. ¡Añade alguna!</p>
+               } @else {
+                  <p class="tasks-empty">No tienes tareas pendientes hoy.</p>
+               }
             }
          </div>
          @if (tasks().length > 3) {
