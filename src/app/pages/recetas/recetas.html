@@ -30,6 +30,18 @@
     }
   </div>
 
+  <div class="recetas-page__categoria-chips">
+    @for (chip of categoriaChips; track chip.value) {
+      <button
+        type="button"
+        class="categoria-chip"
+        [class.active]="categoriaSeleccionada === chip.value"
+        (click)="filtrarPorCategoria(chip.value)">
+        {{ chip.label }}
+      </button>
+    }
+  </div>
+
   <div class="recetas-page__filters">
     <div class="search-box">
       <input 

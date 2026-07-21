@@ -36,11 +36,8 @@ def crear_planta_usuario(db: Session, planta: schemas.PUsuarioCreate, usuario_id
 
 def get_plantas_ids_usuario(db: Session, usuario_id: int) -> List[int]:
     filas = (
-        db.query(models.PUsuario.planta_cat_id)
-        .filter(
-            models.PUsuario.usuario_id == usuario_id,
-            models.PUsuario.planta_cat_id.isnot(None)
-        )
+        db.query(models.PUsuario.planta_id)
+        .filter(models.PUsuario.usuario_id == usuario_id)
         .distinct()
         .all()
     )
