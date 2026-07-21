@@ -64,22 +64,23 @@ class PlantaCat(Base): # El catálogo (Interfaces)
 
 class PUsuario(Base): # La planta personal del usuario
     __tablename__ = "p_usuario"
-
+    # Esquema alineado con feature/plantas-mejoras (ya aplicado en Aiven):
+    # 'id' es la PK real; 'planta_id' es la especie del catálogo (FK a plantas.planta_id),
+    # con UNIQUE(planta_id, usuario_id) para que un usuario no repita especie pero
+    # distintos usuarios sí puedan tener la misma planta.
     id = Column(Integer, primary_key=True, autoincrement=True)
-    planta_id = Column(Integer, ForeignKey("plantas.planta_id"),
-                       nullable=False, index=True)
-    usuario_id = Column(Integer, ForeignKey("usuario.usuario_id"),
-                        nullable=False)
+    planta_id = Column(Integer, ForeignKey("plantas.planta_id"), nullable=False, index=True)
+    usuario_id = Column(Integer, ForeignKey("usuario.usuario_id"), nullable=False)
     f_siembra = Column(Date, nullable=False)
     f_recogida = Column(Date)
     estado_crecimiento = Column(String(20)) # PLANTADA, CRECIENDO, LISTA
 
     __table_args__ = (
-        UniqueConstraint('planta_id', 'usuario_id',
-                         name='uq_p_usuario_planta_usuario'),
+        UniqueConstraint('planta_id', 'usuario_id', name='uq_p_usuario_planta_usuario'),
     )
 
     propietario = relationship("Usuario", back_populates="mis_plantas")
+    especie = relationship("PlantaCat")
 
 class Receta(Base):
     __tablename__ = "recetas"
@@ -96,6 +97,8 @@ class Receta(Base):
     instrucciones = Column(Text)
     tips = Column(String(50))
     imagen_url = Column(String(100))
+
+    ingredientes = relationship("Ingrediente", secondary=receta_ingredientes, backref="recetas")
 
 class Ingrediente(Base):
     __tablename__ = "ingredientes"

@@ -1,12 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RecipesService } from '../../services/recipes';
+import { switchMap } from 'rxjs';
+import { RecetasService } from '../../services/recetas.service';
 import { AuthService } from '../../services/auth';
 import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
-import { Recipe, GardenPlant } from '../../models/interfaces';
-import { RECETAS_LOCALES } from '../../data/recetas-locales';
+import { RecetaHuerto } from '../../models/interfaces';
 
 type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
 
@@ -19,12 +19,17 @@ type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
 })
 export class RecetasComponent implements OnInit {
   private readonly authService = inject(AuthService);
-  private readonly recipesService = inject(RecipesService);
+  private readonly recetasService = inject(RecetasService);
 
-  recipes: Recipe[] = [];
-  filteredRecipes: Recipe[] = [];
-  selectedRecipe: Recipe | null = null;
+  recipes: RecetaHuerto[] = [];
+  filteredRecipes: RecetaHuerto[] = [];
+  selectedRecipe: RecetaHuerto | null = null;
   searchTerm = '';
+  cargando = false;
+
+  // TODO: sustituir por el usuario_id real una vez exista el mapeo entre
+  // el uid de Firebase (AuthService) y el usuario_id numérico de Postgres.
+  readonly usuarioId = 1;
 
   dietaUsuario: TipoDieta = 'OMNIVORA';
 
@@ -36,17 +41,6 @@ export class RecetasComponent implements OnInit {
 
   dietasActivas = new Set<TipoDieta>([this.dietaUsuario]);
 
-  gardenPlants: GardenPlant[] = [
-    { id: '1', name: 'tomate',   quantity: 5,  unit: 'plantas' },
-    { id: '2', name: 'lechuga',  quantity: 10, unit: 'plantas' },
-    { id: '3', name: 'albahaca', quantity: 3,  unit: 'plantas' },
-    { id: '4', name: 'menta',    quantity: 2,  unit: 'plantas' },
-    { id: '5', name: 'pepino',   quantity: 4,  unit: 'plantas' },
-    { id: '6', name: 'perejil',  quantity: 3,  unit: 'plantas' },
-    { id: '7', name: 'cilantro', quantity: 2,  unit: 'plantas' }
-  ];
-
-
   ngOnInit(): void {
     const usuario = this.authService.getStoredUser();
     if (usuario?.tipo_dieta) {
@@ -54,10 +48,24 @@ export class RecetasComponent implements OnInit {
     }
     this.dietasActivas = new Set<TipoDieta>([this.dietaUsuario]);
 
-    this.recipes = RECETAS_LOCALES.map(r =>
-      this.recipesService.updateGardenCompatibility(r, this.gardenPlants)
-    );
-    this.applyFilters();
+    this.cargarFeed();
+  }
+
+  private cargarFeed(): void {
+    this.cargando = true;
+    this.recetasService.getPlantasUsuarioIds(this.usuarioId).pipe(
+      switchMap(idsPlantas => this.recetasService.getFeed(idsPlantas, this.usuarioId))
+    ).subscribe({
+      next: (recetas) => {
+        this.recipes = recetas;
+        this.cargando = false;
+        this.applyFilters();
+      },
+      error: (err) => {
+        console.error('Error al cargar el feed de recetas:', err);
+        this.cargando = false;
+      }
+    });
   }
 
   toggleDieta(dieta: TipoDieta): void {
@@ -81,27 +89,21 @@ export class RecetasComponent implements OnInit {
       const term = this.searchTerm.toLowerCase();
       result = result.filter(r =>
         r.nombre_receta.toLowerCase().includes(term) ||
-        r.descripcion.toLowerCase().includes(term)
+        (r.descripcion ?? '').toLowerCase().includes(term)
       );
     }
 
     if (this.dietasActivas.size > 0) {
-      result = result.filter(r => this.dietasActivas.has(r.tipo_dieta));
+      result = result.filter(r => this.dietasActivas.has(r.tipo_dieta as TipoDieta));
     }
 
-    result.sort((a, b) =>
-      this.recipesService.calculateCompatibility(b) -
-      this.recipesService.calculateCompatibility(a)
-    );
+    result.sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);
 
     this.filteredRecipes = result;
   }
 
-  openRecipeDetail(recipe: Recipe): void { this.selectedRecipe = recipe; }
+  openRecipeDetail(recipe: RecetaHuerto): void { this.selectedRecipe = recipe; }
   closeRecipeDetail(): void { this.selectedRecipe = null; }
-  getCompatibility(recipe: Recipe): number {
-    return this.recipesService.calculateCompatibility(recipe);
-  }
 
   getDietaText(): string {
     const map: Record<TipoDieta, string> = {

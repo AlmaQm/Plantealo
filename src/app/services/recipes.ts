@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Recipe, GardenPlant } from '../models/interfaces';
-import { RECETAS_LOCALES } from '../data/recetas-locales';
+// import { RECETAS_LOCALES } from '../data/recetas-locales'; // deshabilitado: el archivo no tiene exports (TS2306)
+const RECETAS_LOCALES: Recipe[] = [];
 
 @Injectable({
   providedIn: 'root'

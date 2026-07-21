@@ -28,7 +28,11 @@
                      [class.is-rain]="weatherService.esLluvia(weatherService.getIconoDia(dia))"
                      [lucideIcon]="weatherService.getIconoDia(dia)"></svg>
                   <div class="temp-current">{{ dia.temperatura.maxima }}°</div>
-                  <div class="cond-label">{{ weatherService.getDescripcionDia(dia) }}</div>
+                  <div class="cond-label">
+                     @for (word of weatherService.getDescripcionDia(dia).split(' '); track word) {
+                        <span class="cond-word">{{ word }}</span>
+                     }
+                  </div>
                </div>
 
                <div class="weather-divider"></div>

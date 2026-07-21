@@ -1,7 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Recipe, GardenPlant } from '../../../models/interfaces';
-import { RecipesService } from '../../../services/recipes';
+import { RecetaHuerto } from '../../../models/interfaces';
+import { getFaltantesIcono, getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
 
 @Component({
   selector: 'app-receta-window',
@@ -10,26 +10,12 @@ import { RecipesService } from '../../../services/recipes';
   templateUrl: './receta-window.html',
   styleUrls: ['./receta-window.scss']
 })
-export class RecetaWindowComponent implements OnInit {
-  @Input() recipe: Recipe | null = null;
-  @Input() gardenPlants: GardenPlant[] = [];
+export class RecetaWindowComponent {
+  @Input() recipe: RecetaHuerto | null = null;
   @Output() close = new EventEmitter<void>();
 
-  compatibilityPercentage = 0;
-  ingredientsBySource: { fromGarden: any[]; missing: any[] } = { fromGarden: [], missing: [] };
-
-  constructor(private recipesService: RecipesService) {}
-
-  ngOnInit(): void {
-    if (this.recipe) {
-      const updated = this.recipesService.updateGardenCompatibility(this.recipe, this.gardenPlants);
-      this.recipe = updated;
-      this.compatibilityPercentage = this.recipesService.calculateCompatibility(updated);
-      this.ingredientsBySource = {
-        fromGarden: updated.ingredientes.filter(i => i.isFromGarden),
-        missing:    updated.ingredientes.filter(i => !i.isFromGarden)
-      };
-    }
+  getTiempo(): string {
+    return formatTiempoPreparacion(this.recipe?.tiempo_preparacion);
   }
 
   getCategoriaText(): string {
@@ -37,7 +23,7 @@ export class RecetaWindowComponent implements OnInit {
       'ENTRANTE': '🥗 Entrante', 'PRINCIPAL': '🍽️ Principal',
       'POSTRE': '🍰 Postre',    'BEBIDA': '🥤 Bebida'
     };
-    return map[this.recipe?.categoria ?? ''] ?? '';
+    return map[this.recipe?.categoria ?? ''] ?? this.recipe?.categoria ?? '';
   }
 
   getDietaText(): string {
@@ -45,6 +31,25 @@ export class RecetaWindowComponent implements OnInit {
       'VEGANA': '🌱 Vegana', 'VEGETARIANA': '🥬 Vegetariana', 'OMNIVORA': '🍖 Omnívora'
     };
     return map[this.recipe?.tipo_dieta ?? ''] ?? '';
+  }
+
+  getFaltantesIcono(): string {
+    return this.recipe ? getFaltantesIcono(this.recipe.ingredientes_faltantes) : '';
+  }
+
+  getFaltantesTexto(): string {
+    return this.recipe ? getFaltantesTexto(this.recipe.ingredientes_faltantes) : '';
+  }
+
+  getFaltantesClase(): string {
+    return this.recipe ? getFaltantesClase(this.recipe.ingredientes_faltantes) : '';
+  }
+
+  onImageError(): void {
+    const placeholder = 'assets/images/placeholder-receta.jpg';
+    if (this.recipe && this.recipe.imagen_url !== placeholder) {
+      this.recipe.imagen_url = placeholder;
+    }
   }
 
   onClose(): void { this.close.emit(); }
