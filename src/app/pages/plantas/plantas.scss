@@ -3,7 +3,7 @@
 .plantas-page {
   min-height: 100vh;
   background-color: $earth-1;
-  padding: 8px 16px 80px;
+  padding: 0 16px 80px;
 
   // El header ara el pinta <app-page-header>. Els filtres van dins del seu
   // ng-content, així que hereten el fons/sticky del page-header i només
