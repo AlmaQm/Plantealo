@@ -3,11 +3,9 @@
 .comunidad-page {
   min-height: 100vh;
   background-color: $earth-1;
-  padding: 0 0 80px;
+  padding: 0 16px 80px;
 
-  &__header {
-    padding: 24px 16px 16px;
-  }
+  // El header el pinta <app-page-header>.
 
   &__titulo {
     font-size: 28px;

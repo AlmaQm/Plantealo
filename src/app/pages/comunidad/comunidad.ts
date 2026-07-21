@@ -2,13 +2,14 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PublicacionCardComponent } from '../../shared/components/publicacion-card/publicacion-card';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 import { Publicacion } from '../../models/interfaces';
 import { ComunidadService } from '../../services/comunidad';
 
 @Component({
   selector: 'app-comunidad',
   standalone: true,
-  imports: [CommonModule, FormsModule, PublicacionCardComponent],
+  imports: [CommonModule, FormsModule, PublicacionCardComponent, PageHeaderComponent],
   templateUrl: './comunidad.html',
   styleUrls: ['./comunidad.scss']
 })

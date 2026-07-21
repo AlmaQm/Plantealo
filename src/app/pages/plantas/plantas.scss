@@ -3,32 +3,15 @@
 .plantas-page {
   min-height: 100vh;
   background-color: $earth-1;
-  padding: 24px 16px 80px;
+  padding: 0 16px 80px;
 
-  &__header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-
-  &__titulo {
-    font-size: 28px;
-    font-weight: 700;
-    color: $green-7;
-    margin: 0 0 2px 0;
-  }
-
-  &__contador {
-    font-size: 13px;
-    color: $green-5;
-    margin: 0;
-  }
-
+  // El header ara el pinta <app-page-header>. Els filtres van dins del seu
+  // ng-content, així que hereten el fons/sticky del page-header i només
+  // necessiten la disposició en fila i una mica de separació amunt.
   &__filtros {
     display: flex;
     gap: 8px;
-    margin-bottom: 20px;
+    padding-top: 8px;
   }
 
   &__lista {

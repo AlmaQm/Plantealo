@@ -6,6 +6,7 @@ import { PlantasService, getTipoPlanta, diasHastaCosecha } from '../../services/
 import { DatepickerComponent } from '../../components/datepicker/datepicker';
 import { SelectPlantasComponent, SelectOpcion } from '../../components/select-plantas/select-plantas';
 import { PlantaCardComponent } from '../../shared/components/planta-card/planta-card';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 
 
 type Filtro = 'TODAS' | 'INTERIOR' | 'EXTERIOR';
@@ -13,7 +14,7 @@ type Filtro = 'TODAS' | 'INTERIOR' | 'EXTERIOR';
 @Component({
   selector: 'app-plantas',
   standalone: true,
-  imports: [CommonModule, FormsModule, PlantaCardComponent, DatepickerComponent, SelectPlantasComponent],
+  imports: [CommonModule, FormsModule, PlantaCardComponent, DatepickerComponent, SelectPlantasComponent, PageHeaderComponent],
   templateUrl: './plantas.html',
   styleUrls: ['./plantas.scss']
 })

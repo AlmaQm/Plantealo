@@ -7,13 +7,22 @@
   background-color: $md-bg;
   color: $md-ink;
   font-family: $md-font;
-  padding: 20px 20px 90px;
+  padding: 0 20px 90px;
   box-sizing: border-box;
 }
 
 .container {
   max-width: 600px;
   margin: 0 auto;
+}
+
+:host header {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background-color: $md-bg; // fons real de la pàgina (no $earth-1)
+  padding: 20px 20px 20px;
+  margin: 0 -20px;
 }
 
 header {
