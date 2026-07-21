@@ -7,6 +7,7 @@ import { RecetasService } from '../../services/recetas.service';
 import { AuthService } from '../../services/auth';
 import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 import { RecetaHuerto } from '../../models/interfaces';
 
 type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
@@ -15,7 +16,7 @@ type CategoriaFiltro = 'PRINCIPAL' | 'ENTRANTE' | 'POSTRE' | 'BEBIDA' | 'GUARNIC
 @Component({
   selector: 'app-recetas',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCheckboxModule, RecetaCardComponent, RecetaWindowComponent],
+  imports: [CommonModule, FormsModule, MatCheckboxModule, PageHeaderComponent, RecetaCardComponent, RecetaWindowComponent],
   templateUrl: './recetas.html',
   styleUrls: ['./recetas.scss']
 })

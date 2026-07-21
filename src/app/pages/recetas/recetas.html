@@ -1,59 +1,65 @@
 <div class="recetas-page">
 
-  <header class="recetas-page__header">
-    <div>
-      <h1 class="recetas-page__titulo">Recetas</h1>
-      <p class="recetas-page__subtitulo">Basadas en tu huerto y preferencias {{ getDietaText() }}</p>
-    </div>
-  </header>
-  
-  <!-- <div class="recetas-page__search">
-    <div class="search-box">
-      <input 
-        type="text" 
-        [(ngModel)]="searchTerm" 
-        (ngModelChange)="onSearchChange()"
-        placeholder="Buscar recetas por nombre o ingredientes..."
-        class="search-input">
-      <span class="search-icon">🔍</span>
-    </div>
-  </div> -->
-  
-  <div class="recetas-page__dieta-chips">
-    @for (chip of dietaChips; track chip.value) {
-      <button
-        class="dieta-chip"
-        [class.active]="dietasActivas.has(chip.value)"
-        (click)="toggleDieta(chip.value)">
-        {{ chip.label }}
-      </button>
-    }
-  </div>
+  <app-page-header
+    [titulo]="'Recetas'"
+    [subtitulo]="'Basadas en tu huerto y preferencias ' + getDietaText()">
 
-  <div class="recetas-page__categoria-checkboxes">
-    @for (chip of categoriaChips; track chip.value) {
-      <mat-checkbox
-        color="primary"
-        [checked]="categoriasActivas.has(chip.value)"
-        (change)="toggleCategoria(chip.value)">
-        {{ chip.label }}
-      </mat-checkbox>
-    }
-  </div>
-
-  <div class="recetas-page__filters">
-    <div class="search-box">
-      <input 
-        type="text" 
-        [(ngModel)]="searchTerm" 
-        (ngModelChange)="onSearchChange()"
-        placeholder="Buscar recetas..."
-        class="search-input">
+    <div class="recetas-page__search">
+      <div class="search-box">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+          placeholder="Buscar recetas..."
+          class="search-input">
+      </div>
     </div>
-    
-    
-  </div>
-  
+
+    <button
+      type="button"
+      class="filters-toggle"
+      [class.filters-toggle--open]="filtrosAbiertos()"
+      (click)="toggleFiltros()">
+      <span>
+        Filtros
+        @if (filtrosActivos() > 0) {
+          <span class="filters-toggle__count">{{ filtrosActivos() }}</span>
+        }
+      </span>
+      <span class="filters-toggle__chev">▾</span>
+    </button>
+
+    <div
+      class="recetas-page__filtros-collapse"
+      [class.recetas-page__filtros-collapse--open]="filtrosAbiertos()">
+      <div class="recetas-page__filtros-panel">
+        <div class="recetas-page__seccion-label">Dieta</div>
+        <div class="recetas-page__dieta-row">
+          @for (chip of dietaChips; track chip.value) {
+            <mat-checkbox
+              color="primary"
+              [checked]="dietasActivas.has(chip.value)"
+              (change)="toggleDieta(chip.value)">
+              {{ chip.label }}
+            </mat-checkbox>
+          }
+        </div>
+
+        <div class="recetas-page__seccion-label">Categoría</div>
+        <div class="recetas-page__categoria-checkboxes">
+          @for (chip of categoriaChips; track chip.value) {
+            <mat-checkbox
+              color="primary"
+              [checked]="categoriasActivas.has(chip.value)"
+              (change)="toggleCategoria(chip.value)">
+              {{ chip.label }}
+            </mat-checkbox>
+          }
+        </div>
+      </div>
+    </div>
+  </app-page-header>
+
   <div *ngIf="cargando()" class="cargando">
     <p>Cargando recetas de tu huerto...</p>
   </div>
