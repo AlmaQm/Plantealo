@@ -28,12 +28,16 @@
     margin-bottom: 20px;
   }
 
-  &__categoria-chips {
-    display: flex;
-    gap: 8px;
+  &__categoria-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px 16px;
     justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
+    max-width: 480px;
+    margin: 0 auto 20px;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 16px;
   }
 
   &__filters {
@@ -116,30 +120,6 @@
 
   &:not(.active):hover {
     background: $green-1;
-  }
-}
-
-.categoria-chip {
-  padding: 8px 18px;
-  border-radius: 20px;
-  border: 1.5px solid $earth-9;
-  background: white;
-  color: $earth-9;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &.active {
-    background: $earth-9;
-    border-color: $earth-9;
-    color: white;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  }
-
-  &:not(.active):hover {
-    background: $earth-1;
-    transform: translateY(-1px);
   }
 }
 

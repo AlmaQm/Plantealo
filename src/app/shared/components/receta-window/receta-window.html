@@ -39,6 +39,23 @@
         </div>
       }
 
+      @if (recipe?.ingredientes?.length) {
+        <div class="content-section">
+          <h2>🧺 Ingredientes</h2>
+          <ul class="ingredientes-lista">
+            @for (ing of recipe.ingredientes; track ing.nombre_ingrediente) {
+              <li class="ingrediente" [class]="getClaseIngrediente(ing)">
+                <span class="ingrediente__icono">{{ ing.disponible ? '✔️' : '❌' }}</span>
+                <span class="ingrediente__nombre">{{ ing.nombre_ingrediente }}</span>
+                @if (ing.cantidad) {
+                  <span class="ingrediente__cantidad">{{ ing.cantidad }}</span>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
       @if (recipe.instrucciones) {
         <div class="content-section">
           <h2>📝 Instrucciones</h2>

@@ -166,6 +166,51 @@
   }
 }
 
+.ingredientes-lista {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.ingrediente {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  border-left: 4px solid transparent;
+
+  &__icono {
+    font-size: 16px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  &__nombre {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  &__cantidad {
+    font-size: 13px;
+    opacity: 0.8;
+    white-space: nowrap;
+  }
+
+  &--disponible {
+    background: $green-1;
+    color: $green-7;
+    border-left-color: $green-5;
+  }
+
+  &--faltante {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left-color: #dc2626;
+  }
+}
+
 .tips {
   display: grid;
   gap: 12px;

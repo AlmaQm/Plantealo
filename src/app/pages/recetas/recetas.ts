@@ -1,21 +1,21 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { switchMap } from 'rxjs';
 import { RecetasService } from '../../services/recetas.service';
 import { AuthService } from '../../services/auth';
 import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
-import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 import { RecetaHuerto } from '../../models/interfaces';
 
 type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
-type CategoriaFiltro = 'todas' | 'principal' | 'postre' | 'guarnición/salsa/bebida';
+type CategoriaFiltro = 'PRINCIPAL' | 'ENTRANTE' | 'POSTRE' | 'BEBIDA' | 'GUARNICION' | 'SALSA';
 
 @Component({
   selector: 'app-recetas',
   standalone: true,
-  imports: [CommonModule, FormsModule, RecetaCardComponent, RecetaWindowComponent, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, MatCheckboxModule, RecetaCardComponent, RecetaWindowComponent],
   templateUrl: './recetas.html',
   styleUrls: ['./recetas.scss']
 })
@@ -24,10 +24,13 @@ export class RecetasComponent implements OnInit {
   private readonly recetasService = inject(RecetasService);
 
   recipes: RecetaHuerto[] = [];
-  filteredRecipes: RecetaHuerto[] = [];
+  // Signals: esta app no usa zone.js, así que las propiedades planas que
+  // pinta la plantilla y se mutan dentro de un .subscribe() async no
+  // disparan detección de cambios por sí solas. Con signal() sí.
+  filteredRecipes = signal<RecetaHuerto[]>([]);
   selectedRecipe: RecetaHuerto | null = null;
   searchTerm = '';
-  cargando = false;
+  cargando = signal(false);
 
   // TODO: sustituir por el usuario_id real una vez exista el mapeo entre
   // el uid de Firebase (AuthService) y el usuario_id numérico de Postgres.
@@ -46,13 +49,16 @@ export class RecetasComponent implements OnInit {
   dietasActivas = new Set<TipoDieta>();
 
   readonly categoriaChips: { value: CategoriaFiltro; label: string }[] = [
-    { value: 'todas',                     label: 'Todas' },
-    { value: 'principal',                 label: 'Platos Principales' },
-    { value: 'postre',                    label: 'Postres' },
-    { value: 'guarnición/salsa/bebida',   label: 'Guarniciones / Salsas / Bebidas' }
+    { value: 'PRINCIPAL',   label: 'Platos Principales' },
+    { value: 'ENTRANTE',    label: 'Entrantes' },
+    { value: 'GUARNICION',  label: 'Guarniciones' },
+    { value: 'SALSA',       label: 'Salsas' },
+    { value: 'POSTRE',      label: 'Postres' },
+    { value: 'BEBIDA',      label: 'Bebidas' }
   ];
 
-  categoriaSeleccionada: CategoriaFiltro = 'todas';
+  // Selección múltiple: vacío = todas las categorías.
+  categoriasActivas = new Set<CategoriaFiltro>();
 
   ngOnInit(): void {
     // Solo para el texto del subtítulo ("...preferencias Omnívora"); ya NO
@@ -66,35 +72,50 @@ export class RecetasComponent implements OnInit {
   }
 
   private cargarFeed(): void {
-    this.cargando = true;
+    this.cargando.set(true);
     this.recetasService.getPlantasUsuarioIds(this.usuarioId).pipe(
       switchMap(idsPlantas => this.recetasService.getFeed(idsPlantas, this.usuarioId))
     ).subscribe({
       next: (recetas) => {
         this.recipes = recetas;
-        this.cargando = false;
+        this.cargando.set(false);
         this.applyFilters();
       },
       error: (err) => {
         console.error('Error al cargar el feed de recetas:', err);
-        this.cargando = false;
+        this.cargando.set(false);
       }
     });
   }
 
-  filtrarPorCategoria(categoria: CategoriaFiltro): void {
-    this.categoriaSeleccionada = categoria;
+  toggleCategoria(categoria: CategoriaFiltro): void {
+    // Selección múltiple: cada categoría se marca/desmarca de forma independiente.
+    if (this.categoriasActivas.has(categoria)) {
+      this.categoriasActivas.delete(categoria);
+    } else {
+      this.categoriasActivas.add(categoria);
+    }
+    this.categoriasActivas = new Set(this.categoriasActivas);
     this.applyFilters();
   }
 
   toggleDieta(dieta: TipoDieta): void {
-    if (this.dietasActivas.has(dieta)) {
-      this.dietasActivas.delete(dieta);
-    } else {
-      this.dietasActivas.add(dieta);
+    if (dieta === 'OMNIVORA') {
+      // Omnívora = dieta libre: limpia cualquier filtro de dieta activo.
+      this.dietasActivas = new Set();
+      this.applyFilters();
+      return;
     }
-    this.dietasActivas = new Set(this.dietasActivas);
+    // Vegetariana/Vegana son exclusivas entre sí y desmarcan Omnívora
+    // automáticamente (Omnívora no se guarda en el Set, se deriva de que
+    // esté vacío; ver isDietaActiva()).
+    const yaActiva = this.dietasActivas.has(dieta);
+    this.dietasActivas = new Set(yaActiva ? [] : [dieta]);
     this.applyFilters();
+  }
+
+  isDietaActiva(dieta: TipoDieta): boolean {
+    return dieta === 'OMNIVORA' ? this.dietasActivas.size === 0 : this.dietasActivas.has(dieta);
   }
 
   onSearchChange(): void {
@@ -104,8 +125,8 @@ export class RecetasComponent implements OnInit {
   applyFilters(): void {
     let result = [...this.recipes];
 
-    if (this.categoriaSeleccionada !== 'todas') {
-      result = result.filter(r => r.categoria === this.categoriaSeleccionada);
+    if (this.categoriasActivas.size > 0) {
+      result = result.filter(r => this.categoriasActivas.has((r.categoria ?? '').toUpperCase().trim() as CategoriaFiltro));
     }
 
     if (this.searchTerm.trim()) {
@@ -116,13 +137,17 @@ export class RecetasComponent implements OnInit {
       );
     }
 
-    if (this.dietasActivas.size > 0) {
-      result = result.filter(r => this.dietasActivas.has(r.tipo_dieta as TipoDieta));
+    // Inclusión: Vegana ve solo veganas; Vegetariana ve vegetarianas + veganas;
+    // sin dieta activa se ven todas (omnívoras, vegetarianas y veganas).
+    if (this.dietasActivas.has('VEGANA')) {
+      result = result.filter(r => r.tipo_dieta === 'VEGANA');
+    } else if (this.dietasActivas.has('VEGETARIANA')) {
+      result = result.filter(r => r.tipo_dieta === 'VEGETARIANA' || r.tipo_dieta === 'VEGANA');
     }
 
     result.sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);
 
-    this.filteredRecipes = result;
+    this.filteredRecipes.set(result);
   }
 
   openRecipeDetail(recipe: RecetaHuerto): void { this.selectedRecipe = recipe; }

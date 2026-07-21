@@ -172,9 +172,15 @@ class RecetaBase(BaseModel):
     class Config:
         from_attributes = True
 
+class IngredienteEstado(BaseModel):
+    nombre_ingrediente: str
+    cantidad: Optional[str] = None
+    disponible: bool
+
 class RecetaHuerto(RecetaBase):
     ingredientes_faltantes: int
     guardada: bool = False
+    ingredientes: List[IngredienteEstado] = []
 
 class ClasificacionRecetasResponse(BaseModel):
     puedes_cocinar: List[RecetaHuerto]

@@ -23,22 +23,21 @@
     @for (chip of dietaChips; track chip.value) {
       <button
         class="dieta-chip"
-        [class.active]="dietasActivas.has(chip.value)"
+        [class.active]="isDietaActiva(chip.value)"
         (click)="toggleDieta(chip.value)">
         {{ chip.label }}
       </button>
     }
   </div>
 
-  <div class="recetas-page__categoria-chips">
+  <div class="recetas-page__categoria-checkboxes">
     @for (chip of categoriaChips; track chip.value) {
-      <button
-        type="button"
-        class="categoria-chip"
-        [class.active]="categoriaSeleccionada === chip.value"
-        (click)="filtrarPorCategoria(chip.value)">
+      <mat-checkbox
+        color="primary"
+        [checked]="categoriasActivas.has(chip.value)"
+        (change)="toggleCategoria(chip.value)">
         {{ chip.label }}
-      </button>
+      </mat-checkbox>
     }
   </div>
 
@@ -55,19 +54,19 @@
     
   </div>
   
-  <div *ngIf="cargando" class="cargando">
+  <div *ngIf="cargando()" class="cargando">
     <p>Cargando recetas de tu huerto...</p>
   </div>
 
   <div class="recetas-page__grid">
     <app-receta-card
-      *ngFor="let recipe of filteredRecipes"
+      *ngFor="let recipe of filteredRecipes()"
       [recipe]="recipe"
       [usuarioId]="usuarioId"
       (recipeClick)="openRecipeDetail($event)">
     </app-receta-card>
 
-    <div *ngIf="!cargando && filteredRecipes.length === 0" class="no-results">
+    <div *ngIf="!cargando() && filteredRecipes().length === 0" class="no-results">
       <p>No se encontraron recetas con estos filtros</p>
     </div>
   </div>

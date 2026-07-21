@@ -111,9 +111,16 @@ export interface RecetaBase {
   imagen_url?: string;
 }
 
+export interface IngredienteEstado {
+  nombre_ingrediente: string;
+  cantidad?: string;
+  disponible: boolean;
+}
+
 export interface RecetaHuerto extends RecetaBase {
   ingredientes_faltantes: number;
   guardada?: boolean;
+  ingredientes?: IngredienteEstado[];
 }
 
 export interface ConsultaHuertoRequest {

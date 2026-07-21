@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RecetaHuerto } from '../../../models/interfaces';
+import { RecetaHuerto, IngredienteEstado } from '../../../models/interfaces';
 import { getFaltantesIcono, getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
 
 @Component({
@@ -43,6 +43,10 @@ export class RecetaWindowComponent {
 
   getFaltantesClase(): string {
     return this.recipe ? getFaltantesClase(this.recipe.ingredientes_faltantes) : '';
+  }
+
+  getClaseIngrediente(ingrediente: IngredienteEstado): string {
+    return ingrediente.disponible ? 'ingrediente--disponible' : 'ingrediente--faltante';
   }
 
   onImageError(): void {

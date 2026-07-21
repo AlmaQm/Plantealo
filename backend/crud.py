@@ -248,7 +248,43 @@ def _resultados_recetas_con_faltantes(db: Session, ids_plantas: List[int], usuar
         .all()
     )
 
-def _receta_a_schema_huerto(receta: models.Receta, faltantes: int, guardada: bool = False) -> schemas.RecetaHuerto:
+def _ingredientes_por_receta(db: Session, ids_recetas: List[int]) -> dict:
+    if not ids_recetas:
+        return {}
+
+    filas = (
+        db.query(
+            models.receta_ingredientes.c.id_receta,
+            models.Ingrediente.nombre_ingrediente,
+            models.receta_ingredientes.c.cantidad,
+            models.receta_ingredientes.c.id_ingrediente,
+        )
+        .join(models.Ingrediente, models.Ingrediente.id_ingrediente == models.receta_ingredientes.c.id_ingrediente)
+        .filter(models.receta_ingredientes.c.id_receta.in_(ids_recetas))
+        .all()
+    )
+
+    por_receta: dict = {}
+    for id_receta, nombre, cantidad, id_ingrediente in filas:
+        por_receta.setdefault(id_receta, []).append((nombre, cantidad, id_ingrediente))
+    return por_receta
+
+def _receta_a_schema_huerto(
+    receta: models.Receta,
+    faltantes: int,
+    guardada: bool,
+    ingredientes_receta: list,
+    ids_disponibles: set,
+) -> schemas.RecetaHuerto:
+    ingredientes = [
+        schemas.IngredienteEstado(
+            nombre_ingrediente=nombre,
+            cantidad=cantidad,
+            disponible=id_ingrediente in ids_disponibles
+        )
+        for nombre, cantidad, id_ingrediente in ingredientes_receta
+    ]
+
     return schemas.RecetaHuerto(
         id_receta=receta.id_receta,
         nombre_receta=receta.nombre_receta,
@@ -263,20 +299,27 @@ def _receta_a_schema_huerto(receta: models.Receta, faltantes: int, guardada: boo
         tips=receta.tips,
         imagen_url=receta.imagen_url,
         ingredientes_faltantes=int(faltantes),
-        guardada=bool(guardada)
+        guardada=bool(guardada),
+        ingredientes=ingredientes
     )
 
 def clasificar_recetas_por_huerto(
     db: Session, ids_plantas: List[int], usuario_id: Optional[int] = None
 ) -> schemas.ClasificacionRecetasResponse:
     resultados = _resultados_recetas_con_faltantes(db, ids_plantas, usuario_id)
+    ids_disponibles = set(ids_plantas)
+    ingredientes_por_receta = _ingredientes_por_receta(db, [r.id_receta for r, _, _ in resultados])
 
     puedes_cocinar = []
     te_falta_1 = []
     te_faltan_varios = []
 
     for receta, faltantes, guardada in resultados:
-        receta_out = _receta_a_schema_huerto(receta, faltantes, guardada)
+        receta_out = _receta_a_schema_huerto(
+            receta, faltantes, guardada,
+            ingredientes_por_receta.get(receta.id_receta, []),
+            ids_disponibles
+        )
 
         if receta_out.ingredientes_faltantes == 0:
             puedes_cocinar.append(receta_out)
@@ -298,8 +341,15 @@ def get_feed_recetas_inteligente(
     # de faltantes equivalga al total de ingredientes de cada receta.
     ids_comparacion = ids_plantas if ids_plantas else [-1]
     resultados = _resultados_recetas_con_faltantes(db, ids_comparacion, usuario_id)
+    ids_disponibles = set(ids_comparacion)
+    ingredientes_por_receta = _ingredientes_por_receta(db, [r.id_receta for r, _, _ in resultados])
+
     return [
-        _receta_a_schema_huerto(receta, faltantes, guardada)
+        _receta_a_schema_huerto(
+            receta, faltantes, guardada,
+            ingredientes_por_receta.get(receta.id_receta, []),
+            ids_disponibles
+        )
         for receta, faltantes, guardada in resultados
     ]
 
