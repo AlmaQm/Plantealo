@@ -10,6 +10,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { RecetaHuerto } from '../../models/interfaces';
 
 type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
+type CategoriaFiltro = 'todas' | 'principal' | 'postre' | 'guarnición/salsa/bebida';
 
 @Component({
   selector: 'app-recetas',
@@ -40,14 +41,26 @@ export class RecetasComponent implements OnInit {
     { value: 'OMNIVORA',    label: '🍖 Omnívora'    }
   ];
 
-  dietasActivas = new Set<TipoDieta>([this.dietaUsuario]);
+  // Vacío a propósito: sin dieta preseleccionada se muestran todas las recetas
+  // al entrar. El usuario activa un chip solo si quiere filtrar.
+  dietasActivas = new Set<TipoDieta>();
+
+  readonly categoriaChips: { value: CategoriaFiltro; label: string }[] = [
+    { value: 'todas',                     label: 'Todas' },
+    { value: 'principal',                 label: 'Platos Principales' },
+    { value: 'postre',                    label: 'Postres' },
+    { value: 'guarnición/salsa/bebida',   label: 'Guarniciones / Salsas / Bebidas' }
+  ];
+
+  categoriaSeleccionada: CategoriaFiltro = 'todas';
 
   ngOnInit(): void {
+    // Solo para el texto del subtítulo ("...preferencias Omnívora"); ya NO
+    // se usa para preseleccionar ningún chip de dieta como filtro activo.
     const usuario = this.authService.getStoredUser();
     if (usuario?.tipo_dieta) {
       this.dietaUsuario = usuario.tipo_dieta as TipoDieta;
     }
-    this.dietasActivas = new Set<TipoDieta>([this.dietaUsuario]);
 
     this.cargarFeed();
   }
@@ -69,6 +82,11 @@ export class RecetasComponent implements OnInit {
     });
   }
 
+  filtrarPorCategoria(categoria: CategoriaFiltro): void {
+    this.categoriaSeleccionada = categoria;
+    this.applyFilters();
+  }
+
   toggleDieta(dieta: TipoDieta): void {
     if (this.dietasActivas.has(dieta)) {
       this.dietasActivas.delete(dieta);
@@ -85,6 +103,10 @@ export class RecetasComponent implements OnInit {
 
   applyFilters(): void {
     let result = [...this.recipes];
+
+    if (this.categoriaSeleccionada !== 'todas') {
+      result = result.filter(r => r.categoria === this.categoriaSeleccionada);
+    }
 
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();

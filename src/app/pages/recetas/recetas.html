@@ -1,55 +1,80 @@
 <div class="recetas-page">
 
-  <app-page-header
-    [titulo]="'Recetas'"
-    [subtitulo]="'Basadas en tu huerto y preferencias ' + getDietaText()">
-    <div class="recetas-page__dieta-chips">
-      @for (chip of dietaChips; track chip.value) {
-        <button
-          class="dieta-chip"
-          [class.active]="dietasActivas.has(chip.value)"
-          (click)="toggleDieta(chip.value)">
-          {{ chip.label }}
-        </button>
-      }
+  <header class="recetas-page__header">
+    <div>
+      <h1 class="recetas-page__titulo">Recetas</h1>
+      <p class="recetas-page__subtitulo">Basadas en tu huerto y preferencias {{ getDietaText() }}</p>
     </div>
-
-    <div class="recetas-page__filters">
-      <div class="search-box">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange()"
-          placeholder="Buscar recetas..."
-          class="search-input">
-      </div>
+  </header>
+  
+  <!-- <div class="recetas-page__search">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Buscar recetas por nombre o ingredientes..."
+        class="search-input">
+      <span class="search-icon">🔍</span>
     </div>
-  </app-page-header>
+  </div> -->
+  
+  <div class="recetas-page__dieta-chips">
+    @for (chip of dietaChips; track chip.value) {
+      <button
+        class="dieta-chip"
+        [class.active]="dietasActivas.has(chip.value)"
+        (click)="toggleDieta(chip.value)">
+        {{ chip.label }}
+      </button>
+    }
+  </div>
 
+  <div class="recetas-page__categoria-chips">
+    @for (chip of categoriaChips; track chip.value) {
+      <button
+        type="button"
+        class="categoria-chip"
+        [class.active]="categoriaSeleccionada === chip.value"
+        (click)="filtrarPorCategoria(chip.value)">
+        {{ chip.label }}
+      </button>
+    }
+  </div>
+
+  <div class="recetas-page__filters">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Buscar recetas..."
+        class="search-input">
+    </div>
+    
+    
+  </div>
+  
   <div *ngIf="cargando" class="cargando">
     <p>Cargando recetas de tu huerto...</p>
   </div>
 
   <div class="recetas-page__grid">
-    @for (recipe of filteredRecipes; track recipe.id_receta) {
-      <app-receta-card
-        [recipe]="recipe"
-        [usuarioId]="usuarioId"
-        (recipeClick)="openRecipeDetail($event)">
-      </app-receta-card>
-    }
+    <app-receta-card
+      *ngFor="let recipe of filteredRecipes"
+      [recipe]="recipe"
+      [usuarioId]="usuarioId"
+      (recipeClick)="openRecipeDetail($event)">
+    </app-receta-card>
 
-    @if (!cargando && filteredRecipes.length === 0) {
-      <div class="no-results">
-        <p>No se encontraron recetas con estos filtros</p>
-      </div>
-    }
+    <div *ngIf="!cargando && filteredRecipes.length === 0" class="no-results">
+      <p>No se encontraron recetas con estos filtros</p>
+    </div>
   </div>
 
-  @if (selectedRecipe) {
-    <app-receta-window
-      [recipe]="selectedRecipe"
-      (close)="closeRecipeDetail()">
-    </app-receta-window>
-  }
+  <app-receta-window
+    *ngIf="selectedRecipe"
+    [recipe]="selectedRecipe"
+    (close)="closeRecipeDetail()">
+  </app-receta-window>
 </div>
