@@ -1,0 +1,44 @@
+<div class="guardadas__tabs">
+  <button type="button" class="tab-btn" [class.active]="tabActiva() === 'RECETAS'" (click)="setTab('RECETAS')">Recetas</button>
+  <button type="button" class="tab-btn" [class.active]="tabActiva() === 'POSTS'" (click)="setTab('POSTS')">Posts</button>
+</div>
+
+@if (tabActiva() === 'RECETAS') {
+  @if (cargandoRecetas()) {
+    <p class="guardadas__cargando">Cargando...</p>
+  } @else if (recetasGuardadas().length === 0) {
+    <div class="guardadas__vacio">
+      <p>Aún no has guardado ninguna receta.</p>
+      <span>Toca el marcador de una receta para guardarla aquí.</span>
+    </div>
+  } @else {
+    @for (r of recetasGuardadas().slice(0, 3); track r.id_receta) {
+      <div class="guardadas__row">
+        <div class="guardadas__thumb" [style.background-image]="'url(' + (r.imagen_url || 'assets/images/placeholder-receta.jpg') + ')'"></div>
+        <span class="guardadas__nombre">{{ r.nombre_receta }}</span>
+      </div>
+    }
+    @if (recetasGuardadas().length > 3) {
+      <button type="button" class="guardadas__vertodas" (click)="verTodasRecetas()">Ver todas ({{ recetasGuardadas().length }})</button>
+    }
+  }
+} @else {
+  @if (cargandoPosts()) {
+    <p class="guardadas__cargando">Cargando...</p>
+  } @else if (postsGuardados().length === 0) {
+    <div class="guardadas__vacio">
+      <p>Aún no has guardado ninguna publicación.</p>
+      <span>Toca el marcador de un post en Comunidad para guardarlo aquí.</span>
+    </div>
+  } @else {
+    @for (p of postsGuardados().slice(0, 3); track p.publicacion_id) {
+      <div class="guardadas__row">
+        <div class="guardadas__thumb" [style.background-image]="'url(' + p.imagen_url + ')'"></div>
+        <span class="guardadas__nombre">{{ p.descripcion }}</span>
+      </div>
+    }
+    @if (postsGuardados().length > 3) {
+      <button type="button" class="guardadas__vertodas" (click)="verTodasPosts()">Ver todas ({{ postsGuardados().length }})</button>
+    }
+  }
+}

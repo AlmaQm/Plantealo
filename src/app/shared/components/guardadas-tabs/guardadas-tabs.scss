@@ -1,0 +1,98 @@
+@use 'styles/model-d-home' as *;
+
+.guardadas__tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: $md-radius-md;
+  border: 1.5px solid $md-accent;
+  background: transparent;
+  color: $md-accent;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &.active {
+    background: $md-accent;
+    color: $md-on-accent;
+  }
+}
+
+.guardadas__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid $md-accent-soft;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.guardadas__thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: $md-radius-md;
+  flex: 0 0 auto;
+  background-color: $md-earth-soft;
+  background-size: cover;
+  background-position: center;
+}
+
+.guardadas__nombre {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: $md-ink;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.guardadas__vertodas {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  padding: 9px;
+  border-radius: $md-radius-md;
+  background: $md-accent-soft;
+  color: $md-accent;
+  font-size: 12.5px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.guardadas__vacio {
+  text-align: center;
+  padding: 18px 8px;
+  color: $md-ink-muted;
+  font-size: 13px;
+  line-height: 1.5;
+
+  p {
+    margin: 0 0 4px;
+    font-weight: 600;
+  }
+
+  span {
+    font-size: 12px;
+  }
+}
+
+.guardadas__cargando {
+  text-align: center;
+  color: $md-ink-muted;
+  font-size: 13px;
+  padding: 14px 0;
+  margin: 0;
+}
