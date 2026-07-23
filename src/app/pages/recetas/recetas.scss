@@ -21,11 +21,15 @@
     margin: 0;
   }
   
-  &__dieta-chips {
+  &__dieta-checkboxes {
     display: flex;
-    gap: 8px;
+    gap: 4px 16px;
     justify-content: center;
-    margin-bottom: 20px;
+    max-width: 480px;
+    margin: 0 auto 12px;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 16px;
   }
 
   &__categoria-checkboxes {
@@ -98,28 +102,6 @@
     text-align: center;
     padding: 48px;
     color: $green-6;
-  }
-}
-
-.dieta-chip {
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1.5px solid $green-3;
-  background: transparent;
-  color: $green-6;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &.active {
-    background: $green-6;
-    border-color: $green-6;
-    color: white;
-  }
-
-  &:not(.active):hover {
-    background: $green-1;
   }
 }
 

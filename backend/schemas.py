@@ -192,6 +192,10 @@ class RecetaHuerto(RecetaBase):
     ingredientes_faltantes: int
     guardada: bool = False
     ingredientes: List[IngredienteEstado] = []
+    # False cuando la receta no tiene ninguna fila en receta_ingredientes: sin esto,
+    # el frontend no puede distinguir "0 faltantes porque tienes todo" de "0 faltantes
+    # porque no hay datos registrados" (ambos dan total=0, faltantes=0 en la resta).
+    tiene_ingredientes_registrados: bool = True
 
 class ClasificacionRecetasResponse(BaseModel):
     puedes_cocinar: List[RecetaHuerto]

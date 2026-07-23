@@ -32,9 +32,8 @@ export class RecetasComponent implements OnInit {
   searchTerm = '';
   cargando = signal(false);
 
-  // TODO: sustituir por el usuario_id real una vez exista el mapeo entre
-  // el uid de Firebase (AuthService) y el usuario_id numérico de Postgres.
-  readonly usuarioId = 1;
+  // Fallback temporal (1) solo si el usuario aún no está sincronizado con Aiven.
+  usuarioId = 1;
 
   dietaUsuario: TipoDieta = 'OMNIVORA';
 
@@ -44,8 +43,7 @@ export class RecetasComponent implements OnInit {
     { value: 'OMNIVORA',    label: '🍖 Omnívora'    }
   ];
 
-  // Vacío a propósito: sin dieta preseleccionada se muestran todas las recetas
-  // al entrar. El usuario activa un chip solo si quiere filtrar.
+  // Selección múltiple, igual que categoriasActivas: vacío = todas las dietas.
   dietasActivas = new Set<TipoDieta>();
 
   readonly categoriaChips: { value: CategoriaFiltro; label: string }[] = [
@@ -61,11 +59,14 @@ export class RecetasComponent implements OnInit {
   categoriasActivas = new Set<CategoriaFiltro>();
 
   ngOnInit(): void {
-    // Solo para el texto del subtítulo ("...preferencias Omnívora"); ya NO
-    // se usa para preseleccionar ningún chip de dieta como filtro activo.
+    // El texto del subtítulo usa tipo_dieta; el huerto real del usuario se
+    // identifica por usuario_id (id numérico de Aiven), no por el uid de Firebase.
     const usuario = this.authService.getStoredUser();
     if (usuario?.tipo_dieta) {
       this.dietaUsuario = usuario.tipo_dieta as TipoDieta;
+    }
+    if (usuario?.usuario_id) {
+      this.usuarioId = usuario.usuario_id;
     }
 
     this.cargarFeed();
@@ -100,22 +101,29 @@ export class RecetasComponent implements OnInit {
   }
 
   toggleDieta(dieta: TipoDieta): void {
-    if (dieta === 'OMNIVORA') {
-      // Omnívora = dieta libre: limpia cualquier filtro de dieta activo.
-      this.dietasActivas = new Set();
-      this.applyFilters();
-      return;
+    // Selección múltiple: cada dieta se marca/desmarca de forma independiente,
+    // igual que toggleCategoria().
+    if (this.dietasActivas.has(dieta)) {
+      this.dietasActivas.delete(dieta);
+    } else {
+      this.dietasActivas.add(dieta);
     }
-    // Vegetariana/Vegana son exclusivas entre sí y desmarcan Omnívora
-    // automáticamente (Omnívora no se guarda en el Set, se deriva de que
-    // esté vacío; ver isDietaActiva()).
-    const yaActiva = this.dietasActivas.has(dieta);
-    this.dietasActivas = new Set(yaActiva ? [] : [dieta]);
+    this.dietasActivas = new Set(this.dietasActivas);
     this.applyFilters();
   }
 
   isDietaActiva(dieta: TipoDieta): boolean {
-    return dieta === 'OMNIVORA' ? this.dietasActivas.size === 0 : this.dietasActivas.has(dieta);
+    return this.dietasActivas.has(dieta);
+  }
+
+  // Regla de inclusión Vegana ⊂ Vegetariana ⊂ Omnívora: una receta cumple un
+  // filtro de dieta si su tipo_dieta es igual o "más restrictivo" que el filtro.
+  private cumpleFiltroDieta(tipoDietaReceta: string, filtro: TipoDieta): boolean {
+    switch (filtro) {
+      case 'VEGANA':      return tipoDietaReceta === 'VEGANA';
+      case 'VEGETARIANA': return tipoDietaReceta === 'VEGETARIANA' || tipoDietaReceta === 'VEGANA';
+      case 'OMNIVORA':    return true;
+    }
   }
 
   onSearchChange(): void {
@@ -137,15 +145,21 @@ export class RecetasComponent implements OnInit {
       );
     }
 
-    // Inclusión: Vegana ve solo veganas; Vegetariana ve vegetarianas + veganas;
-    // sin dieta activa se ven todas (omnívoras, vegetarianas y veganas).
-    if (this.dietasActivas.has('VEGANA')) {
-      result = result.filter(r => r.tipo_dieta === 'VEGANA');
-    } else if (this.dietasActivas.has('VEGETARIANA')) {
-      result = result.filter(r => r.tipo_dieta === 'VEGETARIANA' || r.tipo_dieta === 'VEGANA');
+    // Unión: con varias dietas marcadas se incluyen las recetas que cumplan
+    // CUALQUIERA de ellas (regla de inclusión Vegana ⊂ Vegetariana ⊂ Omnívora).
+    if (this.dietasActivas.size > 0) {
+      const filtros = [...this.dietasActivas];
+      result = result.filter(r => filtros.some(f => this.cumpleFiltroDieta(r.tipo_dieta ?? '', f)));
     }
 
-    result.sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);
+    // Las recetas sin ingredientes registrados no compiten por posición con las que
+    // sí tenemos calculadas: van al final en vez de colarse como "0 faltantes".
+    result.sort((a, b) => {
+      if (a.tiene_ingredientes_registrados !== b.tiene_ingredientes_registrados) {
+        return a.tiene_ingredientes_registrados ? -1 : 1;
+      }
+      return a.ingredientes_faltantes - b.ingredientes_faltantes;
+    });
 
     this.filteredRecipes.set(result);
   }

@@ -105,6 +105,11 @@
           background: #fee2e2;
           color: #991b1b;
         }
+
+        &.faltantes--sin-datos {
+          background: $earth-1;
+          color: $earth-9;
+        }
       }
     }
   }
@@ -166,10 +171,27 @@
   }
 }
 
+.ingredientes-subtitulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: $earth-9;
+  margin: 16px 0 8px;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+.ingredientes-sin-datos {
+  color: $earth-9;
+  font-style: italic;
+}
+
 .ingredientes-lista {
   list-style: none;
   display: grid;
   gap: 8px;
+  margin-bottom: 8px;
 }
 
 .ingrediente {

@@ -180,4 +180,9 @@
     background: #fee2e2;
     color: #991b1b;
   }
+
+  &.faltantes--sin-datos {
+    background: $earth-1;
+    color: $earth-9;
+  }
 }

@@ -19,14 +19,14 @@
     </div>
   </div> -->
   
-  <div class="recetas-page__dieta-chips">
+  <div class="recetas-page__dieta-checkboxes">
     @for (chip of dietaChips; track chip.value) {
-      <button
-        class="dieta-chip"
-        [class.active]="isDietaActiva(chip.value)"
-        (click)="toggleDieta(chip.value)">
+      <mat-checkbox
+        color="primary"
+        [checked]="isDietaActiva(chip.value)"
+        (change)="toggleDieta(chip.value)">
         {{ chip.label }}
-      </button>
+      </mat-checkbox>
     }
   </div>
 
