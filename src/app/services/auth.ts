@@ -13,6 +13,10 @@ import {
   signOut,
   browserLocalPersistence,
   setPersistence,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  deleteUser,
 } from 'firebase/auth';
 
 import { Usuario } from '../models/interfaces';
@@ -112,7 +116,7 @@ export class AuthService {
   }
 
   // Sincronitzar amb Aiven (POST /usuarios/sync)
-  private async syncWithAiven(usuario: Usuario, uid: string): Promise<void> {
+  private async syncWithAiven(usuario: Usuario, uid: string): Promise<boolean> {
     try {
       const payload = {
         firebase_uid: uid,
@@ -142,10 +146,23 @@ export class AuthService {
       if (res?.usuario_id) {
         usuario.usuario_id = res.usuario_id;
         this.saveStoredUser(usuario);
+        return true;
       }
+      return false;
     } catch (err) {
       console.error('❌ [syncWithAiven] Error inesperat:', err);
+      return false;
     }
+  }
+
+  async actualizarPerfil(datos: { nombre_usuario: string; tipo_dieta: Usuario['tipo_dieta'] }): Promise<boolean> {
+    const usuarioActual = this.getStoredUser();
+    const uid = this.auth.currentUser?.uid;
+    if (!usuarioActual || !uid) {
+      throw new Error('No se pudo actualizar el perfil: sesión no válida');
+    }
+    const actualizado: Usuario = { ...usuarioActual, ...datos };
+    return await this.syncWithAiven(actualizado, uid);
   }
 
   getStoredUser(): Usuario | null {
@@ -264,6 +281,59 @@ export class AuthService {
   async logout(): Promise<void> {
     this.clearStoredUser();
     await signOut(this.auth);
+    await this.router.navigate(['/login']);
+  }
+
+  async cambiarPassword(passwordActual: string, passwordNueva: string): Promise<void> {
+    const firebaseUser = this.auth.currentUser;
+    if (!firebaseUser?.email) {
+      throw new Error('No se pudo verificar la sesión actual.');
+    }
+
+    try {
+      const credential = EmailAuthProvider.credential(firebaseUser.email, passwordActual);
+      await reauthenticateWithCredential(firebaseUser, credential);
+    } catch (err) {
+      console.error('❌ [cambiarPassword] Error de reautenticación:', err);
+      throw new Error('La contraseña actual no es correcta.');
+    }
+
+    try {
+      await updatePassword(firebaseUser, passwordNueva);
+    } catch (err) {
+      console.error('❌ [cambiarPassword] Error al actualizar la contraseña:', err);
+      throw new Error('No se pudo cambiar la contraseña. Inténtalo de nuevo.');
+    }
+  }
+
+  async eliminarCuenta(password: string): Promise<void> {
+    const firebaseUser = this.auth.currentUser;
+    if (!firebaseUser?.email) {
+      throw new Error('No se pudo verificar la sesión actual.');
+    }
+
+    try {
+      const credential = EmailAuthProvider.credential(firebaseUser.email, password);
+      await reauthenticateWithCredential(firebaseUser, credential);
+    } catch (err) {
+      console.error('❌ [eliminarCuenta] Error de reautenticación:', err);
+      throw new Error('La contraseña no es correcta.');
+    }
+
+    // 1. Aiven primero: si falla, no tocamos Firebase y la cuenta queda intacta.
+    try {
+      await firstValueFrom(
+        this.http.delete(`${environment.apiUrl}/usuarios/by-uid/${firebaseUser.uid}`)
+      );
+    } catch (err) {
+      console.error('❌ [eliminarCuenta] Error al borrar los datos en Aiven:', err);
+      throw new Error('No se pudo eliminar la cuenta. Inténtalo de nuevo.');
+    }
+
+    // 2. Firebase después, solo si Aiven ha confirmado el borrado.
+    await deleteUser(firebaseUser);
+
+    this.clearStoredUser();
     await this.router.navigate(['/login']);
   }
 }

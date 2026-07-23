@@ -57,4 +57,12 @@ export class PerfilComponent {
   irAHistorialPlantas(): void {
     this.router.navigate(['/plantas-historial']);
   }
+
+  navegarConfiguracion(): void {
+    this.router.navigate(['/configuracion']);
+  }
+
+  navegarSeguridad(): void {
+    this.router.navigate(['/seguridad']);
+  }
 }

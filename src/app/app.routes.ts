@@ -46,5 +46,15 @@ export const routes: Routes = [
     path: 'plantas-historial',
     loadComponent: () => import('./pages/plantas-historial/plantas-historial').then(m => m.PlantasHistorialComponent),
     canActivate: [authGuard]
+  },
+  {
+    path: 'configuracion',
+    loadComponent: () => import('./pages/configuracion/configuracion').then(m => m.ConfiguracionComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'seguridad',
+    loadComponent: () => import('./pages/seguridad/seguridad').then(m => m.SeguridadComponent),
+    canActivate: [authGuard]
   }
 ];

@@ -1,0 +1,142 @@
+@use 'styles/model-d-home' as *;
+
+:host {
+  display: block;
+  min-height: 100vh;
+  width: 100%;
+  background-color: $md-bg;
+  font-family: $md-font;
+}
+
+.seguridad-page {
+  width: 100%;
+  padding: 0 16px 80px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: $md-surface;
+  border-radius: $md-radius-lg;
+  padding: 22px;
+  box-shadow: $md-shadow;
+
+  h3 {
+    color: $md-ink-muted;
+    margin: 0 0 14px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  &--peligro h3 {
+    color: $md-danger;
+  }
+}
+
+.aviso {
+  font-size: 13px;
+  color: $md-ink-muted;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.campo {
+  margin-bottom: 16px;
+
+  &:last-of-type {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    color: $md-ink-muted;
+    margin-bottom: 5px;
+  }
+
+  input,
+  select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1.5px solid $md-accent-soft;
+    border-radius: $md-radius-md;
+    font-size: 14px;
+    font-family: inherit;
+    color: $md-ink;
+    background: $md-surface;
+    outline: none;
+
+    &:focus {
+      border-color: $md-accent;
+    }
+  }
+}
+
+.campo-error {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: $md-danger;
+}
+
+.mensaje {
+  font-size: 13px;
+  margin: 0 0 14px;
+
+  &--ok {
+    color: $md-accent;
+  }
+
+  &--error {
+    color: $md-danger;
+  }
+}
+
+.btn-guardar {
+  width: 100%;
+  padding: 13px;
+  border-radius: $md-radius-md;
+  border: none;
+  background: $md-accent;
+  color: $md-on-accent;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.94);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-eliminar {
+  width: 100%;
+  padding: 13px;
+  border-radius: $md-radius-md;
+  border: none;
+  background: $md-danger;
+  color: $md-danger-soft;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.92);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}

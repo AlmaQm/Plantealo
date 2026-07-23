@@ -1,0 +1,90 @@
+<div class="seguridad-page">
+
+  <app-page-header
+    [titulo]="'Seguridad'"
+    [subtitulo]="'Cambiar contraseña y opciones de privacidad'"
+    [bg]="'md-bg'">
+  </app-page-header>
+
+  <!-- Cambiar contraseña -->
+  <section class="card">
+    <h3>Cambiar contraseña</h3>
+    <form [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
+      <div class="campo">
+        <label for="passwordActual">Contraseña actual</label>
+        <input id="passwordActual" type="password" formControlName="passwordActual" autocomplete="current-password" />
+      </div>
+
+      <div class="campo">
+        <label for="passwordNueva">Contraseña nueva</label>
+        <input id="passwordNueva" type="password" formControlName="passwordNueva" autocomplete="new-password" />
+        @if (passwordForm.controls.passwordNueva.invalid && passwordForm.controls.passwordNueva.touched) {
+          <span class="campo-error">Mínimo 6 caracteres.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="confirmarPasswordNueva">Confirmar contraseña nueva</label>
+        <input id="confirmarPasswordNueva" type="password" formControlName="confirmarPasswordNueva" autocomplete="new-password" />
+        @if (passwordForm.hasError('passwordsMismatch') && passwordForm.controls.confirmarPasswordNueva.touched) {
+          <span class="campo-error">Las contraseñas no coinciden.</span>
+        }
+      </div>
+
+      @if (passwordOk()) {
+        <p class="mensaje mensaje--ok">Contraseña actualizada correctamente.</p>
+      }
+      @if (passwordError()) {
+        <p class="mensaje mensaje--error">{{ passwordError() }}</p>
+      }
+
+      <button type="submit" class="btn-guardar" [disabled]="passwordForm.invalid || guardandoPassword()">
+        {{ guardandoPassword() ? 'Guardando...' : 'Cambiar contraseña' }}
+      </button>
+    </form>
+  </section>
+
+  <!-- Eliminar cuenta -->
+  <section class="card card--peligro">
+    <h3>Eliminar cuenta</h3>
+    <p class="aviso">Esta acción es irreversible: se borrarán tu huerto, tu perfil y tus datos de la comunidad.</p>
+
+    <div class="campo">
+      <label for="passwordEliminar">Contraseña</label>
+      <input
+        id="passwordEliminar"
+        type="password"
+        autocomplete="current-password"
+        [ngModel]="passwordEliminar()"
+        (ngModelChange)="passwordEliminar.set($event)" />
+    </div>
+
+    <div class="campo">
+      <label for="confirmacion">Escribe <strong>ELIMINAR</strong> para confirmar</label>
+      <input
+        id="confirmacion"
+        type="text"
+        [ngModel]="textoConfirmacion()"
+        (ngModelChange)="textoConfirmacion.set($event)" />
+    </div>
+
+    @if (eliminarError()) {
+      <p class="mensaje mensaje--error">{{ eliminarError() }}</p>
+    }
+
+    <button
+      type="button"
+      class="btn-eliminar"
+      [disabled]="!puedeEliminar || eliminando()"
+      (click)="abrirConfirmModal()">
+      {{ eliminando() ? 'Eliminando...' : 'Eliminar cuenta' }}
+    </button>
+  </section>
+
+</div>
+
+<app-confirm-modal
+  [visible]="mostrarConfirmModal()"
+  [mensaje]="'¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.'"
+  (confirmar)="confirmarEliminar()"
+  (cancelar)="cancelarEliminar()" />

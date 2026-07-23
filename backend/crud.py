@@ -58,6 +58,30 @@ def upsert_usuario(db: Session, data: schemas.UsuarioSync):
             )
         raise HTTPException(status_code=409, detail="Conflicto de datos")
 
+def eliminar_usuario_por_uid(db: Session, firebase_uid: str) -> bool:
+    """Borra un usuario y todos sus datos dependientes en Aiven.
+
+    Las recetas creadas por el usuario se conservan (contenido compartido,
+    otros usuarios pueden tenerlas guardadas); solo se desvincula el autor.
+    recetas_guardadas tiene ondelete="CASCADE" hacia usuario_id, se limpia
+    sola al borrar la fila de Usuario.
+    """
+    usuario = get_usuario_by_firebase_uid(db, firebase_uid)
+    if not usuario:
+        return False
+
+    db.query(models.PerfilUsuario).filter_by(usuario_id=usuario.usuario_id).delete()
+    db.query(models.PUsuario).filter_by(usuario_id=usuario.usuario_id).delete()
+    db.execute(delete(models.seguidores).where(
+        (models.seguidores.c.seguidor_id == usuario.usuario_id) |
+        (models.seguidores.c.seguido_id == usuario.usuario_id)
+    ))
+    db.query(models.Receta).filter_by(usuario_id=usuario.usuario_id).update({"usuario_id": None})
+
+    db.delete(usuario)
+    db.commit()
+    return True
+
 def crear_usuario(db: Session, usuario: schemas.UsuarioCreate):
     db_usuario = models.Usuario(
         nombre=usuario.nombre,

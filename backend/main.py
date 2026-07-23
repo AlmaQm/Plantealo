@@ -120,6 +120,14 @@ def get_usuario_by_uid(firebase_uid: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return usuario
 
+@app.delete("/usuarios/by-uid/{firebase_uid}")
+def eliminar_usuario_endpoint(firebase_uid: str, db: Session = Depends(get_db)):
+    """Borra el usuario y todos sus datos dependientes en Aiven (huerto, perfil, seguidores)."""
+    ok = crud.eliminar_usuario_por_uid(db, firebase_uid)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return {"status": "success", "detail": "Usuario eliminado correctamente."}
+
 @app.get("/usuarios/by-uid/{firebase_uid}/plantas/", response_model=List[schemas.PUsuarioDetall])
 def get_plantas_by_uid(firebase_uid: str, db: Session = Depends(get_db)):
     usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)

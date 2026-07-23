@@ -1,0 +1,53 @@
+<div class="configuracion-page">
+
+  <app-page-header
+    [titulo]="'Configuración'"
+    [subtitulo]="'Ajustes generales de la aplicación'"
+    [bg]="'md-bg'">
+  </app-page-header>
+
+  <!-- Idioma (visual, sense persistir encara) -->
+  <section class="card">
+    <h3>Idioma</h3>
+    <div class="idioma-selector">
+      <button type="button" class="idioma-btn" [class.active]="idioma() === 'ES'" (click)="seleccionarIdioma('ES')">Español</button>
+      <button type="button" class="idioma-btn" [class.active]="idioma() === 'CA'" (click)="seleccionarIdioma('CA')">Català</button>
+      <button type="button" class="idioma-btn" [class.active]="idioma() === 'EN'" (click)="seleccionarIdioma('EN')">English</button>
+    </div>
+  </section>
+
+  <!-- Editar perfil -->
+  <section class="card">
+    <h3>Editar perfil</h3>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="campo">
+        <label for="nombre_usuario">Nombre de usuario</label>
+        <input id="nombre_usuario" type="text" formControlName="nombre_usuario" />
+        @if (form.controls.nombre_usuario.invalid && form.controls.nombre_usuario.touched) {
+          <span class="campo-error">Mínimo 3 caracteres.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="tipo_dieta">Preferencia alimentaria</label>
+        <select id="tipo_dieta" formControlName="tipo_dieta">
+          @for (opcion of dietaOpciones; track opcion.valor) {
+            <option [value]="opcion.valor">{{ opcion.label }}</option>
+          }
+        </select>
+      </div>
+
+      @if (guardadoOk()) {
+        <p class="mensaje mensaje--ok">Perfil actualizado correctamente.</p>
+      }
+      @if (error()) {
+        <p class="mensaje mensaje--error">{{ error() }}</p>
+      }
+
+      <button type="submit" class="btn-guardar" [disabled]="form.invalid || guardando()">
+        {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+    </form>
+  </section>
+
+</div>
