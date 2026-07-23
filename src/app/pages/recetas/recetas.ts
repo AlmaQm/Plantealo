@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { switchMap } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RecetasService } from '../../services/recetas.service';
 import { AuthService } from '../../services/auth';
 import { RecetaCardComponent } from '../../shared/components/receta-card/receta-card';
@@ -33,9 +34,13 @@ export class RecetasComponent implements OnInit {
   searchTerm = '';
   cargando = signal(false);
 
-  // TODO: sustituir por el usuario_id real una vez exista el mapeo entre
-  // el uid de Firebase (AuthService) y el usuario_id numérico de Postgres.
-  readonly usuarioId = 1;
+  readonly usuario = toSignal(this.authService.currentUser$, {
+    initialValue: this.authService.getStoredUser()
+  });
+
+  get usuarioId(): number {
+    return this.usuario()?.usuario_id ?? 0;
+  }
 
   dietaUsuario: TipoDieta = 'OMNIVORA';
 
@@ -67,7 +72,7 @@ export class RecetasComponent implements OnInit {
   ngOnInit(): void {
     // Solo para el texto del subtítulo ("...preferencias Omnívora"); ya NO
     // se usa para preseleccionar ningún chip de dieta como filtro activo.
-    const usuario = this.authService.getStoredUser();
+    const usuario = this.usuario();
     if (usuario?.tipo_dieta) {
       this.dietaUsuario = usuario.tipo_dieta as TipoDieta;
     }
