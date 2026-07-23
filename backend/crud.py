@@ -357,7 +357,6 @@ def _ingredientes_por_receta(db: Session, ids_recetas: List[int]) -> dict:
 
 def _receta_a_schema_huerto(
     receta: models.Receta,
-    faltantes: int,
     guardada: bool,
     ingredientes_receta: list,
     ids_disponibles: set,
@@ -370,6 +369,9 @@ def _receta_a_schema_huerto(
         )
         for nombre, cantidad, id_ingrediente in ingredientes_receta
     ]
+    # Recuento real derivado de la propia lista (no de un agregado SQL aparte),
+    # para que 'ingredientes_faltantes' nunca pueda desincronizarse de 'ingredientes'.
+    ingredientes_faltantes = sum(1 for ing in ingredientes if not ing.disponible)
 
     return schemas.RecetaHuerto(
         id_receta=receta.id_receta,
@@ -384,9 +386,10 @@ def _receta_a_schema_huerto(
         instrucciones=receta.instrucciones,
         tips=receta.tips,
         imagen_url=receta.imagen_url,
-        ingredientes_faltantes=int(faltantes),
+        ingredientes_faltantes=ingredientes_faltantes,
         guardada=bool(guardada),
-        ingredientes=ingredientes
+        ingredientes=ingredientes,
+        tiene_ingredientes_registrados=len(ingredientes) > 0,
     )
 
 def clasificar_recetas_por_huerto(
@@ -400,14 +403,18 @@ def clasificar_recetas_por_huerto(
     te_falta_1 = []
     te_faltan_varios = []
 
-    for receta, faltantes, guardada in resultados:
+    for receta, _faltantes_sql, guardada in resultados:
         receta_out = _receta_a_schema_huerto(
-            receta, faltantes, guardada,
+            receta, guardada,
             ingredientes_por_receta.get(receta.id_receta, []),
             ids_disponibles
         )
 
-        if receta_out.ingredientes_faltantes == 0:
+        if not receta_out.tiene_ingredientes_registrados:
+            # Sin ingredientes registrados no se puede confirmar que "puedes cocinar
+            # esto"; se trata como pendiente en vez de darlo por completo.
+            te_faltan_varios.append(receta_out)
+        elif receta_out.ingredientes_faltantes == 0:
             puedes_cocinar.append(receta_out)
         elif receta_out.ingredientes_faltantes == 1:
             te_falta_1.append(receta_out)
@@ -432,11 +439,11 @@ def get_feed_recetas_inteligente(
 
     return [
         _receta_a_schema_huerto(
-            receta, faltantes, guardada,
+            receta, guardada,
             ingredientes_por_receta.get(receta.id_receta, []),
             ids_disponibles
         )
-        for receta, faltantes, guardada in resultados
+        for receta, _faltantes_sql, guardada in resultados
     ]
 
 # --- LÓGICA PARA RECETAS GUARDADAS ---
