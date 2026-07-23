@@ -1,0 +1,30 @@
+<div class="historial-page">
+
+  <app-page-header
+    [titulo]="'Historial de plantas'"
+    [subtitulo]="inventario().length + ' plantas'"
+    [bg]="'md-bg'">
+  </app-page-header>
+
+  <div class="historial-page__lista">
+    @if (inventario().length === 0) {
+      <div class="historial-page__vacio">
+        <p>Aún no tienes plantas en tu huerto.</p>
+      </div>
+    }
+    @for (planta of inventario(); track planta.planta_id) {
+      <div class="historial-row">
+        <div class="historial-row__info">
+          <span class="historial-row__nombre">{{ planta.nombre_planta }}</span>
+          <span class="historial-row__fechas">
+            Plantada: {{ formatFecha(planta.f_siembra) }} · Cosecha: {{ formatFecha(planta.f_recogida) }}
+          </span>
+        </div>
+        <span class="historial-row__estado estado--{{ planta.estado | lowercase }}">
+          {{ estadoLabel(planta) }}
+        </span>
+      </div>
+    }
+  </div>
+
+</div>

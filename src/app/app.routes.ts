@@ -41,5 +41,10 @@ export const routes: Routes = [
     path: 'perfil',
     loadComponent: () => import('./pages/perfil/perfil').then(m => m.PerfilComponent),
     canActivate: [authGuard]
+  },
+  {
+    path: 'plantas-historial',
+    loadComponent: () => import('./pages/plantas-historial/plantas-historial').then(m => m.PlantasHistorialComponent),
+    canActivate: [authGuard]
   }
 ];
