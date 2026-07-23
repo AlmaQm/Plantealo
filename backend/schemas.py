@@ -146,6 +146,7 @@ class Publicacion(BaseModel):
     fecha: datetime
     likes: int
     liked: bool
+    guardada: bool
     comentarios: List[Comentario]
     class Config:
         from_attributes = True
@@ -156,6 +157,9 @@ class PublicacionEdit(BaseModel):
     descripcion: str
 
 class LikeToggle(BaseModel):
+    usuario_id: str
+
+class GuardarToggle(BaseModel):
     usuario_id: str
 
 class ImagenUpdate(BaseModel):

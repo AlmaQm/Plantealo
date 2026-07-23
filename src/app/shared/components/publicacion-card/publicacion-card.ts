@@ -21,6 +21,7 @@ export class PublicacionCardComponent implements OnInit {
   expandirDesc = signal(false);
   nuevoComentario = signal('');
   procesandoLike = signal(false);
+  procesandoGuardado = signal(false);
   enviandoComentario = signal(false);
 
   editando = signal(false);
@@ -82,6 +83,16 @@ export class PublicacionCardComponent implements OnInit {
       await this.comunidadService.toggleLike(this.publicacion.publicacion_id, this.publicacion.liked);
     } finally {
       this.procesandoLike.set(false);
+    }
+  }
+
+  async toggleGuardar(): Promise<void> {
+    if (this.procesandoGuardado()) return;
+    this.procesandoGuardado.set(true);
+    try {
+      await this.comunidadService.toggleGuardar(this.publicacion.publicacion_id, this.publicacion.guardada);
+    } finally {
+      this.procesandoGuardado.set(false);
     }
   }
 

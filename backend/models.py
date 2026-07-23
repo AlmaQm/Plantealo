@@ -128,6 +128,7 @@ class Publicacion(Base):
     fecha = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     likes = relationship("PublicacionLike", back_populates="publicacion", cascade="all, delete-orphan")
+    guardados = relationship("PublicacionGuardada", back_populates="publicacion", cascade="all, delete-orphan")
     comentarios = relationship("Comentario", back_populates="publicacion", cascade="all, delete-orphan", order_by="Comentario.fecha")
 
 class PublicacionLike(Base):
@@ -136,6 +137,13 @@ class PublicacionLike(Base):
     usuario_id = Column(String(128), primary_key=True)
 
     publicacion = relationship("Publicacion", back_populates="likes")
+
+class PublicacionGuardada(Base):
+    __tablename__ = "publicaciones_guardadas"
+    publicacion_id = Column(Integer, ForeignKey("publicaciones.publicacion_id", ondelete="CASCADE"), primary_key=True)
+    usuario_id = Column(String(128), primary_key=True)
+
+    publicacion = relationship("Publicacion", back_populates="guardados")
 
 class Comentario(Base):
     __tablename__ = "comentarios"

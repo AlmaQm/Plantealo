@@ -92,6 +92,7 @@ export interface Publicacion {
   descripcion: string;
   likes: number;
   liked: boolean;
+  guardada: boolean;
   comentarios: Comentario[];
   fecha: Date;
   siguiendo: boolean;

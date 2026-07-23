@@ -14,6 +14,7 @@ const mockPublicacion: Publicacion = {
   descripcion: 'Descripción de prueba',
   likes: 5,
   liked: false,
+  guardada: false,
   siguiendo: false,
   fecha: new Date('2026-05-01'),
   comentarios: []
@@ -21,6 +22,7 @@ const mockPublicacion: Publicacion = {
 
 class MockComunidadService {
   toggleLike = jasmine.createSpy('toggleLike').and.resolveTo(undefined);
+  toggleGuardar = jasmine.createSpy('toggleGuardar').and.resolveTo(undefined);
   agregarComentario = jasmine.createSpy('agregarComentario').and.resolveTo(undefined);
 }
 

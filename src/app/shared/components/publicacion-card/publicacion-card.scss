@@ -242,6 +242,10 @@
 
   &--like .accion-icon { fill: none; }
   &--like.liked .accion-icon { fill: currentColor; }
+
+  &--guardar .accion-icon { fill: none; }
+  &--guardar.guardado { color: $green-6; }
+  &--guardar.guardado .accion-icon { fill: currentColor; }
 }
 
 .accion-icon {

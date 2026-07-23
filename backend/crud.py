@@ -137,6 +137,7 @@ def serializar_publicacion(pub: models.Publicacion, uid: str | None) -> schemas.
         fecha=pub.fecha,
         likes=len(pub.likes),
         liked=any(l.usuario_id == uid for l in pub.likes) if uid else False,
+        guardada=any(g.usuario_id == uid for g in pub.guardados) if uid else False,
         comentarios=pub.comentarios,
     )
 
@@ -206,6 +207,42 @@ def crear_comentario(db: Session, publicacion_id: int, comentario: schemas.Comen
     db.commit()
     db.refresh(db_pub)
     return serializar_publicacion(db_pub, comentario.usuario_id)
+
+def guardar_publicacion(db: Session, publicacion_id: int, usuario_id: str) -> schemas.Publicacion | None:
+    db_pub = get_publicacion(db, publicacion_id)
+    if not db_pub:
+        return None
+    existente = db.query(models.PublicacionGuardada).filter(
+        models.PublicacionGuardada.publicacion_id == publicacion_id,
+        models.PublicacionGuardada.usuario_id == usuario_id
+    ).first()
+    if not existente:
+        db.add(models.PublicacionGuardada(publicacion_id=publicacion_id, usuario_id=usuario_id))
+        db.commit()
+        db.refresh(db_pub)
+    return serializar_publicacion(db_pub, usuario_id)
+
+def desguardar_publicacion(db: Session, publicacion_id: int, usuario_id: str) -> schemas.Publicacion | None:
+    db_pub = get_publicacion(db, publicacion_id)
+    if not db_pub:
+        return None
+    db.query(models.PublicacionGuardada).filter(
+        models.PublicacionGuardada.publicacion_id == publicacion_id,
+        models.PublicacionGuardada.usuario_id == usuario_id
+    ).delete()
+    db.commit()
+    db.refresh(db_pub)
+    return serializar_publicacion(db_pub, usuario_id)
+
+def get_publicaciones_guardadas(db: Session, usuario_id: str) -> list[schemas.Publicacion]:
+    pubs = (
+        db.query(models.Publicacion)
+        .join(models.PublicacionGuardada, models.Publicacion.publicacion_id == models.PublicacionGuardada.publicacion_id)
+        .filter(models.PublicacionGuardada.usuario_id == usuario_id)
+        .order_by(models.Publicacion.fecha.desc())
+        .all()
+    )
+    return [serializar_publicacion(p, usuario_id) for p in pubs]
 
 # --- LÓGICA PARA PLANTAS (continuación) ---
 

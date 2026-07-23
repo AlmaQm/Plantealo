@@ -265,6 +265,28 @@ def agregar_comentario(publicacion_id: int, comentario: schemas.ComentarioCreate
     return resultado
 
 
+@app.post("/publicaciones/{publicacion_id}/guardar", response_model=schemas.Publicacion)
+def guardar_publicacion_endpoint(publicacion_id: int, body: schemas.GuardarToggle, db: Session = Depends(get_db)):
+    resultado = crud.guardar_publicacion(db, publicacion_id, body.usuario_id)
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada")
+    return resultado
+
+
+@app.delete("/publicaciones/{publicacion_id}/guardar", response_model=schemas.Publicacion)
+def desguardar_publicacion_endpoint(publicacion_id: int, body: schemas.GuardarToggle, db: Session = Depends(get_db)):
+    resultado = crud.desguardar_publicacion(db, publicacion_id, body.usuario_id)
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada")
+    return resultado
+
+
+@app.get("/usuarios/{uid}/publicaciones-guardadas", response_model=List[schemas.Publicacion])
+def listar_publicaciones_guardadas(uid: str, db: Session = Depends(get_db)):
+    """Devuelve las publicaciones que el usuario tiene guardadas."""
+    return crud.get_publicaciones_guardadas(db, uid)
+
+
 # --- TIEMPO (AEMET) ---
 # La key vive solo aqui (no en el frontend) y la llamada real a AEMET se
 # cachea: asi da igual cuantos usuarios abran la app a la vez, solo

@@ -28,6 +28,7 @@ interface ApiPublicacion {
   fecha: string;
   likes: number;
   liked: boolean;
+  guardada: boolean;
   comentarios: ApiComentario[];
 }
 
@@ -85,6 +86,7 @@ export class ComunidadService {
       fecha: new Date(d.fecha),
       likes: d.likes,
       liked: d.liked,
+      guardada: d.guardada,
       siguiendo: false,
       comentarios: d.comentarios.map(c => this.mapComentario(c))
     };
@@ -203,6 +205,23 @@ export class ComunidadService {
       this.http.post<ApiPublicacion>(`${this.apiUrl}/${publicacionId}/like`, { usuario_id: this.uid })
     );
     this.actualizarEnFeed(actualizada);
+  }
+
+  async toggleGuardar(publicacionId: string, currentlyGuardada: boolean): Promise<void> {
+    if (!this.uid) return;
+    const body = { usuario_id: this.uid };
+    const actualizada = currentlyGuardada
+      ? await firstValueFrom(this.http.delete<ApiPublicacion>(`${this.apiUrl}/${publicacionId}/guardar`, { body }))
+      : await firstValueFrom(this.http.post<ApiPublicacion>(`${this.apiUrl}/${publicacionId}/guardar`, body));
+    this.actualizarEnFeed(actualizada);
+  }
+
+  async getPublicacionesGuardadas(): Promise<Publicacion[]> {
+    if (!this.uid) return [];
+    const docs = await firstValueFrom(
+      this.http.get<ApiPublicacion[]>(`${environment.apiUrl}/usuarios/${this.uid}/publicaciones-guardadas`)
+    );
+    return docs.map(d => this.mapPublicacion(d));
   }
 
   async agregarComentario(publicacionId: string, texto: string): Promise<void> {
