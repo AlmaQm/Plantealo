@@ -47,7 +47,8 @@
 }
 
 <!-- MODAL CALENDARIO -->
-<ion-modal #calModal class="cal-modal" [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true">
+<ion-modal #calModal class="cal-modal" [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true"
+  [enterAnimation]="calEnterAnimation" [leaveAnimation]="calLeaveAnimation">
   <ng-template>
     <div class="cal-wrap">
 
@@ -99,6 +100,8 @@
                   @if (mesSeleccionado() === mesActual) {
                     @if (plantadaReciente() === t.nombre) {
                       <span class="cal-added-badge"><svg lucideCheck class="cal-added-icon"></svg> Añadida</span>
+                    } @else if (errorPlantar() && errorPlantar()!.includes(t.nombre)) {
+                      <span class="cal-error-badge">{{ errorPlantar() }}</span>
                     } @else {
                       <button class="cal-now-badge" (click)="plantarAhora(t)">+ Plantar ahora</button>
                     }

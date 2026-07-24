@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonModal } from '@ionic/angular/standalone';
+import { IonModal, createAnimation, AnimationBuilder } from '@ionic/angular/standalone';
 import { switchMap } from 'rxjs';
 import { PlantasService, diasHastaCosecha, getTipoPlanta } from '../../services/plantas';
 import { AuthService } from '../../services/auth';
@@ -179,6 +179,20 @@ interface Temporada {
 
 const MESES_CORTOS = ['E','F','M','A','M','J','J','A','S','O','N','D'];
 
+// El catálogo (backend) usa nombres propios de cultivar/singular que no siempre
+// coinciden con el nombre genérico y plural que se muestra en el calendario.
+const ALIAS_CATALOGO: Record<string, string[]> = {
+  'Zanahorias':    ['Zanahoria'],
+  'Calabacines':   ['Calabacín', 'Calabacin'],
+  'Pepinos':       ['Pepino'],
+  'Tomates':       ['Tomate', 'Tomates Cherry'],
+  'Judías verdes': ['Judías Verdes', 'Judias Verdes'],
+};
+
+function normalizar(s: string): string {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+}
+
 @Component({
   selector: 'app-diet-recommendations',
   standalone: true,
@@ -199,7 +213,9 @@ export class DietRecommendationsComponent implements OnInit {
   readonly mesesCortos = MESES_CORTOS;
 
   plantadaReciente = signal<string | null>(null);
+  errorPlantar = signal<string | null>(null);
   private confirmTimer: any;
+  private errorTimer: any;
 
   // Recomanació de recepta amb el sistema de recetes de l'Alma (RecetaHuerto)
   private readonly authService = inject(AuthService);
@@ -266,13 +282,26 @@ export class DietRecommendationsComponent implements OnInit {
       .sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
-  plantarAhora(t: Temporada) {
+  // Busca en el catálogo real (backend) la entrada que corresponde al nombre
+  // mostrado en el calendario, probando el nombre tal cual y sus alias conocidos.
+  private buscarEnCatalogo(nombre: string) {
+    const candidatos = [nombre, ...(ALIAS_CATALOGO[nombre] ?? [])].map(normalizar);
+    return this.plantasService.catalogo().find(p => candidatos.includes(normalizar(p.nombre_planta)));
+  }
+
+  async plantarAhora(t: Temporada) {
+    const planta = this.buscarEnCatalogo(t.nombre);
+    if (!planta) {
+      this.mostrarError(`No se encontró "${t.nombre}" en el catálogo`);
+      return;
+    }
+
     const hoy = new Date();
     const cosecha = new Date(hoy);
     cosecha.setDate(cosecha.getDate() + diasHastaCosecha(t.nombre));
 
     const nueva: PlantaHuerto = {
-      planta_id: Date.now(),
+      planta_id: planta.planta_id,
       usuario_id: 1,
       nombre_planta: t.nombre,
       imagen_url: t.imagen,
@@ -282,14 +311,76 @@ export class DietRecommendationsComponent implements OnInit {
       estado: 'PLANTADA',
     };
 
-    this.plantasService.addPlanta(nueva);
+    try {
+      await this.plantasService.addPlanta(nueva);
+      this.plantadaReciente.set(t.nombre);
+      clearTimeout(this.confirmTimer);
+      this.confirmTimer = setTimeout(() => this.plantadaReciente.set(null), 2500);
+    } catch {
+      this.mostrarError(`No se pudo añadir "${t.nombre}" (¿ya la tienes plantada?)`);
+    }
+  }
 
-    this.plantadaReciente.set(t.nombre);
-    clearTimeout(this.confirmTimer);
-    this.confirmTimer = setTimeout(() => this.plantadaReciente.set(null), 2500);
+  private mostrarError(msg: string): void {
+    this.errorPlantar.set(msg);
+    clearTimeout(this.errorTimer);
+    this.errorTimer = setTimeout(() => this.errorPlantar.set(null), 2500);
   }
 
   abrirCalendario() {
     this.calModal.present();
   }
+
+  // Animación de apertura: siempre desliza el sheet desde abajo con easing
+  // suave, sin depender del modo iOS/MD por defecto de Ionic (el modo MD usa
+  // una curva más brusca y corta que rompe la sensación de suavidad).
+  calEnterAnimation: AnimationBuilder = (baseEl, opts) => {
+    const root = (baseEl.shadowRoot ?? baseEl) as ParentNode;
+    const breakpoint = opts?.currentBreakpoint ?? 0.92;
+
+    const backdrop = createAnimation()
+      .addElement(root.querySelector('ion-backdrop')!)
+      .fromTo('opacity', '0.01', `calc(var(--backdrop-opacity) * ${breakpoint})`)
+      .beforeStyles({ 'pointer-events': 'none' })
+      .afterClearStyles(['pointer-events']);
+
+    // vh (no %) para que el desplazamiento sea siempre relativo a la altura
+    // real de la pantalla, no a la altura del propio wrapper (que puede
+    // quedar más pequeña que el viewport y hacer que el sheet "arranque"
+    // ya medio visible en vez de fuera de la pantalla).
+    const wrapper = createAnimation()
+      .addElement(root.querySelector('.modal-wrapper')!)
+      .keyframes([
+        { offset: 0, opacity: 1, transform: 'translateY(100vh)' },
+        { offset: 1, opacity: 1, transform: `translateY(${(1 - breakpoint) * 100}vh)` },
+      ]);
+
+    return createAnimation()
+      .addElement(baseEl)
+      .easing('cubic-bezier(0.32, 0.72, 0, 1)')
+      .duration(420)
+      .addAnimation([backdrop, wrapper]);
+  };
+
+  calLeaveAnimation: AnimationBuilder = (baseEl, opts) => {
+    const root = (baseEl.shadowRoot ?? baseEl) as ParentNode;
+    const breakpoint = opts?.currentBreakpoint ?? 0.92;
+
+    const backdrop = createAnimation()
+      .addElement(root.querySelector('ion-backdrop')!)
+      .fromTo('opacity', `calc(var(--backdrop-opacity) * ${breakpoint})`, 0);
+
+    const wrapper = createAnimation()
+      .addElement(root.querySelector('.modal-wrapper')!)
+      .keyframes([
+        { offset: 0, opacity: 1, transform: `translateY(${(1 - breakpoint) * 100}vh)` },
+        { offset: 1, opacity: 1, transform: 'translateY(100vh)' },
+      ]);
+
+    return createAnimation()
+      .addElement(baseEl)
+      .easing('cubic-bezier(0.32, 0.72, 0, 1)')
+      .duration(320)
+      .addAnimation([backdrop, wrapper]);
+  };
 }

@@ -337,6 +337,19 @@ ion-modal.cal-modal {
   stroke-width: 3;
 }
 
+.cal-error-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: $md-danger;
+  background: $md-danger-soft;
+  border: 1px solid $md-danger;
+  padding: 3px 8px;
+  border-radius: $md-radius-sm;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: right;
+}
+
 .cal-epoca-badge {
   font-size: 0.58rem;
   font-weight: 700;
