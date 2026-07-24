@@ -1,6 +1,7 @@
 ﻿@use 'styles/variables' as *;
 
 .receta-card {
+  position: relative;
   background: white;
   border-radius: 20px;
   overflow: hidden;
@@ -39,19 +40,18 @@
 
   &__guardar {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 8px;
+    right: 8px;
     width: 30px;
     height: 30px;
     border-radius: 50%;
     border: none;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(4px);
+    background: white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    line-height: 1;
+    color: $green-7;
     cursor: pointer;
     transition: transform 0.15s ease;
     z-index: 2;
@@ -61,8 +61,19 @@
     }
 
     &.guardada {
-      background: rgba(0, 0, 0, 0.35);
+      background: white;
+      color: #e11d48;
+
+      .receta-card__guardar-icon {
+        fill: currentColor;
+      }
     }
+  }
+
+  &__guardar-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2px;
   }
 
   &__content {
@@ -96,7 +107,10 @@
       color: $green-6;
 
       .meta-icon {
-        font-size: 12px;
+        width: 12px;
+        height: 12px;
+        stroke-width: 2px;
+        flex-shrink: 0;
       }
     }
   }
@@ -108,6 +122,9 @@
     flex-wrap: wrap;
 
     .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
       padding: 3px 8px;
       border-radius: 12px;
       font-size: 10px;
@@ -159,7 +176,9 @@
 }
 
 .badge-faltantes {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 11px;
@@ -180,4 +199,11 @@
     background: #fee2e2;
     color: #991b1b;
   }
+}
+
+.badge-icon {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.5px;
+  flex-shrink: 0;
 }

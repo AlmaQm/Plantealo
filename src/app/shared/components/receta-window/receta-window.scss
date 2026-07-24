@@ -33,11 +33,19 @@
     border-radius: 50%;
     background: white;
     border: none;
-    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transition: all 0.2s ease;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2px;
+    }
 
     &:hover {
       transform: scale(1.1);
@@ -79,13 +87,32 @@
       }
       
       .header-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
         font-size: 14px;
         opacity: 0.9;
         margin-bottom: 12px;
+
+        &__item {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        &__icon {
+          width: 14px;
+          height: 14px;
+          stroke-width: 2px;
+          flex-shrink: 0;
+        }
       }
-      
+
       .badge-faltantes {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
         padding: 6px 12px;
         border-radius: 20px;
         font-size: 14px;
@@ -105,6 +132,13 @@
           background: #fee2e2;
           color: #991b1b;
         }
+
+        .badge-icon {
+          width: 14px;
+          height: 14px;
+          stroke-width: 2.5px;
+          flex-shrink: 0;
+        }
       }
     }
   }
@@ -116,9 +150,19 @@
       margin-bottom: 32px;
 
       h2 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         color: $green-7;
         margin-bottom: 16px;
         font-size: 20px;
+
+        .section-icon {
+          width: 20px;
+          height: 20px;
+          stroke-width: 2px;
+          flex-shrink: 0;
+        }
       }
 
       .description {
@@ -182,9 +226,14 @@
   border-left: 4px solid transparent;
 
   &__icono {
-    font-size: 16px;
-    line-height: 1;
+    display: flex;
     flex-shrink: 0;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2px;
+    }
   }
 
   &__nombre {
@@ -223,7 +272,10 @@
     border-radius: 8px;
     
     .tip-icon {
-      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      stroke-width: 2px;
+      flex-shrink: 0;
     }
     
     p {

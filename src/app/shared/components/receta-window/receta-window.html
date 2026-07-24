@@ -1,7 +1,9 @@
 @if (recipe) {
 <div class="receta-window" (click)="handleOutsideClick($event)">
   <div class="receta-window__container">
-    <button class="receta-window__close" (click)="onClose()">✕</button>
+    <button class="receta-window__close" (click)="onClose()">
+      <svg lucideX></svg>
+    </button>
 
     <div class="receta-window__header">
       <img [src]="recipe.imagen_url" [alt]="recipe.nombre_receta"
@@ -10,24 +12,46 @@
       <div class="header-content">
         <h1>{{ recipe.nombre_receta }}</h1>
         <div class="header-meta">
-          <span>{{ getCategoriaText() }}</span>
+          <span class="header-meta__item">
+            @switch (recipe.categoria) {
+              @case ('ENTRANTE') { <svg lucideSalad class="header-meta__icon"></svg> }
+              @case ('PRINCIPAL') { <svg lucideUtensilsCrossed class="header-meta__icon"></svg> }
+              @case ('POSTRE') { <svg lucideCakeSlice class="header-meta__icon"></svg> }
+              @case ('BEBIDA') { <svg lucideCupSoda class="header-meta__icon"></svg> }
+            }
+            {{ getCategoriaText() }}
+          </span>
           <span>•</span>
-          <span>{{ getDietaText() }}</span>
+          <span class="header-meta__item">
+            @switch (recipe.tipo_dieta) {
+              @case ('VEGANA') { <svg lucideLeaf class="header-meta__icon"></svg> }
+              @case ('VEGETARIANA') { <svg lucideSalad class="header-meta__icon"></svg> }
+              @case ('OMNIVORA') { <svg lucideBeef class="header-meta__icon"></svg> }
+            }
+            {{ getDietaText() }}
+          </span>
           @if (getTiempo()) {
             <span>•</span>
-            <span>⏱️ {{ getTiempo() }}</span>
+            <span class="header-meta__item"><svg lucideClock class="header-meta__icon"></svg>{{ getTiempo() }}</span>
           }
           @if (recipe.num_comensales) {
             <span>•</span>
-            <span>👥 {{ recipe.num_comensales }} personas</span>
+            <span class="header-meta__item"><svg lucideUsers class="header-meta__icon"></svg>{{ recipe.num_comensales }} personas</span>
           }
           @if (recipe.dificultad) {
             <span>•</span>
-            <span>📊 {{ recipe.dificultad }}</span>
+            <span class="header-meta__item"><svg lucideChartColumn class="header-meta__icon"></svg>{{ recipe.dificultad }}</span>
           }
         </div>
         <div class="badge-faltantes" [class]="getFaltantesClase()">
-          {{ getFaltantesIcono() }} {{ getFaltantesTexto() }}
+          @if (recipe.ingredientes_faltantes === 0) {
+            <svg lucideCircleCheck class="badge-icon"></svg>
+          } @else if (recipe.ingredientes_faltantes === 1) {
+            <svg lucideCircleAlert class="badge-icon"></svg>
+          } @else {
+            <svg lucideCircleX class="badge-icon"></svg>
+          }
+          {{ getFaltantesTexto() }}
         </div>
       </div>
     </div>
@@ -41,11 +65,17 @@
 
       @if (recipe?.ingredientes?.length) {
         <div class="content-section">
-          <h2>🧺 Ingredientes</h2>
+          <h2><svg lucideShoppingBasket class="section-icon"></svg>Ingredientes</h2>
           <ul class="ingredientes-lista">
             @for (ing of recipe.ingredientes; track ing.nombre_ingrediente) {
               <li class="ingrediente" [class]="getClaseIngrediente(ing)">
-                <span class="ingrediente__icono">{{ ing.disponible ? '✔️' : '❌' }}</span>
+                <span class="ingrediente__icono">
+                  @if (ing.disponible) {
+                    <svg lucideCircleCheck></svg>
+                  } @else {
+                    <svg lucideCircleX></svg>
+                  }
+                </span>
                 <span class="ingrediente__nombre">{{ ing.nombre_ingrediente }}</span>
                 @if (ing.cantidad) {
                   <span class="ingrediente__cantidad">{{ ing.cantidad }}</span>
@@ -58,7 +88,7 @@
 
       @if (recipe.instrucciones) {
         <div class="content-section">
-          <h2>📝 Instrucciones</h2>
+          <h2><svg lucideNotebookText class="section-icon"></svg>Instrucciones</h2>
           <div class="instructions">
             <p class="whitespace-pre-line">{{ recipe.instrucciones }}</p>
           </div>
@@ -67,10 +97,10 @@
 
       @if (recipe.tips) {
         <div class="content-section">
-          <h2>👨‍🍳 Consejo del Chef</h2>
+          <h2><svg lucideChefHat class="section-icon"></svg>Consejo del Chef</h2>
           <div class="tips">
             <div class="tip">
-              <span class="tip-icon">✨</span>
+              <svg lucideSparkles class="tip-icon"></svg>
               <p class="whitespace-pre-line">{{ recipe.tips }}</p>
             </div>
           </div>

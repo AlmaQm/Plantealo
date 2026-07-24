@@ -4,30 +4,31 @@
     [titulo]="'Recetas'"
     [subtitulo]="'Basadas en tu huerto y preferencias ' + getDietaText()">
 
-    <div class="recetas-page__search">
-      <div class="search-box">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange()"
-          placeholder="Buscar recetas..."
-          class="search-input">
+    <div class="recetas-page__search-row">
+      <div class="recetas-page__search">
+        <div class="search-box">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Buscar recetas..."
+            class="search-input">
+        </div>
       </div>
-    </div>
 
-    <button
-      type="button"
-      class="filters-toggle"
-      [class.filters-toggle--open]="filtrosAbiertos()"
-      (click)="toggleFiltros()">
-      <span>
-        Filtros
+      <button
+        type="button"
+        class="filters-toggle"
+        [class.filters-toggle--open]="filtrosAbiertos()"
+        [class.filters-toggle--active]="filtrosActivos() > 0"
+        (click)="toggleFiltros()"
+        aria-label="Filtros">
+        <svg lucideSlidersHorizontal class="filters-toggle__icon"></svg>
         @if (filtrosActivos() > 0) {
           <span class="filters-toggle__count">{{ filtrosActivos() }}</span>
         }
-      </span>
-      <span class="filters-toggle__chev">▾</span>
-    </button>
+      </button>
+    </div>
 
     <div
       class="recetas-page__filtros-collapse"

@@ -1,9 +1,3 @@
-export function getFaltantesIcono(faltantes: number): string {
-  if (faltantes === 0) return '🟢';
-  if (faltantes === 1) return '🟡';
-  return '🔴';
-}
-
 export function getFaltantesTexto(faltantes: number): string {
   if (faltantes === 0) return '¡Tienes todo en tu huerto!';
   if (faltantes === 1) return '¡Te falta solo 1 ingrediente!';

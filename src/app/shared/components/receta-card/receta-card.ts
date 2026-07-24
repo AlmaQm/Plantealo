@@ -2,12 +2,22 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RecetaHuerto } from '../../../models/interfaces';
 import { RecetasService } from '../../../services/recetas.service';
-import { getFaltantesIcono, getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
+import { getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
+import {
+  LucideHeart, LucideClock, LucideUsers, LucideChartColumn,
+  LucideLeaf, LucideSalad, LucideUtensilsCrossed, LucideCakeSlice, LucideCupSoda,
+  LucideCircleCheck, LucideCircleAlert, LucideCircleX
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-receta-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    LucideHeart, LucideClock, LucideUsers, LucideChartColumn,
+    LucideLeaf, LucideSalad, LucideUtensilsCrossed, LucideCakeSlice, LucideCupSoda,
+    LucideCircleCheck, LucideCircleAlert, LucideCircleX
+  ],
   templateUrl: './receta-card.html',
   styleUrls: ['./receta-card.scss']
 })
@@ -24,14 +34,10 @@ export class RecetaCardComponent {
 
   getCategoriaText(): string {
     const map: Record<string, string> = {
-      'ENTRANTE': '🥗 Entrante', 'PRINCIPAL': '🍽️ Principal',
-      'POSTRE': '🍰 Postre',    'BEBIDA': '🥤 Bebida'
+      'ENTRANTE': 'Entrante', 'PRINCIPAL': 'Principal',
+      'POSTRE': 'Postre',    'BEBIDA': 'Bebida'
     };
     return map[this.recipe.categoria ?? ''] ?? this.recipe.categoria ?? '';
-  }
-
-  getFaltantesIcono(): string {
-    return getFaltantesIcono(this.recipe.ingredientes_faltantes);
   }
 
   getFaltantesTexto(): string {
