@@ -293,7 +293,10 @@ export class DietRecommendationsComponent implements OnInit {
         const [mejor] = [...compatibles].sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);
         this.recetaRecomendada = mejor ?? null;
       },
-      error: () => { this.recetaRecomendada = null; },
+      error: (err) => {
+        console.error('❌ [cargarRecetaRecomendada] Error al cargar la receta recomendada:', err);
+        this.recetaRecomendada = null;
+      },
     });
   }
 

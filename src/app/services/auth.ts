@@ -54,15 +54,18 @@ export class AuthService {
           }
 
           // Obtenir usuari de localStorage
-          let usuario = this.getStoredUser();
+          const usuario = this.getStoredUser();
 
-          // Si no hi ha dades a localStorage, intentar sincronitzar amb Aiven
-          if (!usuario) {
-            // Intentar obtenir de Aiven pel uid
+          // Si no hi ha dades a localStorage, o la sincronització anterior no
+          // va arribar a guardar l'usuario_id, cal esperar la sincronització
+          // abans d'emetre: si no, components com la recomanació de receptes
+          // (que necessiten usuario_id) es queden en silenci sense cap avís.
+          if (!usuario || !usuario.usuario_id) {
             return from(this.syncUserFromAiven(fbUser.uid, fbUser.email || ''));
           }
 
-          // Si tenim usuari a localStorage, sincronitzar amb Aiven per actualitzar
+          // Ja tenim un usuari vàlid en local: refresquem en segon pla sense
+          // bloquejar l'emissió.
           this.syncWithAiven(usuario, fbUser.uid).catch(err => {
             console.error('❌ [currentUser$] Error sincronitzant:', err);
           });
