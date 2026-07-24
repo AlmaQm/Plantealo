@@ -64,12 +64,12 @@ export class HomeComponent {
       .map(({ p, estado, dias, riego }) => {
         const tipo: GardenTask['tipo'] = estado === 'ENFERMA' ? 'ENFERMA' : estado === 'LISTA' ? 'COSECHA' : 'RIEGO';
         const completed = tipo === 'ENFERMA'
-          ? done.has(p.planta_id)
+          ? done.has(p.id)
           : tipo === 'COSECHA'
-            ? esHoy(p.f_cosecha) || done.has(p.planta_id)
-            : esHoy(p.ultimo_riego) || done.has(p.planta_id);
+            ? esHoy(p.f_cosecha) || done.has(p.id)
+            : esHoy(p.ultimo_riego) || done.has(p.id);
         return {
-          id:          p.planta_id,
+          id:          p.id,
           tipo,
           icon:        ICONOS[estado] ?? '🌿',
           image:       p.imagen_url,

@@ -29,7 +29,7 @@ export class PlantaCardComponent {
   }
 
   confirmarEliminar(): void {
-    this.plantasService.deletePlanta(this.planta.planta_id);
+    this.plantasService.deletePlanta(this.planta.id);
     this.mostrarConfirm.set(false);
   }
 
