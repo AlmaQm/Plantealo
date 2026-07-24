@@ -14,6 +14,11 @@ engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,
     pool_recycle=280,
+    # Aiven limita las conexiones concurrentes totales, compartidas con el
+    # backend de producción; sin este límite SQLAlchemy abre hasta 15 por
+    # proceso (5 + 10 overflow) y agota el cupo, provocando 500 intermitentes.
+    pool_size=3,
+    max_overflow=2,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

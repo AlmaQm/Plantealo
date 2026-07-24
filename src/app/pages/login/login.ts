@@ -22,6 +22,8 @@ export class Login {
 
   readonly loading = signal(false);
   readonly error = signal('');
+  readonly passwordVisible = signal(false);
+  readonly loadingGoogle = signal(false);
 
   readonly form = new FormGroup<LoginForm>({
     email: new FormControl('', {
@@ -48,6 +50,20 @@ export class Login {
       this.error.set((e as Error).message);
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  async onGoogleLogin(): Promise<void> {
+    if (this.loadingGoogle()) return;
+    this.loadingGoogle.set(true);
+    this.error.set('');
+    try {
+      await this.authService.loginConGoogle();
+      await this.router.navigate(['/inicio']);
+    } catch (e) {
+      this.error.set((e as Error).message);
+    } finally {
+      this.loadingGoogle.set(false);
     }
   }
 }

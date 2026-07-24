@@ -37,7 +37,7 @@ class Usuario(Base):
     email = Column(String(50), unique=True, nullable=False)
     contrasena = Column(String(255), nullable=True)  # ya era nullable en la BD (Firebase gestiona auth)
     tipo_dieta = Column(String(20), nullable=False) # OMNIVORA, VEGETARIANA, VEGANA
-    imagen_url = Column(String(100))
+    imagen_url = Column(String(255))  # ampliado para URLs de Firebase Storage (antes String(100))
 
     perfil = relationship("PerfilUsuario", back_populates="usuario", uselist=False)
     mis_plantas = relationship("PUsuario", back_populates="propietario")

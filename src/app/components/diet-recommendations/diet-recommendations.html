@@ -16,7 +16,7 @@
 
 <div class="recs-grid">
   @for (planta of plantas; track planta.nombre) {
-    <div class="rec-card">
+    <div class="rec-card" (click)="abrirDetalle(planta)">
       <img [src]="planta.imagen" [alt]="planta.nombre" class="rec-img" />
       <div class="rec-overlay"></div>
       <div class="rec-info">
@@ -47,7 +47,7 @@
 }
 
 <!-- MODAL CALENDARIO -->
-<ion-modal #calModal class="cal-modal" [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true">
+<ion-modal #calModal mode="ios" class="cal-modal" [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true">
   <ng-template>
     <div class="cal-wrap">
 
@@ -78,13 +78,14 @@
       <div class="cal-months-header">
         <div class="cal-months-spacer"></div>
         <div class="cal-months-row">
-          @for (m of mesesCortos; track m; let i = $index) {
+          @for (m of mesesCortos; track $index; let i = $index) {
             <span class="cal-month-lbl"
               [class.es-hoy]="i + 1 === mesActual"
               [class.es-seleccionado]="i + 1 === mesSeleccionado()"
               (click)="seleccionarMes(i)">{{ m }}</span>
           }
         </div>
+        <div class="cal-months-spacer"></div>
       </div>
 
       <!-- LISTA DE PLANTAS (scroll) -->
@@ -99,6 +100,8 @@
                   @if (mesSeleccionado() === mesActual) {
                     @if (plantadaReciente() === t.nombre) {
                       <span class="cal-added-badge"><svg lucideCheck class="cal-added-icon"></svg> Añadida</span>
+                    } @else if (errorPlantar() && errorPlantar()!.includes(t.nombre)) {
+                      <span class="cal-error-badge">{{ errorPlantar() }}</span>
                     } @else {
                       <button class="cal-now-badge" (click)="plantarAhora(t)">+ Plantar ahora</button>
                     }
@@ -108,7 +111,7 @@
                 }
               </div>
               <div class="cal-bar">
-                @for (m of mesesCortos; track m; let i = $index) {
+                @for (m of mesesCortos; track $index; let i = $index) {
                   <span class="cal-seg"
                     [class.seg-on]="t.meses.includes(i + 1)"
                     [class.seg-sel]="t.meses.includes(i + 1) && i + 1 === mesSeleccionado()"
@@ -122,5 +125,42 @@
       </div>
 
     </div>
+  </ng-template>
+</ion-modal>
+
+<!-- MODAL DETALLE DE VERDURA -->
+<ion-modal #detalleModal class="detalle-modal">
+  <ng-template>
+    @if (verduraSeleccionada(); as v) {
+      <div class="detalle-wrap">
+        <img [src]="v.imagen" [alt]="v.nombre" class="detalle-img" />
+        <button class="detalle-close" (click)="detalleModal.dismiss()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <div class="detalle-body">
+          <h2 class="detalle-nombre">{{ v.nombre }}</h2>
+          <p class="detalle-texto">{{ getDescripcion(v.nombre) }}</p>
+          <div class="detalle-consejo-box">
+            <svg lucideSprout class="detalle-consejo-icon"></svg>
+            <span>{{ v.consejo }}</span>
+          </div>
+
+          <div class="detalle-siembra">
+            <span class="detalle-siembra-label">Época de siembra</span>
+            <div class="cal-bar">
+              @for (m of mesesCortos; track m; let i = $index) {
+                <span class="cal-seg"
+                  [class.seg-on]="getMesesSiembra(v.nombre).includes(i + 1)"
+                  [class.seg-cur]="i + 1 === mesActual">
+                </span>
+              }
+            </div>
+            <span class="detalle-siembra-meses">{{ getMesesSiembraTexto(v.nombre) }}</span>
+          </div>
+        </div>
+      </div>
+    }
   </ng-template>
 </ion-modal>

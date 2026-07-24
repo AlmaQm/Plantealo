@@ -17,6 +17,8 @@ import {
   reauthenticateWithCredential,
   updatePassword,
   deleteUser,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 
 import { Usuario } from '../models/interfaces';
@@ -58,15 +60,18 @@ export class AuthService {
           }
 
           // Obtenir usuari de localStorage
-          let usuario = this.getStoredUser();
+          const usuario = this.getStoredUser();
 
-          // Si no hi ha dades a localStorage, intentar sincronitzar amb Aiven
-          if (!usuario) {
-            // Intentar obtenir de Aiven pel uid
+          // Si no hi ha dades a localStorage, o la sincronització anterior no
+          // va arribar a guardar l'usuario_id, cal esperar la sincronització
+          // abans d'emetre: si no, components com la recomanació de receptes
+          // (que necessiten usuario_id) es queden en silenci sense cap avís.
+          if (!usuario || !usuario.usuario_id) {
             return from(this.syncUserFromAiven(fbUser.uid, fbUser.email || ''));
           }
 
-          // Si tenim usuari a localStorage, sincronitzar amb Aiven per actualitzar
+          // Ja tenim un usuari vàlid en local: refresquem en segon pla sense
+          // bloquejar l'emissió.
           this.syncWithAiven(usuario, fbUser.uid).catch(err => {
             console.error('❌ [currentUser$] Error sincronitzant:', err);
           });
@@ -155,7 +160,11 @@ export class AuthService {
     }
   }
 
-  async actualizarPerfil(datos: { nombre_usuario: string; tipo_dieta: Usuario['tipo_dieta'] }): Promise<boolean> {
+  async actualizarPerfil(datos: {
+    nombre_usuario: string;
+    tipo_dieta: Usuario['tipo_dieta'];
+    imagen_url?: string;
+  }): Promise<boolean> {
     const usuarioActual = this.getStoredUser();
     const uid = this.auth.currentUser?.uid;
     if (!usuarioActual || !uid) {
@@ -163,6 +172,19 @@ export class AuthService {
     }
     const actualizado: Usuario = { ...usuarioActual, ...datos };
     return await this.syncWithAiven(actualizado, uid);
+  }
+
+  async uploadAvatar(file: File, uid: string): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await firstValueFrom(
+      this.http.post<{ imagen_url: string }>(
+        `${environment.apiUrl}/usuarios/by-uid/${uid}/avatar`,
+        formData
+      )
+    );
+    return res.imagen_url;
   }
 
   getStoredUser(): Usuario | null {
@@ -228,6 +250,16 @@ export class AuthService {
       throw new Error(mapAuthError(error as { code?: string }));
     }
 
+    // Paso 1b: subir el avatar si el usuario ha elegido uno (opcional, no bloqueante)
+    let imagenUrl: string | undefined;
+    if (avatarFile) {
+      try {
+        imagenUrl = await this.uploadAvatar(avatarFile, uid);
+      } catch (error) {
+        console.error('❌ [register] Error al subir el avatar (se continúa sin foto):', error);
+      }
+    }
+
     // Paso 2: crear objeto usuario
     const usuario: Usuario = {
       uid,
@@ -235,7 +267,7 @@ export class AuthService {
       nombre_usuario: data.nombre_usuario,
       email: data.email,
       tipo_dieta: data.tipo_dieta,
-      imagen_url: data.imagen_url,
+      imagen_url: imagenUrl ?? data.imagen_url,
       fechaRegistro: new Date(),
     };
 
@@ -250,7 +282,7 @@ export class AuthService {
         nombre_usuario: data.nombre_usuario,
         email: data.email,
         tipo_dieta: data.tipo_dieta,
-        imagen_url: data.imagen_url || null,
+        imagen_url: usuario.imagen_url || null,
       };
 
       const res = await firstValueFrom(
@@ -275,6 +307,41 @@ export class AuthService {
       }
     } catch (err) {
       console.error('❌ [register] Error inesperat en sync:', err);
+    }
+  }
+
+  async loginConGoogle(): Promise<void> {
+    try {
+      const provider = new GoogleAuthProvider();
+      const credential = await signInWithPopup(this.auth, provider);
+      const uid = credential.user.uid;
+
+      // Comprova si l'usuari ja existeix a Aiven; si no, el crea amb les
+      // dades de Google (mateix patró que syncUserFromAiven/register).
+      const existe = await firstValueFrom(
+        this.http.get<Usuario>(`${environment.apiUrl}/usuarios/by-uid/${uid}`).pipe(
+          catchError(() => of(null))
+        )
+      );
+
+      if (!existe) {
+        const nombre = credential.user.displayName ?? 'Usuario';
+        const email = credential.user.email ?? '';
+        const nuevoUsuario: Usuario = {
+          uid,
+          email,
+          nombre,
+          nombre_usuario: email.split('@')[0] || 'usuario',
+          tipo_dieta: 'OMNIVORA',
+          imagen_url: credential.user.photoURL ?? undefined,
+          fechaRegistro: new Date(),
+        };
+        await this.syncWithAiven(nuevoUsuario, uid);
+        this.saveStoredUser(nuevoUsuario);
+      }
+    } catch (error) {
+      console.error('❌ [loginConGoogle] Error:', error);
+      throw new Error(mapAuthError(error as { code?: string }));
     }
   }
 

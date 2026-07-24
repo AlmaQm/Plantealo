@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional, List
@@ -30,6 +31,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- ARCHIVOS SUBIDOS (avatares) ---
+# Nota: en Render (plan sin disco persistente) el sistema de archivos es
+# efímero y se borra en cada redeploy/reinicio — los avatares subidos no
+# sobreviven a largo plazo salvo que se añada un disco persistente.
+os.makedirs("uploads/avatars", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Crear tablas al iniciar
 @app.on_event("startup")
@@ -127,6 +135,31 @@ def eliminar_usuario_endpoint(firebase_uid: str, db: Session = Depends(get_db)):
     if not ok:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return {"status": "success", "detail": "Usuario eliminado correctamente."}
+
+@app.post("/usuarios/by-uid/{firebase_uid}/avatar")
+async def subir_avatar(
+    firebase_uid: str,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    nombre_archivo = f"{firebase_uid}.{extension}"
+    ruta = f"uploads/avatars/{nombre_archivo}"
+
+    with open(ruta, "wb") as f:
+        contenido = await file.read()
+        f.write(contenido)
+
+    # URL completa que el frontend pueda usar
+    url = f"{os.getenv('BACKEND_URL', 'http://localhost:8000')}/uploads/avatars/{nombre_archivo}"
+    usuario.imagen_url = url
+    db.commit()
+
+    return {"imagen_url": url}
 
 @app.get("/usuarios/by-uid/{firebase_uid}/plantas/", response_model=List[schemas.PUsuarioDetall])
 def get_plantas_by_uid(firebase_uid: str, db: Session = Depends(get_db)):

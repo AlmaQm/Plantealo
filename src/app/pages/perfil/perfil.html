@@ -20,9 +20,6 @@
          }
          <h2>{{ usuario()?.nombre ?? '—' }}</h2>
          <span class="handle">@{{ usuario()?.nombre_usuario ?? '' }}</span>
-         @if (usuario()?.tipo_dieta) {
-            <div class="tag">{{ dietaLabel(usuario()!.tipo_dieta) }}</div>
-         }
       </section>
 
       <!-- Información personal -->
@@ -72,7 +69,7 @@
             </div>
             <div class="stat-item">
                <span class="stat-value">{{ totalPlantas() }}</span>
-               <span class="stat-label">Gestionadas</span>
+               <span class="stat-label">Historial</span>
             </div>
          </div>
       </section>
