@@ -122,14 +122,14 @@ def get_plantas_usuario(db, usuario_id: int):
         .all()
     )
 
-def _get_planta_usuario(db: Session, usuario_id: int, planta_id: int):
+def _get_planta_usuario_por_id(db: Session, usuario_id: int, id: int):
     return db.query(models.PUsuario).filter(
         models.PUsuario.usuario_id == usuario_id,
-        models.PUsuario.planta_id == planta_id
+        models.PUsuario.id == id
     ).first()
 
-def marcar_riego(db: Session, usuario_id: int, planta_id: int, regado: bool):
-    planta = _get_planta_usuario(db, usuario_id, planta_id)
+def marcar_riego(db: Session, usuario_id: int, id: int, regado: bool):
+    planta = _get_planta_usuario_por_id(db, usuario_id, id)
     if not planta:
         return None
     planta.ultimo_riego = date.today() if regado else None
@@ -137,8 +137,8 @@ def marcar_riego(db: Session, usuario_id: int, planta_id: int, regado: bool):
     db.refresh(planta)
     return planta
 
-def marcar_cosecha(db: Session, usuario_id: int, planta_id: int, cosechado: bool):
-    planta = _get_planta_usuario(db, usuario_id, planta_id)
+def marcar_cosecha(db: Session, usuario_id: int, id: int, cosechado: bool):
+    planta = _get_planta_usuario_por_id(db, usuario_id, id)
     if not planta:
         return None
     planta.f_cosecha = date.today() if cosechado else None

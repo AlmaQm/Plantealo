@@ -164,7 +164,7 @@ export class RecetasComponent implements OnInit {
 
   getDietaText(): string {
     const map: Record<TipoDieta, string> = {
-      'VEGANA': '🌱 Vegana', 'VEGETARIANA': '🥬 Vegetariana', 'OMNIVORA': '🍖 Omnívora'
+      'VEGANA': 'Vegana', 'VEGETARIANA': 'Vegetariana', 'OMNIVORA': 'Omnívora'
     };
     return map[this.dietaUsuario];
   }

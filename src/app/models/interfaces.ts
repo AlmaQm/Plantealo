@@ -15,6 +15,7 @@ export interface WeatherData {
 }
 
 export interface Planta {
+  id: number;
   planta_id: number;
   usuario_id: number;
   nombre_planta: string;

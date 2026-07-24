@@ -12,7 +12,7 @@
         <p>Aún no tienes plantas en tu huerto.</p>
       </div>
     }
-    @for (planta of inventario(); track planta.planta_id) {
+    @for (planta of inventario(); track planta.id) {
       <div class="historial-row">
         <div class="historial-row__info">
           <span class="historial-row__nombre">{{ planta.nombre_planta }}</span>

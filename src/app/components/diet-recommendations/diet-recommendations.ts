@@ -368,6 +368,7 @@ export class DietRecommendationsComponent implements OnInit {
     cosecha.setDate(cosecha.getDate() + diasHastaCosecha(t.nombre));
 
     const nueva: PlantaHuerto = {
+      id: 0,
       planta_id: planta.planta_id,
       usuario_id: 1,
       nombre_planta: t.nombre,

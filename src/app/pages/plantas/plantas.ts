@@ -70,6 +70,7 @@ export class PlantasComponent {
       f_recogida.setDate(f_recogida.getDate() + diasHastaCosecha(planta.nombre_planta));
 
       this.plantasService.addPlanta({
+        id: 0,
         planta_id: planta.planta_id,
         usuario_id: 0,
         nombre_planta: planta.nombre_planta,

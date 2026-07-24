@@ -90,6 +90,7 @@ class PlantaCat(BaseModel):
 
 # Planta personal del usuario + datos del catálogo (join p_usuario + plantas)
 class PUsuarioDetall(BaseModel):
+    id: int
     planta_id: int
     usuario_id: int
     f_siembra: date
