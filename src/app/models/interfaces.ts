@@ -126,6 +126,8 @@ export interface RecetaHuerto extends RecetaBase {
   ingredientes_faltantes: number;
   guardada?: boolean;
   ingredientes?: IngredienteEstado[];
+  // false = la receta no tiene ingredientes registrados en BD (no confundir con "0 faltantes").
+  tiene_ingredientes_registrados: boolean;
 }
 
 export interface ConsultaHuertoRequest {

@@ -50,8 +50,7 @@ export class RecetasComponent implements OnInit {
     { value: 'VEGANA',      label: 'Vegana'      }
   ];
 
-  // Vacío a propósito: sin dieta preseleccionada se muestran todas las recetas
-  // al entrar. El usuario activa un chip solo si quiere filtrar.
+  // Selección múltiple, igual que categoriasActivas: vacío = todas las dietas.
   dietasActivas = new Set<TipoDieta>();
 
   readonly categoriaChips: { value: CategoriaFiltro; label: string }[] = [
@@ -72,6 +71,7 @@ export class RecetasComponent implements OnInit {
   ngOnInit(): void {
     // Solo para el texto del subtítulo ("...preferencias Omnívora"); ya NO
     // se usa para preseleccionar ningún chip de dieta como filtro activo.
+    // usuarioId ya se resuelve de forma reactiva vía el getter de arriba.
     const usuario = this.usuario();
     if (usuario?.tipo_dieta) {
       this.dietaUsuario = usuario.tipo_dieta as TipoDieta;
@@ -128,6 +128,16 @@ export class RecetasComponent implements OnInit {
     this.applyFilters();
   }
 
+  // Regla de inclusión Vegana ⊂ Vegetariana ⊂ Omnívora: una receta cumple un
+  // filtro de dieta si su tipo_dieta es igual o "más restrictivo" que el filtro.
+  private cumpleFiltroDieta(tipoDietaReceta: string, filtro: TipoDieta): boolean {
+    switch (filtro) {
+      case 'VEGANA':      return tipoDietaReceta === 'VEGANA';
+      case 'VEGETARIANA': return tipoDietaReceta === 'VEGETARIANA' || tipoDietaReceta === 'VEGANA';
+      case 'OMNIVORA':    return true;
+    }
+  }
+
   onSearchChange(): void {
     this.applyFilters();
   }
@@ -147,15 +157,14 @@ export class RecetasComponent implements OnInit {
       );
     }
 
-    // Selección múltiple libre: sin filtro activo se ven todas; con uno o
-    // más marcados, solo las recetas cuyo tipo_dieta coincida con alguno
-    // de los seleccionados (mismo patrón que categoriasActivas).
+    // Unión: con varias dietas marcadas se incluyen las recetas que cumplan
+    // CUALQUIERA de ellas (regla de inclusión Vegana ⊂ Vegetariana ⊂ Omnívora).
     if (this.dietasActivas.size > 0) {
-      result = result.filter(r => this.dietasActivas.has((r.tipo_dieta ?? '').toUpperCase().trim() as TipoDieta));
+      const filtros = [...this.dietasActivas];
+      result = result.filter(r => filtros.some(f => this.cumpleFiltroDieta((r.tipo_dieta ?? '').toUpperCase().trim(), f)));
     }
 
-    result.sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);
-
+    // Sin reordenar: se respeta el orden que ya devuelve la API (id_receta ASC).
     this.filteredRecipes.set(result);
   }
 

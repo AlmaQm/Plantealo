@@ -233,6 +233,9 @@ interface PUsuarioDetallAiven {
 
 // ─── Imagen local por nombre de planta ───────────────────────────────────────
 const IMAGEN_PLANTA: Record<string, string> = {
+  'Remolacha':        'assets/images/remolacha.jpg',
+  'Coliflor':         'assets/images/coliflor.jpg',
+  'Brócoli':          'assets/images/brocoli.jpg',
   'Tomate':           'assets/images/tomate-cherry.jpg',
   'Lechuga':          'assets/images/lechuga.jpg',
   'Zanahoria':        'assets/images/zanahoria.jpg',
@@ -261,7 +264,7 @@ const IMAGEN_PLANTA: Record<string, string> = {
   'Pepino':           'assets/images/pepino.jpg',
   'Berenjenas':       'assets/images/berenjenasç.jpg',
   'Romero':           'assets/images/romero.jpg',
-  'Ajos':             'assets/images/placeholder-receta.jpg',
+  'Ajos':             'assets/images/ajo.webp',
   'Fresones':         'assets/images/fresas.jpg',
   'Guindillas':       'assets/images/pimientos.jpg',
 };

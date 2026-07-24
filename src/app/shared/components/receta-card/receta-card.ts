@@ -31,15 +31,15 @@ export class RecetaCardComponent {
   }
 
   getFaltantesIcono(): string {
-    return getFaltantesIcono(this.recipe.ingredientes_faltantes);
+    return getFaltantesIcono(this.recipe.ingredientes_faltantes, this.recipe.tiene_ingredientes_registrados);
   }
 
   getFaltantesTexto(): string {
-    return getFaltantesTexto(this.recipe.ingredientes_faltantes);
+    return getFaltantesTexto(this.recipe.ingredientes_faltantes, this.recipe.tiene_ingredientes_registrados);
   }
 
   getFaltantesClase(): string {
-    return getFaltantesClase(this.recipe.ingredientes_faltantes);
+    return getFaltantesClase(this.recipe.ingredientes_faltantes, this.recipe.tiene_ingredientes_registrados);
   }
 
   onCardClick(): void {
