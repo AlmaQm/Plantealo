@@ -77,7 +77,7 @@
     border-radius: $md-radius-md;
     font-size: 14px;
     font-family: inherit;
-    color: $md-ink;
+    color: $md-ink-muted;
     background: $md-surface;
     outline: none;
 
@@ -85,6 +85,21 @@
       border-color: $md-accent;
     }
   }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: $md-ink-muted !important;
+    -webkit-box-shadow: 0 0 0 1000px $md-surface inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+// Override puntual del color del text del trigger d'app-select-plantas
+// (component compartit amb plantas.ts, no es toca el seu .scss): només
+// dins de Configuración volem el to $md-ink-muted en lloc de $green-7.
+::ng-deep app-select-plantas .sp__trigger.sp__trigger {
+  color: $md-ink-muted;
 }
 
 .avatar-selector {
@@ -104,6 +119,26 @@
   &--vacio {
     display: block;
   }
+}
+
+.btn-seleccionar-archivo {
+  padding: 8px 14px;
+  border: 1.5px solid $md-accent-soft;
+  border-radius: $md-radius-md;
+  background: $md-surface;
+  color: $md-ink-muted;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $md-accent;
+  }
+}
+
+.archivo-nombre {
+  font-size: 13px;
+  color: $md-ink-muted;
+  margin-left: 8px;
 }
 
 .campo-error {

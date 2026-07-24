@@ -5,6 +5,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../services/auth';
 import { Usuario } from '../../models/interfaces';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
+import { ConfirmModalComponent } from '../../shared/components/confirm-modal/confirm-modal';
+import { SelectPlantasComponent, SelectOpcion } from '../../components/select-plantas/select-plantas';
 
 type Idioma = 'ES' | 'CA' | 'EN';
 
@@ -13,10 +15,22 @@ type ConfiguracionForm = {
   tipo_dieta: FormControl<Usuario['tipo_dieta']>;
 };
 
+const DIETA_A_NUMERO: Record<Usuario['tipo_dieta'], number> = {
+  OMNIVORA: 1,
+  VEGETARIANA: 2,
+  VEGANA: 3,
+};
+
+const NUMERO_A_DIETA: Record<number, Usuario['tipo_dieta']> = {
+  1: 'OMNIVORA',
+  2: 'VEGETARIANA',
+  3: 'VEGANA',
+};
+
 @Component({
   selector: 'app-configuracion',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, ConfirmModalComponent, SelectPlantasComponent],
   templateUrl: './configuracion.html',
   styleUrls: ['./configuracion.scss']
 })
@@ -31,15 +45,19 @@ export class ConfiguracionComponent implements OnInit {
   readonly guardando = signal(false);
   readonly guardadoOk = signal(false);
   readonly error = signal('');
+  readonly mostrarPremiumModal = signal(false);
 
   readonly avatarPreview = signal('');
+  readonly archivoSeleccionadoNombre = signal('');
   private avatarFile: File | undefined;
 
-  readonly dietaOpciones: { valor: Usuario['tipo_dieta']; label: string }[] = [
-    { valor: 'OMNIVORA',    label: 'Omnívora' },
-    { valor: 'VEGETARIANA', label: 'Vegetariana' },
-    { valor: 'VEGANA',      label: 'Vegana' },
+  readonly dietaOpcionesSelect: SelectOpcion[] = [
+    { valor: 1, etiqueta: 'Omnívora' },
+    { valor: 2, etiqueta: 'Vegetariana' },
+    { valor: 3, etiqueta: 'Vegana' },
   ];
+
+  readonly dietaValorSeleccionado = signal<number | null>(null);
 
   readonly form = new FormGroup<ConfiguracionForm>({
     nombre_usuario: new FormControl('', {
@@ -60,11 +78,26 @@ export class ConfiguracionComponent implements OnInit {
         tipo_dieta: usuario.tipo_dieta
       });
       this.avatarPreview.set(usuario.imagen_url ?? '');
+      this.dietaValorSeleccionado.set(DIETA_A_NUMERO[usuario.tipo_dieta]);
     }
   }
 
+  onDietaChange(valor: number): void {
+    const dieta = NUMERO_A_DIETA[valor];
+    this.form.controls.tipo_dieta.setValue(dieta);
+    this.dietaValorSeleccionado.set(valor);
+  }
+
   seleccionarIdioma(idioma: Idioma): void {
+    if (idioma !== 'ES') {
+      this.mostrarPremiumModal.set(true);
+      return;
+    }
     this.idioma.set(idioma);
+  }
+
+  cerrarPremiumModal(): void {
+    this.mostrarPremiumModal.set(false);
   }
 
   onAvatarSelected(event: Event): void {
@@ -72,6 +105,7 @@ export class ConfiguracionComponent implements OnInit {
     if (file) {
       this.avatarFile = file;
       this.avatarPreview.set(URL.createObjectURL(file));
+      this.archivoSeleccionadoNombre.set(file.name);
     }
   }
 

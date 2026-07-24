@@ -3,13 +3,15 @@
     <div class="confirm-modal" (click)="$event.stopPropagation()">
       <p class="confirm-modal__mensaje">{{ mensaje() }}</p>
       <div class="confirm-modal__botons">
-        <button class="confirm-modal__btn confirm-modal__btn--cancel"
-                (click)="cancelar.emit()">
-          No
-        </button>
+        @if (!soloConfirmar()) {
+          <button class="confirm-modal__btn confirm-modal__btn--cancel"
+                  (click)="cancelar.emit()">
+            No
+          </button>
+        }
         <button class="confirm-modal__btn confirm-modal__btn--confirm"
                 (click)="confirmar.emit()">
-          Sí, eliminar
+          {{ textoConfirmar() }}
         </button>
       </div>
     </div>

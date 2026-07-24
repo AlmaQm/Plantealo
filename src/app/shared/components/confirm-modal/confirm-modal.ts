@@ -9,6 +9,8 @@ import { Component, input, output } from '@angular/core';
 export class ConfirmModalComponent {
   mensaje = input<string>('');
   visible = input<boolean>(false);
+  soloConfirmar = input<boolean>(false);
+  textoConfirmar = input<string>('Sí, eliminar');
 
   confirmar = output<void>();
   cancelar = output<void>();

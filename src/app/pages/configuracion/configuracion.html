@@ -21,14 +21,19 @@
     <h3>Editar perfil</h3>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="campo campo--avatar">
-        <label for="avatar">Foto de perfil</label>
+        <label>Foto de perfil</label>
         <div class="avatar-selector">
           @if (avatarPreview()) {
-            <img class="avatar-preview" [src]="avatarPreview()" alt="Vista previa del avatar" />
+            <img class="avatar-preview" [src]="avatarPreview()" alt="Vista previa" />
           } @else {
             <div class="avatar-preview avatar-preview--vacio"></div>
           }
-          <input id="avatar" type="file" accept="image/*" (change)="onAvatarSelected($event)" />
+          <button type="button" class="btn-seleccionar-archivo" (click)="fileInput.click()">
+            Seleccionar archivo
+          </button>
+          <span class="archivo-nombre">{{ archivoSeleccionadoNombre() || 'Ningún archivo seleccionado' }}</span>
+          <input #fileInput id="avatar" type="file" accept="image/*"
+                 hidden (change)="onAvatarSelected($event)" />
         </div>
       </div>
 
@@ -41,12 +46,12 @@
       </div>
 
       <div class="campo">
-        <label for="tipo_dieta">Preferencia alimentaria</label>
-        <select id="tipo_dieta" formControlName="tipo_dieta">
-          @for (opcion of dietaOpciones; track opcion.valor) {
-            <option [value]="opcion.valor">{{ opcion.label }}</option>
-          }
-        </select>
+        <label>Preferencia alimentaria</label>
+        <app-select-plantas
+          [opciones]="dietaOpcionesSelect"
+          [value]="dietaValorSeleccionado()"
+          [placeholder]="'Selecciona tu dieta'"
+          (valueChange)="onDietaChange($event)" />
       </div>
 
       @if (guardadoOk()) {
@@ -63,3 +68,11 @@
   </section>
 
 </div>
+
+<app-confirm-modal
+  [visible]="mostrarPremiumModal()"
+  [mensaje]="'Esta función está disponible en la versión premium. ¡Actualiza tu cuenta para desbloquear más idiomas!'"
+  [soloConfirmar]="true"
+  [textoConfirmar]="'Entendido'"
+  (confirmar)="cerrarPremiumModal()"
+  (cancelar)="cerrarPremiumModal()" />
