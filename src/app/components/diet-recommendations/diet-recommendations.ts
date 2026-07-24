@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonModal, createAnimation, AnimationBuilder } from '@ionic/angular/standalone';
+import { IonModal } from '@ionic/angular/standalone';
 import { switchMap } from 'rxjs';
 import { PlantasService, diasHastaCosecha, getTipoPlanta } from '../../services/plantas';
 import { AuthService } from '../../services/auth';
@@ -330,57 +330,4 @@ export class DietRecommendationsComponent implements OnInit {
   abrirCalendario() {
     this.calModal.present();
   }
-
-  // Animación de apertura: siempre desliza el sheet desde abajo con easing
-  // suave, sin depender del modo iOS/MD por defecto de Ionic (el modo MD usa
-  // una curva más brusca y corta que rompe la sensación de suavidad).
-  calEnterAnimation: AnimationBuilder = (baseEl, opts) => {
-    const root = (baseEl.shadowRoot ?? baseEl) as ParentNode;
-    const breakpoint = opts?.currentBreakpoint ?? 0.92;
-
-    const backdrop = createAnimation()
-      .addElement(root.querySelector('ion-backdrop')!)
-      .fromTo('opacity', '0.01', `calc(var(--backdrop-opacity) * ${breakpoint})`)
-      .beforeStyles({ 'pointer-events': 'none' })
-      .afterClearStyles(['pointer-events']);
-
-    // vh (no %) para que el desplazamiento sea siempre relativo a la altura
-    // real de la pantalla, no a la altura del propio wrapper (que puede
-    // quedar más pequeña que el viewport y hacer que el sheet "arranque"
-    // ya medio visible en vez de fuera de la pantalla).
-    const wrapper = createAnimation()
-      .addElement(root.querySelector('.modal-wrapper')!)
-      .keyframes([
-        { offset: 0, opacity: 1, transform: 'translateY(100vh)' },
-        { offset: 1, opacity: 1, transform: `translateY(${(1 - breakpoint) * 100}vh)` },
-      ]);
-
-    return createAnimation()
-      .addElement(baseEl)
-      .easing('cubic-bezier(0.32, 0.72, 0, 1)')
-      .duration(420)
-      .addAnimation([backdrop, wrapper]);
-  };
-
-  calLeaveAnimation: AnimationBuilder = (baseEl, opts) => {
-    const root = (baseEl.shadowRoot ?? baseEl) as ParentNode;
-    const breakpoint = opts?.currentBreakpoint ?? 0.92;
-
-    const backdrop = createAnimation()
-      .addElement(root.querySelector('ion-backdrop')!)
-      .fromTo('opacity', `calc(var(--backdrop-opacity) * ${breakpoint})`, 0);
-
-    const wrapper = createAnimation()
-      .addElement(root.querySelector('.modal-wrapper')!)
-      .keyframes([
-        { offset: 0, opacity: 1, transform: `translateY(${(1 - breakpoint) * 100}vh)` },
-        { offset: 1, opacity: 1, transform: 'translateY(100vh)' },
-      ]);
-
-    return createAnimation()
-      .addElement(baseEl)
-      .easing('cubic-bezier(0.32, 0.72, 0, 1)')
-      .duration(320)
-      .addAnimation([backdrop, wrapper]);
-  };
 }
