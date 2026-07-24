@@ -331,6 +331,7 @@ def _resultados_recetas_con_faltantes(db: Session, ids_plantas: List[int], usuar
                 models.recetas_guardadas.c.usuario_id == usuario_id
             )
         )
+        .order_by(models.Receta.id_receta.asc())
         .all()
     )
 

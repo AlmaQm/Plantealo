@@ -164,15 +164,7 @@ export class RecetasComponent implements OnInit {
       result = result.filter(r => filtros.some(f => this.cumpleFiltroDieta((r.tipo_dieta ?? '').toUpperCase().trim(), f)));
     }
 
-    // Las recetas sin ingredientes registrados no compiten por posición con las que
-    // sí tenemos calculadas: van al final en vez de colarse como "0 faltantes".
-    result.sort((a, b) => {
-      if (a.tiene_ingredientes_registrados !== b.tiene_ingredientes_registrados) {
-        return a.tiene_ingredientes_registrados ? -1 : 1;
-      }
-      return a.ingredientes_faltantes - b.ingredientes_faltantes;
-    });
-
+    // Sin reordenar: se respeta el orden que ya devuelve la API (id_receta ASC).
     this.filteredRecipes.set(result);
   }
 
