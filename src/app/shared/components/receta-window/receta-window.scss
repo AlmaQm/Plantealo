@@ -133,6 +133,11 @@
           color: #991b1b;
         }
 
+        &.faltantes--sin-datos {
+          background: $earth-1;
+          color: $earth-9;
+        }
+
         .badge-icon {
           width: 14px;
           height: 14px;
@@ -210,10 +215,37 @@
   }
 }
 
+.ingredientes-subtitulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $earth-9;
+  margin: 16px 0 8px;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+
+  &__icon {
+    width: 15px;
+    height: 15px;
+    stroke-width: 2px;
+    flex-shrink: 0;
+  }
+}
+
+.ingredientes-sin-datos {
+  color: $earth-9;
+  font-style: italic;
+}
+
 .ingredientes-lista {
   list-style: none;
   display: grid;
   gap: 8px;
+  margin-bottom: 8px;
 }
 
 .ingrediente {

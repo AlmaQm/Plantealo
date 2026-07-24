@@ -44,7 +44,9 @@
           }
         </div>
         <div class="badge-faltantes" [class]="getFaltantesClase()">
-          @if (recipe.ingredientes_faltantes === 0) {
+          @if (!recipe.tiene_ingredientes_registrados) {
+            <svg lucideCircleAlert class="badge-icon"></svg>
+          } @else if (recipe.ingredientes_faltantes === 0) {
             <svg lucideCircleCheck class="badge-icon"></svg>
           } @else if (recipe.ingredientes_faltantes === 1) {
             <svg lucideCircleAlert class="badge-icon"></svg>
@@ -63,26 +65,44 @@
         </div>
       }
 
-      @if (recipe?.ingredientes?.length) {
+      @if (recipe.tiene_ingredientes_registrados) {
         <div class="content-section">
           <h2><svg lucideShoppingBasket class="section-icon"></svg>Ingredientes</h2>
-          <ul class="ingredientes-lista">
-            @for (ing of recipe.ingredientes; track ing.nombre_ingrediente) {
-              <li class="ingrediente" [class]="getClaseIngrediente(ing)">
-                <span class="ingrediente__icono">
-                  @if (ing.disponible) {
-                    <svg lucideCircleCheck></svg>
-                  } @else {
-                    <svg lucideCircleX></svg>
+
+          @if (ingredientesDisponibles.length > 0) {
+            <h3 class="ingredientes-subtitulo"><svg lucideCircleCheck class="ingredientes-subtitulo__icon"></svg>En tu huerto/despensa</h3>
+            <ul class="ingredientes-lista">
+              @for (ing of ingredientesDisponibles; track ing.nombre_ingrediente) {
+                <li class="ingrediente ingrediente--disponible">
+                  <span class="ingrediente__icono"><svg lucideCircleCheck></svg></span>
+                  <span class="ingrediente__nombre">{{ ing.nombre_ingrediente }}</span>
+                  @if (ing.cantidad) {
+                    <span class="ingrediente__cantidad">{{ ing.cantidad }}</span>
                   }
-                </span>
-                <span class="ingrediente__nombre">{{ ing.nombre_ingrediente }}</span>
-                @if (ing.cantidad) {
-                  <span class="ingrediente__cantidad">{{ ing.cantidad }}</span>
-                }
-              </li>
-            }
-          </ul>
+                </li>
+              }
+            </ul>
+          }
+
+          @if (ingredientesFaltantes.length > 0) {
+            <h3 class="ingredientes-subtitulo"><svg lucideShoppingBasket class="ingredientes-subtitulo__icon"></svg>Te falta comprar</h3>
+            <ul class="ingredientes-lista">
+              @for (ing of ingredientesFaltantes; track ing.nombre_ingrediente) {
+                <li class="ingrediente ingrediente--faltante">
+                  <span class="ingrediente__icono"><svg lucideCircleX></svg></span>
+                  <span class="ingrediente__nombre">{{ ing.nombre_ingrediente }}</span>
+                  @if (ing.cantidad) {
+                    <span class="ingrediente__cantidad">{{ ing.cantidad }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      } @else {
+        <div class="content-section">
+          <h2><svg lucideShoppingBasket class="section-icon"></svg>Ingredientes</h2>
+          <p class="ingredientes-sin-datos">Esta receta todavía no tiene ingredientes especificados.</p>
         </div>
       }
 

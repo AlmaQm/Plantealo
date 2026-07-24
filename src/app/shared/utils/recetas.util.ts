@@ -1,10 +1,12 @@
-export function getFaltantesTexto(faltantes: number): string {
+export function getFaltantesTexto(faltantes: number, tieneIngredientes: boolean): string {
+  if (!tieneIngredientes) return 'Ingredientes no especificados';
   if (faltantes === 0) return '¡Tienes todo en tu huerto!';
   if (faltantes === 1) return '¡Te falta solo 1 ingrediente!';
   return `Te faltan ${faltantes} ingredientes`;
 }
 
-export function getFaltantesClase(faltantes: number): string {
+export function getFaltantesClase(faltantes: number, tieneIngredientes: boolean): string {
+  if (!tieneIngredientes) return 'faltantes--sin-datos';
   if (faltantes === 0) return 'faltantes--completa';
   if (faltantes === 1) return 'faltantes--falta-uno';
   return 'faltantes--varios';

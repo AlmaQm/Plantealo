@@ -46,15 +46,19 @@ export class RecetaWindowComponent {
   }
 
   getFaltantesTexto(): string {
-    return this.recipe ? getFaltantesTexto(this.recipe.ingredientes_faltantes) : '';
+    return this.recipe ? getFaltantesTexto(this.recipe.ingredientes_faltantes, this.recipe.tiene_ingredientes_registrados) : '';
   }
 
   getFaltantesClase(): string {
-    return this.recipe ? getFaltantesClase(this.recipe.ingredientes_faltantes) : '';
+    return this.recipe ? getFaltantesClase(this.recipe.ingredientes_faltantes, this.recipe.tiene_ingredientes_registrados) : '';
   }
 
-  getClaseIngrediente(ingrediente: IngredienteEstado): string {
-    return ingrediente.disponible ? 'ingrediente--disponible' : 'ingrediente--faltante';
+  get ingredientesDisponibles(): IngredienteEstado[] {
+    return this.recipe?.ingredientes?.filter(ing => ing.disponible) ?? [];
+  }
+
+  get ingredientesFaltantes(): IngredienteEstado[] {
+    return this.recipe?.ingredientes?.filter(ing => !ing.disponible) ?? [];
   }
 
   onImageError(): void {

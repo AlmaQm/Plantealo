@@ -41,11 +41,11 @@ export class RecetaCardComponent {
   }
 
   getFaltantesTexto(): string {
-    return getFaltantesTexto(this.recipe.ingredientes_faltantes);
+    return getFaltantesTexto(this.recipe.ingredientes_faltantes, this.recipe.tiene_ingredientes_registrados);
   }
 
   getFaltantesClase(): string {
-    return getFaltantesClase(this.recipe.ingredientes_faltantes);
+    return getFaltantesClase(this.recipe.ingredientes_faltantes, this.recipe.tiene_ingredientes_registrados);
   }
 
   onCardClick(): void {
