@@ -5,7 +5,7 @@ import { RecetasService } from '../../../services/recetas.service';
 import { getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
 import {
   LucideHeart, LucideClock, LucideUsers, LucideChartColumn,
-  LucideLeaf, LucideSalad, LucideUtensilsCrossed,
+  LucideLeaf, LucideSalad, LucideBeef, LucideUtensilsCrossed,
   LucideCircleCheck, LucideCircleAlert, LucideCircleX
 } from '@lucide/angular';
 
@@ -15,7 +15,7 @@ import {
   imports: [
     CommonModule,
     LucideHeart, LucideClock, LucideUsers, LucideChartColumn,
-    LucideLeaf, LucideSalad, LucideUtensilsCrossed,
+    LucideLeaf, LucideSalad, LucideBeef, LucideUtensilsCrossed,
     LucideCircleCheck, LucideCircleAlert, LucideCircleX
   ],
   templateUrl: './receta-card.html',

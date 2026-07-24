@@ -28,11 +28,11 @@
 </div>
 
 <!-- RECOMANACIÓ DE RECEPTA amb el sistema de recetes de l'Alma -->
-@if (recetaRecomendada) {
+@if (recetaRecomendada(); as receta) {
   <div class="recs-receta">
     <span class="recs-receta-label">Receta con tu huerto</span>
     <app-receta-card
-      [recipe]="recetaRecomendada"
+      [recipe]="receta"
       [usuarioId]="usuarioId"
       (recipeClick)="abrirReceta()">
     </app-receta-card>
@@ -41,7 +41,7 @@
 
 @if (mostrarRecetaModal()) {
   <app-receta-window
-    [recipe]="recetaRecomendada"
+    [recipe]="recetaRecomendada()"
     (close)="cerrarReceta()">
   </app-receta-window>
 }

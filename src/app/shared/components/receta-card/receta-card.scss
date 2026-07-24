@@ -44,10 +44,8 @@
     right: 8px;
     width: 30px;
     height: 30px;
-    border-radius: 50%;
     border: none;
-    background: white;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    background: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,7 +61,6 @@
     }
 
     &.guardada {
-      background: white;
       color: #e11d48;
 
       .receta-card__guardar-icon {
@@ -141,6 +138,11 @@
       &--vegetariana {
         background: $green-2;
         color: $green-7;
+      }
+
+      &--omnivora {
+        background: $earth-2;
+        color: $earth-9;
       }
 
       &--category {

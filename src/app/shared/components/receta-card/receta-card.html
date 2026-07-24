@@ -43,6 +43,9 @@
       @if (recipe.tipo_dieta === 'VEGETARIANA') {
         <span class="badge badge--vegetariana"><svg lucideSalad class="badge-icon"></svg>Vegetariana</span>
       }
+      @if (recipe.tipo_dieta === 'OMNIVORA') {
+        <span class="badge badge--omnivora"><svg lucideBeef class="badge-icon"></svg>Omnívoro</span>
+      }
       @if (recipe.categoria) {
         <span class="badge badge--category">
           @if (recipe.categoria === 'PRINCIPAL') {
