@@ -12,15 +12,13 @@
   width: 100%;
   padding: 0 16px 80px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 }
 
 .card {
   background: $md-surface;
   border-radius: $md-radius-lg;
   padding: 22px;
+  margin-bottom: 16px;
   box-shadow: $md-shadow;
 
   h3 {
@@ -86,6 +84,25 @@
     &:focus {
       border-color: $md-accent;
     }
+  }
+}
+
+.avatar-selector {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar-preview {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+  background: $md-accent-soft;
+
+  &--vacio {
+    display: block;
   }
 }
 

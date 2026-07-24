@@ -155,7 +155,11 @@ export class AuthService {
     }
   }
 
-  async actualizarPerfil(datos: { nombre_usuario: string; tipo_dieta: Usuario['tipo_dieta'] }): Promise<boolean> {
+  async actualizarPerfil(datos: {
+    nombre_usuario: string;
+    tipo_dieta: Usuario['tipo_dieta'];
+    imagen_url?: string;
+  }): Promise<boolean> {
     const usuarioActual = this.getStoredUser();
     const uid = this.auth.currentUser?.uid;
     if (!usuarioActual || !uid) {
@@ -163,6 +167,19 @@ export class AuthService {
     }
     const actualizado: Usuario = { ...usuarioActual, ...datos };
     return await this.syncWithAiven(actualizado, uid);
+  }
+
+  async uploadAvatar(file: File, uid: string): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await firstValueFrom(
+      this.http.post<{ imagen_url: string }>(
+        `${environment.apiUrl}/usuarios/by-uid/${uid}/avatar`,
+        formData
+      )
+    );
+    return res.imagen_url;
   }
 
   getStoredUser(): Usuario | null {
@@ -228,6 +245,16 @@ export class AuthService {
       throw new Error(mapAuthError(error as { code?: string }));
     }
 
+    // Paso 1b: subir el avatar si el usuario ha elegido uno (opcional, no bloqueante)
+    let imagenUrl: string | undefined;
+    if (avatarFile) {
+      try {
+        imagenUrl = await this.uploadAvatar(avatarFile, uid);
+      } catch (error) {
+        console.error('❌ [register] Error al subir el avatar (se continúa sin foto):', error);
+      }
+    }
+
     // Paso 2: crear objeto usuario
     const usuario: Usuario = {
       uid,
@@ -235,7 +262,7 @@ export class AuthService {
       nombre_usuario: data.nombre_usuario,
       email: data.email,
       tipo_dieta: data.tipo_dieta,
-      imagen_url: data.imagen_url,
+      imagen_url: imagenUrl ?? data.imagen_url,
       fechaRegistro: new Date(),
     };
 
@@ -250,7 +277,7 @@ export class AuthService {
         nombre_usuario: data.nombre_usuario,
         email: data.email,
         tipo_dieta: data.tipo_dieta,
-        imagen_url: data.imagen_url || null,
+        imagen_url: usuario.imagen_url || null,
       };
 
       const res = await firstValueFrom(

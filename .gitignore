@@ -50,3 +50,6 @@ __pycache__/
 *.pyc
 *.pyo
 backend/venv/
+
+# Avatares subidos por los usuarios (no versionar)
+backend/uploads/

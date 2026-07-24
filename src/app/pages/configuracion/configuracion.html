@@ -20,6 +20,18 @@
   <section class="card">
     <h3>Editar perfil</h3>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="campo campo--avatar">
+        <label for="avatar">Foto de perfil</label>
+        <div class="avatar-selector">
+          @if (avatarPreview()) {
+            <img class="avatar-preview" [src]="avatarPreview()" alt="Vista previa del avatar" />
+          } @else {
+            <div class="avatar-preview avatar-preview--vacio"></div>
+          }
+          <input id="avatar" type="file" accept="image/*" (change)="onAvatarSelected($event)" />
+        </div>
+      </div>
+
       <div class="campo">
         <label for="nombre_usuario">Nombre de usuario</label>
         <input id="nombre_usuario" type="text" formControlName="nombre_usuario" />
