@@ -51,6 +51,40 @@
   &--error { border-color: #e11d48; }
 }
 
+.campo-password {
+  position: relative;
+
+  .campo-input {
+    padding-right: 42px;
+  }
+}
+
+.btn-ojo {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: $green-6;
+  cursor: pointer;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: $green-4;
+  }
+}
+
 .error-inline {
   font-size: 12px;
   color: #e11d48;

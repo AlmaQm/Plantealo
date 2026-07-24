@@ -42,6 +42,10 @@ export class SeguridadComponent {
   readonly passwordOk = signal(false);
   readonly passwordError = signal('');
 
+  readonly passwordActualVisible = signal(false);
+  readonly passwordNuevaVisible = signal(false);
+  readonly confirmarPasswordNuevaVisible = signal(false);
+
   readonly passwordForm = new FormGroup<CambiarPasswordForm>(
     {
       passwordActual: new FormControl('', {
@@ -81,6 +85,7 @@ export class SeguridadComponent {
 
   // --- Eliminar cuenta ---
   readonly passwordEliminar = signal('');
+  readonly passwordEliminarVisible = signal(false);
   readonly textoConfirmacion = signal('');
   readonly mostrarConfirmModal = signal(false);
   readonly eliminando = signal(false);

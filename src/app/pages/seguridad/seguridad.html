@@ -12,12 +12,54 @@
     <form [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
       <div class="campo">
         <label for="passwordActual">Contraseña actual</label>
-        <input id="passwordActual" type="password" formControlName="passwordActual" autocomplete="current-password" />
+        <div class="campo-password">
+          <input
+            id="passwordActual"
+            [type]="passwordActualVisible() ? 'text' : 'password'"
+            formControlName="passwordActual"
+            autocomplete="current-password" />
+          <button type="button" class="btn-ojo"
+                  (click)="passwordActualVisible.set(!passwordActualVisible())"
+                  [attr.aria-label]="passwordActualVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            @if (passwordActualVisible()) {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            }
+          </button>
+        </div>
       </div>
 
       <div class="campo">
         <label for="passwordNueva">Contraseña nueva</label>
-        <input id="passwordNueva" type="password" formControlName="passwordNueva" autocomplete="new-password" />
+        <div class="campo-password">
+          <input
+            id="passwordNueva"
+            [type]="passwordNuevaVisible() ? 'text' : 'password'"
+            formControlName="passwordNueva"
+            autocomplete="new-password" />
+          <button type="button" class="btn-ojo"
+                  (click)="passwordNuevaVisible.set(!passwordNuevaVisible())"
+                  [attr.aria-label]="passwordNuevaVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            @if (passwordNuevaVisible()) {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            }
+          </button>
+        </div>
         @if (passwordForm.controls.passwordNueva.invalid && passwordForm.controls.passwordNueva.touched) {
           <span class="campo-error">Mínimo 6 caracteres.</span>
         }
@@ -25,7 +67,28 @@
 
       <div class="campo">
         <label for="confirmarPasswordNueva">Confirmar contraseña nueva</label>
-        <input id="confirmarPasswordNueva" type="password" formControlName="confirmarPasswordNueva" autocomplete="new-password" />
+        <div class="campo-password">
+          <input
+            id="confirmarPasswordNueva"
+            [type]="confirmarPasswordNuevaVisible() ? 'text' : 'password'"
+            formControlName="confirmarPasswordNueva"
+            autocomplete="new-password" />
+          <button type="button" class="btn-ojo"
+                  (click)="confirmarPasswordNuevaVisible.set(!confirmarPasswordNuevaVisible())"
+                  [attr.aria-label]="confirmarPasswordNuevaVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            @if (confirmarPasswordNuevaVisible()) {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            }
+          </button>
+        </div>
         @if (passwordForm.hasError('passwordsMismatch') && passwordForm.controls.confirmarPasswordNueva.touched) {
           <span class="campo-error">Las contraseñas no coinciden.</span>
         }
@@ -51,12 +114,29 @@
 
     <div class="campo">
       <label for="passwordEliminar">Contraseña</label>
-      <input
-        id="passwordEliminar"
-        type="password"
-        autocomplete="current-password"
-        [ngModel]="passwordEliminar()"
-        (ngModelChange)="passwordEliminar.set($event)" />
+      <div class="campo-password">
+        <input
+          id="passwordEliminar"
+          [type]="passwordEliminarVisible() ? 'text' : 'password'"
+          autocomplete="current-password"
+          [ngModel]="passwordEliminar()"
+          (ngModelChange)="passwordEliminar.set($event)" />
+        <button type="button" class="btn-ojo"
+                (click)="passwordEliminarVisible.set(!passwordEliminarVisible())"
+                [attr.aria-label]="passwordEliminarVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+          @if (passwordEliminarVisible()) {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          }
+        </button>
+      </div>
     </div>
 
     <div class="campo">

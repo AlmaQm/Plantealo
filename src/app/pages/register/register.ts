@@ -46,6 +46,9 @@ export class Register {
   readonly avatarPreview = signal('');
   private avatarFile: File | undefined;
 
+  readonly contrasenaVisible = signal(false);
+  readonly confirmarContrasenaVisible = signal(false);
+
   readonly dietaOpciones: { valor: TipoDieta; emoji: string; label: string }[] = [
     { valor: 'OMNIVORA',    emoji: '🥩', label: 'Omnívora' },
     { valor: 'VEGETARIANA', emoji: '🥗', label: 'Vegetariana' },

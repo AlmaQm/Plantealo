@@ -17,6 +17,8 @@ import {
   reauthenticateWithCredential,
   updatePassword,
   deleteUser,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 
 import { Usuario } from '../models/interfaces';
@@ -302,6 +304,41 @@ export class AuthService {
       }
     } catch (err) {
       console.error('❌ [register] Error inesperat en sync:', err);
+    }
+  }
+
+  async loginConGoogle(): Promise<void> {
+    try {
+      const provider = new GoogleAuthProvider();
+      const credential = await signInWithPopup(this.auth, provider);
+      const uid = credential.user.uid;
+
+      // Comprova si l'usuari ja existeix a Aiven; si no, el crea amb les
+      // dades de Google (mateix patró que syncUserFromAiven/register).
+      const existe = await firstValueFrom(
+        this.http.get<Usuario>(`${environment.apiUrl}/usuarios/by-uid/${uid}`).pipe(
+          catchError(() => of(null))
+        )
+      );
+
+      if (!existe) {
+        const nombre = credential.user.displayName ?? 'Usuario';
+        const email = credential.user.email ?? '';
+        const nuevoUsuario: Usuario = {
+          uid,
+          email,
+          nombre,
+          nombre_usuario: email.split('@')[0] || 'usuario',
+          tipo_dieta: 'OMNIVORA',
+          imagen_url: credential.user.photoURL ?? undefined,
+          fechaRegistro: new Date(),
+        };
+        await this.syncWithAiven(nuevoUsuario, uid);
+        this.saveStoredUser(nuevoUsuario);
+      }
+    } catch (error) {
+      console.error('❌ [loginConGoogle] Error:', error);
+      throw new Error(mapAuthError(error as { code?: string }));
     }
   }
 
