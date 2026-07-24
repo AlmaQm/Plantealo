@@ -32,6 +32,9 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: $md-ink-muted;
-    margin: 4px 0 0;
+    margin: 20px 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
