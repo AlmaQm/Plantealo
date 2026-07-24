@@ -47,8 +47,7 @@
 }
 
 <!-- MODAL CALENDARIO -->
-<ion-modal #calModal class="cal-modal" [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true"
-  [enterAnimation]="calEnterAnimation" [leaveAnimation]="calLeaveAnimation">
+<ion-modal #calModal mode="ios" class="cal-modal" [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true">
   <ng-template>
     <div class="cal-wrap">
 
@@ -79,13 +78,14 @@
       <div class="cal-months-header">
         <div class="cal-months-spacer"></div>
         <div class="cal-months-row">
-          @for (m of mesesCortos; track m; let i = $index) {
+          @for (m of mesesCortos; track $index; let i = $index) {
             <span class="cal-month-lbl"
               [class.es-hoy]="i + 1 === mesActual"
               [class.es-seleccionado]="i + 1 === mesSeleccionado()"
               (click)="seleccionarMes(i)">{{ m }}</span>
           }
         </div>
+        <div class="cal-months-spacer"></div>
       </div>
 
       <!-- LISTA DE PLANTAS (scroll) -->
@@ -111,7 +111,7 @@
                 }
               </div>
               <div class="cal-bar">
-                @for (m of mesesCortos; track m; let i = $index) {
+                @for (m of mesesCortos; track $index; let i = $index) {
                   <span class="cal-seg"
                     [class.seg-on]="t.meses.includes(i + 1)"
                     [class.seg-sel]="t.meses.includes(i + 1) && i + 1 === mesSeleccionado()"
