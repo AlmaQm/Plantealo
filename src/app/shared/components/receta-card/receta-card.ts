@@ -5,7 +5,7 @@ import { RecetasService } from '../../../services/recetas.service';
 import { getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
 import {
   LucideHeart, LucideClock, LucideUsers, LucideChartColumn,
-  LucideLeaf, LucideSalad, LucideUtensilsCrossed, LucideCakeSlice, LucideCupSoda,
+  LucideLeaf, LucideSalad, LucideUtensilsCrossed,
   LucideCircleCheck, LucideCircleAlert, LucideCircleX
 } from '@lucide/angular';
 
@@ -15,7 +15,7 @@ import {
   imports: [
     CommonModule,
     LucideHeart, LucideClock, LucideUsers, LucideChartColumn,
-    LucideLeaf, LucideSalad, LucideUtensilsCrossed, LucideCakeSlice, LucideCupSoda,
+    LucideLeaf, LucideSalad, LucideUtensilsCrossed,
     LucideCircleCheck, LucideCircleAlert, LucideCircleX
   ],
   templateUrl: './receta-card.html',
@@ -33,11 +33,9 @@ export class RecetaCardComponent {
   }
 
   getCategoriaText(): string {
-    const map: Record<string, string> = {
-      'ENTRANTE': 'Entrante', 'PRINCIPAL': 'Principal',
-      'POSTRE': 'Postre',    'BEBIDA': 'Bebida'
-    };
-    return map[this.recipe.categoria ?? ''] ?? this.recipe.categoria ?? '';
+    const categoria = this.recipe.categoria ?? '';
+    if (!categoria) return '';
+    return categoria.charAt(0).toUpperCase() + categoria.slice(1).toLowerCase();
   }
 
   getFaltantesTexto(): string {

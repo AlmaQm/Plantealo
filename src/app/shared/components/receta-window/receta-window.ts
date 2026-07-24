@@ -4,7 +4,7 @@ import { RecetaHuerto, IngredienteEstado } from '../../../models/interfaces';
 import { getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
 import {
   LucideX, LucideClock, LucideUsers, LucideChartColumn,
-  LucideLeaf, LucideSalad, LucideBeef, LucideUtensilsCrossed, LucideCakeSlice, LucideCupSoda,
+  LucideLeaf, LucideSalad, LucideBeef, LucideUtensilsCrossed,
   LucideCircleCheck, LucideCircleAlert, LucideCircleX,
   LucideShoppingBasket, LucideNotebookText, LucideChefHat, LucideSparkles
 } from '@lucide/angular';
@@ -15,7 +15,7 @@ import {
   imports: [
     CommonModule,
     LucideX, LucideClock, LucideUsers, LucideChartColumn,
-    LucideLeaf, LucideSalad, LucideBeef, LucideUtensilsCrossed, LucideCakeSlice, LucideCupSoda,
+    LucideLeaf, LucideSalad, LucideBeef, LucideUtensilsCrossed,
     LucideCircleCheck, LucideCircleAlert, LucideCircleX,
     LucideShoppingBasket, LucideNotebookText, LucideChefHat, LucideSparkles
   ],
@@ -31,11 +31,9 @@ export class RecetaWindowComponent {
   }
 
   getCategoriaText(): string {
-    const map: Record<string, string> = {
-      'ENTRANTE': 'Entrante', 'PRINCIPAL': 'Principal',
-      'POSTRE': 'Postre',    'BEBIDA': 'Bebida'
-    };
-    return map[this.recipe?.categoria ?? ''] ?? this.recipe?.categoria ?? '';
+    const categoria = this.recipe?.categoria ?? '';
+    if (!categoria) return '';
+    return categoria.charAt(0).toUpperCase() + categoria.slice(1).toLowerCase();
   }
 
   getDietaText(): string {

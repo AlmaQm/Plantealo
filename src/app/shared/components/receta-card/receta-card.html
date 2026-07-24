@@ -45,11 +45,8 @@
       }
       @if (recipe.categoria) {
         <span class="badge badge--category">
-          @switch (recipe.categoria) {
-            @case ('ENTRANTE') { <svg lucideSalad class="badge-icon"></svg> }
-            @case ('PRINCIPAL') { <svg lucideUtensilsCrossed class="badge-icon"></svg> }
-            @case ('POSTRE') { <svg lucideCakeSlice class="badge-icon"></svg> }
-            @case ('BEBIDA') { <svg lucideCupSoda class="badge-icon"></svg> }
+          @if (recipe.categoria === 'PRINCIPAL') {
+            <svg lucideUtensilsCrossed class="badge-icon"></svg>
           }
           {{ getCategoriaText() }}
         </span>

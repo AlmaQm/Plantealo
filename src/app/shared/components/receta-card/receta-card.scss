@@ -131,8 +131,9 @@
       font-weight: 500;
 
       &--vegana {
-        background: #a7f3d0;
-        color: #064e3b;
+        // Mismo verde oliva que el botón "Calendario" del Home.
+        background: #848f70;
+        color: #f7efdf;
       }
 
       &--vegetariana {

@@ -13,11 +13,8 @@
         <h1>{{ recipe.nombre_receta }}</h1>
         <div class="header-meta">
           <span class="header-meta__item">
-            @switch (recipe.categoria) {
-              @case ('ENTRANTE') { <svg lucideSalad class="header-meta__icon"></svg> }
-              @case ('PRINCIPAL') { <svg lucideUtensilsCrossed class="header-meta__icon"></svg> }
-              @case ('POSTRE') { <svg lucideCakeSlice class="header-meta__icon"></svg> }
-              @case ('BEBIDA') { <svg lucideCupSoda class="header-meta__icon"></svg> }
+            @if (recipe.categoria === 'PRINCIPAL') {
+              <svg lucideUtensilsCrossed class="header-meta__icon"></svg>
             }
             {{ getCategoriaText() }}
           </span>
