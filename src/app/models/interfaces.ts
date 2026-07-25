@@ -74,6 +74,18 @@ export interface GardenPlant {
   unit: string;
 }
 
+export interface Intercambio {
+  id: number;
+  usuario_id: string;
+  nombre_usuario: string;
+  planta_id: number;
+  nombre_planta: string;
+  imagen_url: string;
+  cantidad_aprox: string | null;
+  ciudad: string;
+  fecha_creacion: Date;
+}
+
 export interface Comentario {
   comentario_id: string;
   usuario_id: string;
