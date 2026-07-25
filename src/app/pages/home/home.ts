@@ -1,13 +1,16 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlantasService, calcularEstado, diasRestantes, diasHastaProximoRiego, esHoy } from '../../services/plantas';
-import { GardenTask } from '../../models/interfaces';
+import { AuthService } from '../../services/auth';
+import { IntercambiosService } from '../../services/intercambios';
+import { GardenTask, Planta } from '../../models/interfaces';
 
 import { WeatherCardComponent } from '../../components/weather-card/weather-card';
 import { CalendarWeekComponent } from '../../components/calendar-week/calendar-week';
 import { TaskItemComponent } from '../../components/task-item/task-item';
 import { SummaryCardComponent } from '../../components/summary-card/summary-card';
 import { DietRecommendationsComponent } from '../../components/diet-recommendations/diet-recommendations';
+import { SobraCosechaModalComponent, SobraCosechaDatos } from '../../shared/components/sobra-cosecha-modal/sobra-cosecha-modal';
 
 const ICONOS: Record<string, string> = {
   LISTA:     '🌾',
@@ -30,12 +33,15 @@ const URGENCIA: Record<string, number> = {
     TaskItemComponent,
     SummaryCardComponent,
     DietRecommendationsComponent,
+    SobraCosechaModalComponent,
   ],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']
 })
 export class HomeComponent {
   private plantasService = inject(PlantasService);
+  private authService = inject(AuthService);
+  private intercambiosService = inject(IntercambiosService);
   // Ids marcados como hechos: para enferma es el único estado (no hay campo en el
   // backend todavía); para riego/cosecha da el feedback visual instantáneo (tachado) al
   // hacer click, antes de que el backend confirme — luego, mientras sea el mismo día,
@@ -125,6 +131,88 @@ export class HomeComponent {
       : this.plantasService.marcarCosecha(task.id, marcado);
 
     marcar.catch(err => console.error('Error al marcar la tarea', err));
+
+    if (task.tipo === 'COSECHA' && marcado) {
+      const planta = this.plantasService.inventario().find(p => p.id === task.id);
+      if (planta) this.abrirSobraCosecha(planta);
+    }
+  }
+
+  // --- Intercambios: "¿te ha sobrado cosecha?" al marcar COSECHA como hecha ---
+
+  sobraCosechaVisible = signal(false);
+  sobraCosechaPlanta = signal<{ planta_id: number; nombre_planta: string } | null>(null);
+  sobraCosechaNecesitaCiudad = signal(false);
+  sobraCosechaCiudades = signal<string[]>([]);
+  sobraCosechaPublicando = signal(false);
+  sobraCosechaError = signal('');
+
+  private abrirSobraCosecha(planta: Planta): void {
+    this.sobraCosechaPlanta.set({ planta_id: planta.planta_id, nombre_planta: planta.nombre_planta });
+    this.sobraCosechaError.set('');
+
+    const usuario = this.authService.getStoredUser();
+    const necesitaCiudad = !usuario?.ciudad;
+    this.sobraCosechaNecesitaCiudad.set(necesitaCiudad);
+    this.sobraCosechaVisible.set(true);
+
+    if (necesitaCiudad) {
+      this.intercambiosService.getCiudades()
+        .then(ciudades => this.sobraCosechaCiudades.set(ciudades))
+        .catch(() => this.sobraCosechaCiudades.set([]));
+    }
+  }
+
+  cerrarSobraCosecha(): void {
+    this.sobraCosechaVisible.set(false);
+    this.sobraCosechaPlanta.set(null);
+  }
+
+  async publicarSobraCosecha(datos: SobraCosechaDatos): Promise<void> {
+    const planta = this.sobraCosechaPlanta();
+    const usuario = this.authService.getStoredUser();
+    if (!planta || !usuario?.uid) return;
+
+    const ciudad = datos.ciudad || usuario.ciudad;
+    if (!ciudad) {
+      this.sobraCosechaError.set('Falta seleccionar una ciudad.');
+      return;
+    }
+
+    this.sobraCosechaPublicando.set(true);
+    this.sobraCosechaError.set('');
+    try {
+      await this.intercambiosService.crear({
+        usuario_id: usuario.uid,
+        nombre_usuario: usuario.nombre,
+        planta_id: planta.planta_id,
+        cantidad_aprox: datos.cantidad_aprox,
+        ciudad,
+      });
+
+      // fallback de ciudad inline: se propaga también al perfil para no
+      // volver a preguntar la próxima vez.
+      if (datos.ciudad) {
+        this.authService.actualizarPerfil({
+          nombre_usuario: usuario.nombre_usuario,
+          tipo_dieta: usuario.tipo_dieta,
+          ciudad: datos.ciudad,
+        }).catch(err => console.error('Error al guardar la ciudad en el perfil', err));
+      }
+
+      this.cerrarSobraCosecha();
+    } catch (err) {
+      const status = (err as { status?: number })?.status;
+      if (status === 409) {
+        // ya tenía un excedente activo publicado para esta planta: no es un error del usuario
+        this.cerrarSobraCosecha();
+      } else {
+        console.error('Error al publicar excedente de cosecha', err);
+        this.sobraCosechaError.set('No se ha podido publicar. Inténtalo de nuevo.');
+      }
+    } finally {
+      this.sobraCosechaPublicando.set(false);
+    }
   }
 
   private descripcion(estado: string, dias: number, riego: number): string {
