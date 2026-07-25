@@ -1,11 +1,16 @@
-<div class="task-card" [class.completed]="task.completed">
+<div class="task-card" [class.completed]="task.completed" [class.cosecha]="task.tipo === 'COSECHA'">
 
    <span class="icon">
       <img [src]="task.image" [alt]="task.title">
    </span>
 
    <div class="info">
-      <h3>{{ task.title }}</h3>
+      <h3>
+         @if (task.tipo === 'COSECHA') {
+            <svg lucideWheat class="cosecha-icon"></svg>
+         }
+         {{ task.title }}
+      </h3>
       <p>{{ task.description }}</p>
    </div>
 

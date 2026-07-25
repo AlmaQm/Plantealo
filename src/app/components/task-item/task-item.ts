@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideWheat } from '@lucide/angular';
 import { GardenTask } from '../../models/interfaces';
 
 @Component({
    selector: 'app-task-item',
    standalone: true,
-   imports: [CommonModule],
+   imports: [CommonModule, LucideWheat],
    templateUrl: './task-item.html',
    styleUrls: ['./task-item.scss']
 })

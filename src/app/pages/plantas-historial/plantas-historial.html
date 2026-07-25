@@ -20,7 +20,7 @@
             Plantada: {{ formatFecha(planta.f_siembra) }} · Cosecha: {{ formatFecha(planta.f_recogida) }}
           </span>
         </div>
-        <span class="historial-row__estado estado--{{ planta.estado | lowercase }}">
+        <span class="historial-row__estado estado--{{ estadoClase(planta) }}">
           {{ estadoLabel(planta) }}
         </span>
       </div>
