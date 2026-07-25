@@ -38,6 +38,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'intercambios',
+    loadComponent: () => import('./pages/intercambios/intercambios').then(m => m.IntercambiosComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'perfil',
     loadComponent: () => import('./pages/perfil/perfil').then(m => m.PerfilComponent),
     canActivate: [authGuard]
