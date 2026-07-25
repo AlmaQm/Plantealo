@@ -25,6 +25,8 @@ def upsert_usuario(db: Session, data: schemas.UsuarioSync):
         usuario.nombre_usuario = data.nombre_usuario
         usuario.email = data.email
         usuario.tipo_dieta = data.tipo_dieta
+        if data.ciudad:
+            usuario.ciudad = data.ciudad
         if data.imagen_url:
             usuario.imagen_url = data.imagen_url
     else:
@@ -36,6 +38,7 @@ def upsert_usuario(db: Session, data: schemas.UsuarioSync):
             email=data.email,
             tipo_dieta=data.tipo_dieta,
             imagen_url=data.imagen_url,
+            ciudad=data.ciudad,
             contrasena=None
         )
         db.add(usuario)
@@ -87,8 +90,9 @@ def crear_usuario(db: Session, usuario: schemas.UsuarioCreate):
         nombre=usuario.nombre,
         nombre_usuario=usuario.nombre_usuario,
         email=usuario.email,
-        contrasena=usuario.contrasena, 
-        tipo_dieta=usuario.tipo_dieta
+        contrasena=usuario.contrasena,
+        tipo_dieta=usuario.tipo_dieta,
+        ciudad=usuario.ciudad
     )
     db.add(db_usuario)
     db.commit() 

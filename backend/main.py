@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from groq import Groq
 import httpx
 import models, schemas, crud, database
+from ciudades import CIUDADES
 import os
 import time
 import csv
@@ -113,6 +114,14 @@ def upload_catalogo_csv(file: UploadFile = File(...), db: Session = Depends(get_
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo CSV: {str(e)}")
+
+
+# --- CIUDADES (catálogo cerrado para registro e Intercambios) ---
+
+@app.get("/ciudades/", response_model=List[str])
+def get_ciudades():
+    """Lista cerrada de ciudades: única fuente de verdad para registro e Intercambios."""
+    return CIUDADES
 
 
 # --- SINCRONIZACIÓN FIREBASE ↔ AIVEN ---

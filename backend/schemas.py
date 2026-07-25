@@ -9,6 +9,7 @@ class UsuarioBase(BaseModel):
     email: EmailStr
     tipo_dieta: str
     imagen_url: Optional[str] = None
+    ciudad: Optional[str] = None
 
 class UsuarioCreate(UsuarioBase):
     contrasena: str
@@ -26,6 +27,7 @@ class UsuarioSync(BaseModel):
     email: EmailStr
     tipo_dieta: str
     imagen_url: Optional[str] = None
+    ciudad: Optional[str] = None
 
 # Usuario de salida (incluye usuario_id y firebase_uid)
 class UsuarioOut(BaseModel):
@@ -36,6 +38,7 @@ class UsuarioOut(BaseModel):
     email: EmailStr
     tipo_dieta: str
     imagen_url: Optional[str] = None
+    ciudad: Optional[str] = None
     class Config:
         from_attributes = True
 
