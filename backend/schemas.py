@@ -169,6 +169,32 @@ class GuardarToggle(BaseModel):
 class ImagenUpdate(BaseModel):
     imagen_url: str
 
+# --- INTERCAMBIOS ---
+
+class IntercambioCreate(BaseModel):
+    usuario_id: str
+    nombre_usuario: str
+    planta_id: int
+    cantidad_aprox: Optional[str] = None
+    ciudad: str
+
+class Intercambio(BaseModel):
+    id: int
+    usuario_id: str
+    nombre_usuario: str
+    planta_id: int
+    nombre_planta: str
+    imagen_url: Optional[str] = None
+    cantidad_aprox: Optional[str] = None
+    ciudad: str
+    estado: str
+    fecha_creacion: datetime
+    class Config:
+        from_attributes = True
+
+class IntercambioCerrar(BaseModel):
+    usuario_id: str
+
 # --- Nivel 1: ¿Qué puedo cocinar con mi huerto? ---
 
 class ConsultaHuertoRequest(BaseModel):

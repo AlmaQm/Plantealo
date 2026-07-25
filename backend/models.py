@@ -157,3 +157,21 @@ class Comentario(Base):
     fecha = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     publicacion = relationship("Publicacion", back_populates="comentarios")
+
+# --- INTERCAMBIOS ---
+# usuario_id aqui es el uid de Firebase Auth (string), mismo patron que Publicacion:
+# el excedente se identifica por autor via Firebase, los datos de la publicacion
+# viven siempre en esta base de datos, independiente de la entidad Publicacion.
+
+class Intercambio(Base):
+    __tablename__ = "intercambios"
+    id = Column(Integer, primary_key=True, index=True)
+    usuario_id = Column(String(128), nullable=False, index=True)
+    nombre_usuario = Column(String(50), nullable=False)
+    planta_id = Column(Integer, ForeignKey("plantas.planta_id"), nullable=False, index=True)
+    cantidad_aprox = Column(String(80), nullable=True)
+    ciudad = Column(String(80), nullable=False)
+    estado = Column(String(10), nullable=False, default="ACTIVA")  # ACTIVA, CERRADA
+    fecha_creacion = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    especie = relationship("PlantaCat")

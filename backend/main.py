@@ -521,3 +521,27 @@ def desguardar_receta_endpoint(usuario_id: int, id_receta: int, db: Session = De
 def listar_recetas_guardadas(usuario_id: int, db: Session = Depends(get_db)):
     """Devuelve las recetas que el usuario tiene guardadas."""
     return crud.get_recetas_guardadas(db=db, usuario_id=usuario_id)
+
+
+# --- INTERCAMBIOS ---
+
+@app.post("/intercambios/", response_model=schemas.Intercambio)
+def crear_intercambio_endpoint(data: schemas.IntercambioCreate, db: Session = Depends(get_db)):
+    return crud.crear_intercambio(db, data)
+
+
+@app.get("/intercambios/", response_model=List[schemas.Intercambio])
+def listar_intercambios_endpoint(
+    ciudad: Optional[str] = None,
+    planta_id: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    return crud.listar_intercambios(db, ciudad=ciudad, planta_id=planta_id)
+
+
+@app.patch("/intercambios/{intercambio_id}/cerrar", response_model=schemas.Intercambio)
+def cerrar_intercambio_endpoint(intercambio_id: int, body: schemas.IntercambioCerrar, db: Session = Depends(get_db)):
+    intercambio = crud.cerrar_intercambio(db, intercambio_id, body.usuario_id)
+    if not intercambio:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
+    return crud._serializar_intercambio(intercambio)
