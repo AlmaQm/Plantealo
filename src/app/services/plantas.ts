@@ -269,7 +269,7 @@ const IMAGEN_PLANTA: Record<string, string> = {
   'Guindillas':       'assets/images/pimientos.jpg',
 };
 
-function getImagenPlanta(nombre: string): string {
+export function getImagenPlanta(nombre: string): string {
   return IMAGEN_PLANTA[nombre] ?? 'assets/images/placeholder-receta.jpg';
 }
 

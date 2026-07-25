@@ -63,7 +63,7 @@
 @if (sobraCosechaVisible() && sobraCosechaPlanta()) {
    <app-sobra-cosecha-modal
       [nombrePlanta]="sobraCosechaPlanta()!.nombre_planta"
-      [necesitaCiudad]="sobraCosechaNecesitaCiudad()"
+      [ciudadInicial]="sobraCosechaCiudadInicial()"
       [ciudades]="sobraCosechaCiudades()"
       [publicando]="sobraCosechaPublicando()"
       [error]="sobraCosechaError()"

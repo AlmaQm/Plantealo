@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Intercambio } from '../models/interfaces';
+import { getImagenPlanta } from './plantas';
 
 interface ApiIntercambio {
   id: number;
@@ -29,7 +30,7 @@ export class IntercambiosService {
       nombre_usuario: d.nombre_usuario,
       planta_id: d.planta_id,
       nombre_planta: d.nombre_planta,
-      imagen_url: d.imagen_url ?? 'assets/images/placeholder-receta.jpg',
+      imagen_url: getImagenPlanta(d.nombre_planta),
       cantidad_aprox: d.cantidad_aprox,
       ciudad: d.ciudad,
       fecha_creacion: new Date(d.fecha_creacion),

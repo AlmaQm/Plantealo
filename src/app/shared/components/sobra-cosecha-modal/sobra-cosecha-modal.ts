@@ -1,10 +1,10 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, OnInit, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 export interface SobraCosechaDatos {
   cantidad_aprox?: string;
-  ciudad?: string;
+  ciudad: string;
 }
 
 @Component({
@@ -14,9 +14,9 @@ export interface SobraCosechaDatos {
   templateUrl: './sobra-cosecha-modal.html',
   styleUrls: ['./sobra-cosecha-modal.scss'],
 })
-export class SobraCosechaModalComponent {
+export class SobraCosechaModalComponent implements OnInit {
   nombrePlanta = input.required<string>();
-  necesitaCiudad = input<boolean>(false);
+  ciudadInicial = input<string>('');
   ciudades = input<string[]>([]);
   publicando = input<boolean>(false);
   error = input<string>('');
@@ -28,15 +28,19 @@ export class SobraCosechaModalComponent {
   cantidad = signal('');
   ciudadSeleccionada = signal('');
 
+  ngOnInit(): void {
+    this.ciudadSeleccionada.set(this.ciudadInicial());
+  }
+
   responderSi(): void {
     this.paso.set('formulario');
   }
 
   confirmarPublicar(): void {
-    if (this.necesitaCiudad() && !this.ciudadSeleccionada()) return;
+    if (!this.ciudadSeleccionada()) return;
     this.publicar.emit({
       cantidad_aprox: this.cantidad().trim() || undefined,
-      ciudad: this.necesitaCiudad() ? this.ciudadSeleccionada() : undefined,
+      ciudad: this.ciudadSeleccionada(),
     });
   }
 }

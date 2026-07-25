@@ -1,7 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 import {
   AbstractControl,
   FormControl,
@@ -13,7 +11,6 @@ import {
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService, ERROR_EMAIL_EXISTENTE } from '../../services/auth';
 import { Usuario } from '../../models/interfaces';
-import { environment } from '../../../environments/environment';
 
 export function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('contrasena')?.value as string;
@@ -30,7 +27,6 @@ type RegisterForm = {
   contrasena: FormControl<string>;
   confirmarContrasena: FormControl<string>;
   tipo_dieta: FormControl<TipoDieta>;
-  ciudad: FormControl<string>;
 };
 
 @Component({
@@ -43,15 +39,12 @@ type RegisterForm = {
 export class Register {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly http = inject(HttpClient);
 
   readonly loading = signal(false);
   readonly error = signal('');
   readonly emailExistente = signal(false);
   readonly avatarPreview = signal('');
   private avatarFile: File | undefined;
-
-  readonly ciudades = signal<string[]>([]);
 
   readonly contrasenaVisible = signal(false);
   readonly confirmarContrasenaVisible = signal(false);
@@ -88,19 +81,9 @@ export class Register {
         nonNullable: true,
         validators: [Validators.required]
       }),
-      ciudad: new FormControl('', {
-        nonNullable: true,
-        validators: [Validators.required]
-      }),
     },
     { validators: passwordsMatchValidator }
   );
-
-  constructor() {
-    firstValueFrom(this.http.get<string[]>(`${environment.apiUrl}/ciudades/`))
-      .then(ciudades => this.ciudades.set(ciudades))
-      .catch(() => this.ciudades.set([]));
-  }
 
   onAvatarSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -116,13 +99,12 @@ export class Register {
     this.error.set('');
     this.emailExistente.set(false);
 
-    const { nombre, nombre_usuario, email, contrasena, tipo_dieta, ciudad } = this.form.getRawValue();
+    const { nombre, nombre_usuario, email, contrasena, tipo_dieta } = this.form.getRawValue();
     const data: Omit<Usuario, 'uid' | 'fechaRegistro'> = {
       nombre,
       nombre_usuario,
       email,
       tipo_dieta,
-      ciudad,
     };
 
     try {

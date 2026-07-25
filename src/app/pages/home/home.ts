@@ -142,7 +142,7 @@ export class HomeComponent {
 
   sobraCosechaVisible = signal(false);
   sobraCosechaPlanta = signal<{ planta_id: number; nombre_planta: string } | null>(null);
-  sobraCosechaNecesitaCiudad = signal(false);
+  sobraCosechaCiudadInicial = signal('');
   sobraCosechaCiudades = signal<string[]>([]);
   sobraCosechaPublicando = signal(false);
   sobraCosechaError = signal('');
@@ -152,15 +152,12 @@ export class HomeComponent {
     this.sobraCosechaError.set('');
 
     const usuario = this.authService.getStoredUser();
-    const necesitaCiudad = !usuario?.ciudad;
-    this.sobraCosechaNecesitaCiudad.set(necesitaCiudad);
+    this.sobraCosechaCiudadInicial.set(usuario?.ciudad ?? '');
     this.sobraCosechaVisible.set(true);
 
-    if (necesitaCiudad) {
-      this.intercambiosService.getCiudades()
-        .then(ciudades => this.sobraCosechaCiudades.set(ciudades))
-        .catch(() => this.sobraCosechaCiudades.set([]));
-    }
+    this.intercambiosService.getCiudades()
+      .then(ciudades => this.sobraCosechaCiudades.set(ciudades))
+      .catch(() => this.sobraCosechaCiudades.set([]));
   }
 
   cerrarSobraCosecha(): void {
@@ -173,12 +170,6 @@ export class HomeComponent {
     const usuario = this.authService.getStoredUser();
     if (!planta || !usuario?.uid) return;
 
-    const ciudad = datos.ciudad || usuario.ciudad;
-    if (!ciudad) {
-      this.sobraCosechaError.set('Falta seleccionar una ciudad.');
-      return;
-    }
-
     this.sobraCosechaPublicando.set(true);
     this.sobraCosechaError.set('');
     try {
@@ -187,18 +178,15 @@ export class HomeComponent {
         nombre_usuario: usuario.nombre,
         planta_id: planta.planta_id,
         cantidad_aprox: datos.cantidad_aprox,
-        ciudad,
+        ciudad: datos.ciudad,
       });
 
-      // fallback de ciudad inline: se propaga también al perfil para no
-      // volver a preguntar la próxima vez.
-      if (datos.ciudad) {
-        this.authService.actualizarPerfil({
-          nombre_usuario: usuario.nombre_usuario,
-          tipo_dieta: usuario.tipo_dieta,
-          ciudad: datos.ciudad,
-        }).catch(err => console.error('Error al guardar la ciudad en el perfil', err));
-      }
+      // se recuerda la ciudad para preseleccionarla la próxima vez que se publique.
+      this.authService.actualizarPerfil({
+        nombre_usuario: usuario.nombre_usuario,
+        tipo_dieta: usuario.tipo_dieta,
+        ciudad: datos.ciudad,
+      }).catch(err => console.error('Error al guardar la ciudad en el perfil', err));
 
       this.cerrarSobraCosecha();
     } catch (err) {
