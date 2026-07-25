@@ -92,10 +92,16 @@ export class HomeComponent {
     this.mostrarTodasTareas.update(v => !v);
   }
 
-  totalPlantas = computed(() => this.plantasService.inventario().length);
+  // Una planta ya cosechada (f_cosecha marcado) deja de contar como activa en
+  // el huerto: sigue en el inventario (para el historial) pero no aquí.
+  private plantasActivas = computed(() =>
+    this.plantasService.inventario().filter(p => !p.f_cosecha)
+  );
+
+  totalPlantas = computed(() => this.plantasActivas().length);
 
   plantasListas = computed(() =>
-    this.plantasService.inventario().filter(p => calcularEstado(p) === 'LISTA').length
+    this.plantasActivas().filter(p => calcularEstado(p) === 'LISTA').length
   );
 
   totalTareas = computed(() => this.tasks().length);
