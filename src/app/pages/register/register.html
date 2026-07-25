@@ -104,6 +104,20 @@
         }
       </div>
 
+      <!-- Ciudad -->
+      <label class="campo-label campo-label--mt" for="ciudad">Ciudad</label>
+      <select id="ciudad" class="campo-input"
+        [class.campo-input--error]="form.controls.ciudad.invalid && form.controls.ciudad.touched"
+        formControlName="ciudad">
+        <option value="" disabled>Selecciona tu ciudad</option>
+        @for (c of ciudades(); track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+      @if (form.controls.ciudad.touched && form.controls.ciudad.hasError('required')) {
+        <p class="error-inline">Selecciona tu ciudad</p>
+      }
+
       <!-- Avatar -->
       <label class="campo-label campo-label--mt">Imagen de perfil (opcional)</label>
       <div class="upload-zone" (click)="avatarInput.click()">

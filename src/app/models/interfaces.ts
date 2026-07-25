@@ -63,6 +63,7 @@ export interface Usuario {
   email: string;
   tipo_dieta: 'OMNIVORA' | 'VEGETARIANA' | 'VEGANA';
   imagen_url?: string;
+  ciudad?: string;
   fechaRegistro?: Date;
 }
 

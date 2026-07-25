@@ -130,6 +130,7 @@ export class AuthService {
         email: usuario.email || '',
         tipo_dieta: usuario.tipo_dieta || 'OMNIVORA',
         imagen_url: usuario.imagen_url || null,
+        ciudad: usuario.ciudad || null,
       };
 
       const res = await firstValueFrom(
@@ -164,6 +165,7 @@ export class AuthService {
     nombre_usuario: string;
     tipo_dieta: Usuario['tipo_dieta'];
     imagen_url?: string;
+    ciudad?: string;
   }): Promise<boolean> {
     const usuarioActual = this.getStoredUser();
     const uid = this.auth.currentUser?.uid;
@@ -283,6 +285,7 @@ export class AuthService {
         email: data.email,
         tipo_dieta: data.tipo_dieta,
         imagen_url: usuario.imagen_url || null,
+        ciudad: data.ciudad || null,
       };
 
       const res = await firstValueFrom(
