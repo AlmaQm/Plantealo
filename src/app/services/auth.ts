@@ -95,8 +95,13 @@ export class AuthService {
       );
 
       if (res) {
-        this.saveStoredUser(res);
-        return res;
+        // El backend (schemas.UsuarioOut) devuelve `firebase_uid`, no `uid`: si se
+        // guardara `res` tal cual, el usuario en localStorage se quedaría sin `uid`
+        // (undefined), rompiendo en silencio cualquier flujo que dependa de
+        // getStoredUser()?.uid (p. ej. publicar excedente de cosecha desde Home).
+        const usuario: Usuario = { ...res, uid };
+        this.saveStoredUser(usuario);
+        return usuario;
       }
 
       // Si no existeix a Aiven, crear un usuari mínim
