@@ -39,13 +39,15 @@
             <span class="intercambio-card__planta">{{ i.nombre_planta }}</span>
             <span class="intercambio-card__autor">{{ i.nombre_usuario }}</span>
           </div>
-          <span class="intercambio-card__ciudad">{{ i.ciudad }}</span>
         </div>
-        @if (i.cantidad_aprox) {
-          <div class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</div>
-        }
+        <div class="intercambio-card__tags">
+          <span class="intercambio-card__ciudad">{{ i.ciudad }}</span>
+          @if (i.cantidad_aprox) {
+            <span class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</span>
+          }
+        </div>
         <div class="intercambio-card__meta">
-          <span>Publicado {{ formatFecha(i.fecha_creacion) }}</span>
+          <span>{{ formatFecha(i.fecha_creacion) }}</span>
           @if (i.usuario_id === miUid) {
             <button class="intercambio-card__cerrar" (click)="cerrar(i)">Ya no disponible</button>
           }

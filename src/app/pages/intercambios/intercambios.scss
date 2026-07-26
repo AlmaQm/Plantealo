@@ -16,12 +16,13 @@
   }
 
   &__lista {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 12px;
   }
 
   &__vacio {
+    grid-column: 1 / -1;
     text-align: center;
     font-size: 13px;
     color: $md-ink-muted;
@@ -54,26 +55,22 @@
 
 // Tarjeta "clavada": el pin es un marcador decorativo (no un control), por
 // eso puede ser un círculo perfecto sin romper la regla de radios contenidos
-// del Modelo D. Ligera rotación por posición para que se sienta clavada, no
-// alineada con regla — pero contenida: nunca más de ~1.5deg.
+// del Modelo D. Sin rotación: dos por fila, en línea.
 .intercambio-card {
   position: relative;
   background: $md-surface;
   border-radius: $md-radius-lg;
   box-shadow: $md-shadow;
-  padding: 20px 14px 14px;
-
-  &:nth-child(3n+1) { transform: rotate(-1.1deg); }
-  &:nth-child(3n+2) { transform: rotate(0.9deg); }
-  &:nth-child(3n)   { transform: rotate(-0.5deg); }
+  padding: 18px 12px 12px;
+  min-width: 0;
 
   &__pin {
     position: absolute;
-    top: -7px;
+    top: -6px;
     left: 50%;
     transform: translateX(-50%);
-    width: 13px;
-    height: 13px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: $md-accent;
     box-shadow: $md-shadow, 0 1px 0 rgba(255, 255, 255, 0.25) inset;
@@ -86,12 +83,12 @@
   &__top {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   &__imagen {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     border-radius: $md-radius-md;
     object-fit: cover;
     flex-shrink: 0;
@@ -103,28 +100,42 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
   }
 
   &__planta {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: $md-ink;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__autor {
-    font-size: 12px;
+    font-size: 11px;
     color: $md-ink-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
   }
 
   &__ciudad {
     flex-shrink: 0;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: $md-accent;
     background: $md-accent-soft;
-    padding: 4px 10px;
-    border-radius: $md-radius-md;
+    padding: 3px 8px;
+    border-radius: $md-radius-sm;
     white-space: nowrap;
   }
 
@@ -134,16 +145,21 @@
   }
 
   &__cantidad {
-    font-size: 13px;
+    font-size: 11px;
+    font-style: italic;
     color: $md-ink-muted;
-    margin-top: 8px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__meta {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 11px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 10px;
     color: $md-ink-muted;
     margin-top: 10px;
     padding-top: 8px;
@@ -151,13 +167,11 @@
   }
 
   &__cerrar {
-    flex-shrink: 0;
-    padding: 5px 11px;
-    border-radius: $md-radius-md;
+    padding: 0;
     border: none;
     background: transparent;
     color: $md-ink-muted;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     cursor: pointer;
     font-family: inherit;
