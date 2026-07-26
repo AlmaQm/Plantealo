@@ -62,7 +62,7 @@
   background: $md-surface;
   border-radius: $md-radius-lg;
   box-shadow: $md-shadow;
-  padding: 0 0 10px;
+  padding: 12px 10px 10px;
   min-width: 0;
 
   &__pin {
@@ -87,12 +87,12 @@
     width: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    border-radius: $md-radius-lg $md-radius-lg 0 0;
+    border-radius: $md-radius-md;
     background: $md-surface-2;
   }
 
   &__top {
-    padding: 8px 10px 0;
+    padding-top: 8px;
   }
 
   &__info {
@@ -123,7 +123,6 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 5px;
-    padding: 0 10px;
     margin-top: 6px;
   }
 
@@ -160,7 +159,7 @@
     gap: 3px;
     font-size: 9px;
     color: $md-ink-muted;
-    margin: 8px 10px 0;
+    margin-top: 8px;
     padding-top: 6px;
     border-top: 1px dashed $md-earth-soft;
   }
