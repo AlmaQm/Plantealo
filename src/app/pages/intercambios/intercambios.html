@@ -2,7 +2,8 @@
 
   <app-page-header
     [titulo]="'Intercambios'"
-    [subtitulo]="'Descubre quién tiene excedente de cosecha cerca de ti'">
+    [subtitulo]="'Descubre quién tiene excedente de cosecha cerca de ti'"
+    [bg]="'md-bg'">
   </app-page-header>
 
   <div class="intercambios-page__filtros">
@@ -28,21 +29,27 @@
   <div class="intercambios-page__lista">
     @for (i of lista(); track i.id) {
       <div class="intercambio-card">
-        <img class="intercambio-card__imagen"
-             [src]="i.imagen_url"
-             [alt]="i.nombre_planta"
-             (error)="$any($event.target).src='assets/images/placeholder-receta.jpg'">
-        <div class="intercambio-card__info">
-          <span class="intercambio-card__planta">{{ i.nombre_planta }}</span>
-          <span class="intercambio-card__autor">{{ i.nombre_usuario }}</span>
-          @if (i.cantidad_aprox) {
-            <span class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</span>
-          }
-          <span class="intercambio-card__meta">{{ i.ciudad }} · {{ formatFecha(i.fecha_creacion) }}</span>
+        <div class="intercambio-card__pin"></div>
+        <div class="intercambio-card__top">
+          <img class="intercambio-card__imagen"
+               [src]="i.imagen_url"
+               [alt]="i.nombre_planta"
+               (error)="$any($event.target).src='assets/images/placeholder-receta.jpg'">
+          <div class="intercambio-card__info">
+            <span class="intercambio-card__planta">{{ i.nombre_planta }}</span>
+            <span class="intercambio-card__autor">{{ i.nombre_usuario }}</span>
+          </div>
+          <span class="intercambio-card__ciudad">{{ i.ciudad }}</span>
         </div>
-        @if (i.usuario_id === miUid) {
-          <button class="intercambio-card__cerrar" (click)="cerrar(i)">Ya no disponible</button>
+        @if (i.cantidad_aprox) {
+          <div class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</div>
         }
+        <div class="intercambio-card__meta">
+          <span>Publicado {{ formatFecha(i.fecha_creacion) }}</span>
+          @if (i.usuario_id === miUid) {
+            <button class="intercambio-card__cerrar" (click)="cerrar(i)">Ya no disponible</button>
+          }
+        </div>
       </div>
     } @empty {
       @if (cargando()) {

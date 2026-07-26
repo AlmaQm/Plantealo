@@ -1,26 +1,30 @@
-@use 'styles/variables' as *;
+@use 'styles/model-d-home' as *;
 
 .intercambios-page {
   min-height: 100vh;
-  background-color: $earth-1;
   padding: 0 16px 80px;
+  // Textura de corcho casi imperceptible: mismo espíritu que la sombra
+  // "casi invisible" del Modelo D, resuelta en el propio tono tierra.
+  background:
+    radial-gradient(circle at 1px 1px, rgba($md-earth, 0.16) 1px, transparent 0) 0 0/16px 16px,
+    $md-bg;
 
   &__filtros {
     display: flex;
     gap: 10px;
-    padding: 0 0 16px;
+    padding: 4px 0 18px;
   }
 
   &__lista {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 18px;
   }
 
   &__vacio {
     text-align: center;
     font-size: 13px;
-    color: $green-5;
+    color: $md-ink-muted;
     padding: 32px 16px;
   }
 }
@@ -29,37 +33,69 @@
   flex: 1;
   min-width: 0;
   box-sizing: border-box;
-  padding: 10px 12px;
-  border: 1.5px solid white;
-  border-radius: 12px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: $md-radius-md;
   font-size: 13px;
-  color: $green-7;
-  background: white;
+  font-weight: 600;
+  color: $md-ink;
+  background: $md-surface;
+  box-shadow: $md-shadow;
   font-family: inherit;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2387986a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237d715a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
+  padding-right: 30px;
   cursor: pointer;
 
-  &:focus { outline: none; border-color: $green-4; }
+  &:focus { outline: none; box-shadow: 0 0 0 2px $md-accent-soft; }
 }
 
+// Tarjeta "clavada": el pin es un marcador decorativo (no un control), por
+// eso puede ser un círculo perfecto sin romper la regla de radios contenidos
+// del Modelo D. Ligera rotación por posición para que se sienta clavada, no
+// alineada con regla — pero contenida: nunca más de ~1.5deg.
 .intercambio-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: white;
-  border-radius: 16px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: relative;
+  background: $md-surface;
+  border-radius: $md-radius-lg;
+  box-shadow: $md-shadow;
+  padding: 20px 14px 14px;
+
+  &:nth-child(3n+1) { transform: rotate(-1.1deg); }
+  &:nth-child(3n+2) { transform: rotate(0.9deg); }
+  &:nth-child(3n)   { transform: rotate(-0.5deg); }
+
+  &__pin {
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: $md-accent;
+    box-shadow: $md-shadow, 0 1px 0 rgba(255, 255, 255, 0.25) inset;
+  }
+
+  &:nth-child(even) &__pin {
+    background: $md-earth;
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
   &__imagen {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: $md-radius-md;
     object-fit: cover;
     flex-shrink: 0;
+    background: $md-surface-2;
   }
 
   &__info {
@@ -71,39 +107,63 @@
   }
 
   &__planta {
-    font-size: 14px;
-    font-weight: 700;
-    color: $green-7;
+    font-size: 15px;
+    font-weight: 600;
+    color: $md-ink;
   }
 
   &__autor {
     font-size: 12px;
-    color: $green-6;
+    color: $md-ink-muted;
+  }
+
+  &__ciudad {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: $md-accent;
+    background: $md-accent-soft;
+    padding: 4px 10px;
+    border-radius: $md-radius-md;
+    white-space: nowrap;
+  }
+
+  &:nth-child(even) &__ciudad {
+    color: $md-earth;
+    background: $md-earth-soft;
   }
 
   &__cantidad {
-    font-size: 12px;
-    color: $green-5;
-    font-style: italic;
+    font-size: 13px;
+    color: $md-ink-muted;
+    margin-top: 8px;
   }
 
   &__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 11px;
-    color: $green-5;
+    color: $md-ink-muted;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed $md-earth-soft;
   }
 
   &__cerrar {
     flex-shrink: 0;
-    padding: 7px 12px;
-    border-radius: 20px;
-    border: 1.5px solid $green-3;
+    padding: 5px 11px;
+    border-radius: $md-radius-md;
+    border: none;
     background: transparent;
-    color: $green-6;
-    font-size: 12px;
-    font-weight: 500;
+    color: $md-ink-muted;
+    font-size: 11px;
+    font-weight: 600;
     cursor: pointer;
     font-family: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
 
-    &:hover { background: $green-1; }
+    &:hover { color: $md-danger; }
   }
 }

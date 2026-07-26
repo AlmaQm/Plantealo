@@ -1,12 +1,13 @@
 // ==========================================================================
 // MODELO D — "Terracotta Paper"
-// Tokens exclusivos del reskin de Home (pantalla + sus componentes hijos
-// exclusivos: weather-card, calendar-week, task-item, summary-card,
-// diet-recommendations, incluido su modal de calendario en styles.scss).
+// Nacido como reskin de Home (pantalla + sus componentes hijos exclusivos:
+// weather-card, calendar-week, task-item, summary-card, diet-recommendations,
+// incluido su modal de calendario en styles.scss). Adoptado también por
+// Intercambios (page-header con [bg]="'md-bg'" e intercambios.scss).
 //
-// No sustituye ni modifica styles/variables.scss (compartido por todas las
-// páginas) — es un set de tokens nuevo, usado únicamente por los archivos
-// exclusivos de Home.
+// No sustituye ni modifica styles/variables.scss (compartido por el resto de
+// páginas) — es un set de tokens aparte; úsalo en cualquier página que quiera
+// sumarse a esta dirección visual, no lo dupliques con valores sueltos.
 // ==========================================================================
 
 // Neutros — sin blanco puro en ninguna superficie
