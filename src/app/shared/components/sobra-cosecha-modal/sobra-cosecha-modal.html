@@ -29,12 +29,17 @@
 
       <label class="campo-label campo-label--mt">Ciudad</label>
       <select class="campo-input"
-        [ngModel]="ciudadSeleccionada()" (ngModelChange)="ciudadSeleccionada.set($event)">
+        [class.campo-input--error]="avisoCiudad() && !ciudadSeleccionada()"
+        [ngModel]="ciudadSeleccionada()"
+        (ngModelChange)="ciudadSeleccionada.set($event); avisoCiudad.set(false)">
         <option value="" disabled>Selecciona tu ciudad</option>
         @for (c of ciudades(); track c) {
           <option [value]="c">{{ c }}</option>
         }
       </select>
+      @if (avisoCiudad() && !ciudadSeleccionada()) {
+        <p class="campo-error">Selecciona una ciudad para publicar.</p>
+      }
 
       @if (error()) {
         <p class="campo-error">{{ error() }}</p>
@@ -43,7 +48,7 @@
 
     <div class="modal-dialog__footer">
       <button class="btn-publicar-full"
-        [disabled]="publicando() || !ciudadSeleccionada()"
+        [disabled]="publicando()"
         (click)="confirmarPublicar()">
         {{ publicando() ? 'Publicando...' : 'Publicar' }}
       </button>

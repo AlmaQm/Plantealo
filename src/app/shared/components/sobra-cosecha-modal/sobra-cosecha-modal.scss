@@ -113,6 +113,7 @@
   font-family: inherit;
 
   &:focus { outline: none; border-color: $green-4; }
+  &--error { border-color: #e11d48; }
 }
 
 .campo-error {

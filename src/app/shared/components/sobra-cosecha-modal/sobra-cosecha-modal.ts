@@ -27,6 +27,7 @@ export class SobraCosechaModalComponent implements OnInit {
   paso = signal<'preguntar' | 'formulario'>('preguntar');
   cantidad = signal('');
   ciudadSeleccionada = signal('');
+  avisoCiudad = signal(false);
 
   ngOnInit(): void {
     this.ciudadSeleccionada.set(this.ciudadInicial());
@@ -37,7 +38,11 @@ export class SobraCosechaModalComponent implements OnInit {
   }
 
   confirmarPublicar(): void {
-    if (!this.ciudadSeleccionada()) return;
+    if (!this.ciudadSeleccionada()) {
+      this.avisoCiudad.set(true);
+      return;
+    }
+    this.avisoCiudad.set(false);
     this.publicar.emit({
       cantidad_aprox: this.cantidad().trim() || undefined,
       ciudad: this.ciudadSeleccionada(),
