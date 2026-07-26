@@ -17,8 +17,8 @@
 
   &__lista {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px 10px;
   }
 
   &__vacio {
@@ -55,13 +55,14 @@
 
 // Tarjeta "clavada": el pin es un marcador decorativo (no un control), por
 // eso puede ser un círculo perfecto sin romper la regla de radios contenidos
-// del Modelo D. Sin rotación: dos por fila, en línea.
+// del Modelo D. Aquí sujeta literalmente la foto — la foto es lo que manda,
+// el texto es soporte debajo.
 .intercambio-card {
   position: relative;
   background: $md-surface;
   border-radius: $md-radius-lg;
   box-shadow: $md-shadow;
-  padding: 18px 12px 12px;
+  padding: 0 0 10px;
   min-width: 0;
 
   &__pin {
@@ -74,37 +75,34 @@
     border-radius: 50%;
     background: $md-accent;
     box-shadow: $md-shadow, 0 1px 0 rgba(255, 255, 255, 0.25) inset;
+    z-index: 1;
   }
 
   &:nth-child(even) &__pin {
     background: $md-earth;
   }
 
-  &__top {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
   &__imagen {
-    width: 40px;
-    height: 40px;
-    border-radius: $md-radius-md;
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
-    flex-shrink: 0;
+    border-radius: $md-radius-lg $md-radius-lg 0 0;
     background: $md-surface-2;
   }
 
+  &__top {
+    padding: 8px 10px 0;
+  }
+
   &__info {
-    flex: 1;
-    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 1px;
   }
 
   &__planta {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: $md-ink;
     white-space: nowrap;
@@ -113,7 +111,7 @@
   }
 
   &__autor {
-    font-size: 11px;
+    font-size: 10px;
     color: $md-ink-muted;
     white-space: nowrap;
     overflow: hidden;
@@ -124,17 +122,18 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
+    gap: 5px;
+    padding: 0 10px;
+    margin-top: 6px;
   }
 
   &__ciudad {
     flex-shrink: 0;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     color: $md-accent;
     background: $md-accent-soft;
-    padding: 3px 8px;
+    padding: 2px 7px;
     border-radius: $md-radius-sm;
     white-space: nowrap;
   }
@@ -145,7 +144,7 @@
   }
 
   &__cantidad {
-    font-size: 11px;
+    font-size: 10px;
     font-style: italic;
     color: $md-ink-muted;
     min-width: 0;
@@ -158,11 +157,11 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
-    font-size: 10px;
+    gap: 3px;
+    font-size: 9px;
     color: $md-ink-muted;
-    margin-top: 10px;
-    padding-top: 8px;
+    margin: 8px 10px 0;
+    padding-top: 6px;
     border-top: 1px dashed $md-earth-soft;
   }
 
@@ -171,7 +170,7 @@
     border: none;
     background: transparent;
     color: $md-ink-muted;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
     cursor: pointer;
     font-family: inherit;

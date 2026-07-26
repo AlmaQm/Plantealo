@@ -30,11 +30,11 @@
     @for (i of lista(); track i.id) {
       <div class="intercambio-card">
         <div class="intercambio-card__pin"></div>
+        <img class="intercambio-card__imagen"
+             [src]="i.imagen_url"
+             [alt]="i.nombre_planta"
+             (error)="$any($event.target).src='assets/images/placeholder-receta.jpg'">
         <div class="intercambio-card__top">
-          <img class="intercambio-card__imagen"
-               [src]="i.imagen_url"
-               [alt]="i.nombre_planta"
-               (error)="$any($event.target).src='assets/images/placeholder-receta.jpg'">
           <div class="intercambio-card__info">
             <span class="intercambio-card__planta">{{ i.nombre_planta }}</span>
             <span class="intercambio-card__autor">{{ i.nombre_usuario }}</span>
