@@ -127,6 +127,11 @@ export class AuthService {
 
   // Sincronitzar amb Aiven (POST /usuarios/sync)
   private async syncWithAiven(usuario: Usuario, uid: string): Promise<boolean> {
+    // Repara cualquier objeto ya guardado en localStorage al que le falte 'uid'
+    // (p. ej. sesiones cacheadas antes de que syncUserFromAiven empezara a
+    // adjuntarlo): sin esto, un usuario con datos viejos en caché nunca
+    // recupera el uid solo con los syncs en segundo plano.
+    usuario.uid = uid;
     try {
       const payload = {
         firebase_uid: uid,
