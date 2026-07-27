@@ -47,10 +47,9 @@
             <span class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</span>
           }
         </div>
-        <!-- TODO: de momento se muestra tambien en publicaciones propias para
-             poder probarlo con una sola cuenta; volver a "i.usuario_id !== miUid"
-             antes de dar la feature por definitiva. -->
-        <button class="intercambio-card__contactar" (click)="abrirChatDesdeTarjeta(i)">Contactar</button>
+        @if (i.usuario_id !== miUid) {
+          <button class="intercambio-card__contactar" (click)="abrirChatDesdeTarjeta(i)">Contactar</button>
+        }
         <div class="intercambio-card__meta">
           <span>{{ formatFecha(i.fecha_creacion) }}</span>
           @if (i.usuario_id === miUid) {
