@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SelectPlantasComponent, SelectOpcion } from '../../../components/select-plantas/select-plantas';
@@ -15,9 +15,8 @@ export interface SobraCosechaDatos {
   templateUrl: './sobra-cosecha-modal.html',
   styleUrls: ['./sobra-cosecha-modal.scss'],
 })
-export class SobraCosechaModalComponent implements OnInit {
+export class SobraCosechaModalComponent {
   nombrePlanta = input.required<string>();
-  ciudadInicial = input<string>('');
   ciudades = input<string[]>([]);
   publicando = input<boolean>(false);
   error = input<string>('');
@@ -27,6 +26,8 @@ export class SobraCosechaModalComponent implements OnInit {
 
   paso = signal<'preguntar' | 'formulario'>('preguntar');
   cantidad = signal('');
+  // Siempre arranca vacío (sin recordar la ciudad de la vez anterior): se
+  // muestra el placeholder "Selecciona tu ciudad" hasta que el usuario elige.
   ciudadSeleccionada = signal('');
   avisoCiudad = signal(false);
 
@@ -41,10 +42,6 @@ export class SobraCosechaModalComponent implements OnInit {
   onCiudadIndiceChange(indice: number): void {
     this.ciudadSeleccionada.set(this.ciudades()[indice] ?? '');
     this.avisoCiudad.set(false);
-  }
-
-  ngOnInit(): void {
-    this.ciudadSeleccionada.set(this.ciudadInicial());
   }
 
   responderSi(): void {
