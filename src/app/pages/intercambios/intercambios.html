@@ -76,7 +76,11 @@
   <div class="conversaciones-dialog" (click)="$event.stopPropagation()">
     <div class="conversaciones-dialog__header">
       <h3 class="conversaciones-dialog__titulo">Mis conversaciones</h3>
-      <button class="conversaciones-dialog__cerrar" (click)="cerrarConversaciones()" aria-label="Cerrar">✕</button>
+      <button class="conversaciones-dialog__cerrar" (click)="cerrarConversaciones()" aria-label="Cerrar">
+        <svg class="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"/><path d="M6 6 18 18"/>
+        </svg>
+      </button>
     </div>
     <div class="conversaciones-dialog__lista">
       @if (cargandoConversaciones()) {
@@ -96,7 +100,11 @@
               <span class="conversacion-item__planta">sobre {{ c.nombre_planta }}</span>
               <span class="conversacion-item__ultimo">{{ c.ultimo_mensaje }}</span>
             </button>
-            <button class="conversacion-item__eliminar" (click)="eliminarConversacion(c)" aria-label="Eliminar conversación">✕</button>
+            <button class="conversacion-item__eliminar" (click)="eliminarConversacion(c)" aria-label="Eliminar conversación">
+              <svg class="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6 6 18"/><path d="M6 6 18 18"/>
+              </svg>
+            </button>
           </div>
         }
       }

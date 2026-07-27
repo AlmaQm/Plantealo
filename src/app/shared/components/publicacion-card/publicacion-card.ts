@@ -124,8 +124,8 @@ export class PublicacionCardComponent implements OnInit {
 
   getCategoriaLabel(): string {
     const map: Record<Publicacion['categoria'], string> = {
-      'HUERTO': '🌿 Huerto', 'RECETA': '🍳 Receta',
-      'CONSEJO': '💡 Consejo', 'COSECHA': '🌾 Cosecha'
+      'HUERTO': 'Huerto', 'RECETA': 'Receta',
+      'CONSEJO': 'Consejo', 'COSECHA': 'Cosecha'
     };
     return map[this.publicacion.categoria];
   }

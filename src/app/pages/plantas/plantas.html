@@ -13,7 +13,11 @@
   <div class="plantas-page__lista">
     @if (plantasFiltradas().length === 0) {
       <div class="plantas-page__vacio">
-        <span class="vacio-icon">🌱</span>
+        <svg class="vacio-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V13"/>
+          <path d="M12 13C12 8 8 5 3 5c0 5 3 9 8 9Z"/>
+          <path d="M12 13c0-4 3-7 8-7 0 4-3 7-8 7Z"/>
+        </svg>
         <p>¡Anímate a empezar tu pequeño huerto!</p>
         <span>Dale al <strong>+</strong> y añade tu primera planta</span>
       </div>
@@ -36,7 +40,11 @@
 
     <div class="bottomsheet__header">
       <h3 class="bottomsheet__titulo">Añadir planta</h3>
-      <button class="bottomsheet__cerrar" (click)="cerrarModal()">✕</button>
+      <button class="bottomsheet__cerrar" (click)="cerrarModal()">
+        <svg class="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"/><path d="M6 6 18 18"/>
+        </svg>
+      </button>
     </div>
 
     <div class="bottomsheet__body">

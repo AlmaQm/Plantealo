@@ -31,7 +31,9 @@
     gap: 16px;
 
     .vacio-icon {
-      font-size: 72px;
+      width: 72px;
+      height: 72px;
+      color: $green-6;
     }
 
     p {
@@ -145,13 +147,19 @@
   }
 
   &__cerrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
-    font-size: 18px;
     color: $green-5;
     cursor: pointer;
     padding: 4px;
-    line-height: 1;
+
+    .icon-x {
+      width: 18px;
+      height: 18px;
+    }
   }
 
   &__body {

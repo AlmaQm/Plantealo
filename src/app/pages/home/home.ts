@@ -12,13 +12,6 @@ import { SummaryCardComponent } from '../../components/summary-card/summary-card
 import { DietRecommendationsComponent } from '../../components/diet-recommendations/diet-recommendations';
 import { SobraCosechaModalComponent, SobraCosechaDatos } from '../../shared/components/sobra-cosecha-modal/sobra-cosecha-modal';
 
-const ICONOS: Record<string, string> = {
-  LISTA:     '🌾',
-  CRECIENDO: '💧',
-  PLANTADA:  '🌱',
-  ENFERMA:   '⚠️',
-};
-
 const URGENCIA: Record<string, number> = {
   ENFERMA: 0, LISTA: 1, CRECIENDO: 2, PLANTADA: 3,
 };
@@ -77,7 +70,6 @@ export class HomeComponent {
         return {
           id:          p.id,
           tipo,
-          icon:        ICONOS[estado] ?? '🌿',
           image:       p.imagen_url,
           title:       p.nombre_planta,
           description: this.descripcion(estado, dias, riego),

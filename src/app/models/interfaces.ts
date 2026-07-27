@@ -1,7 +1,6 @@
 export interface GardenTask {
   id: number;
   tipo: 'RIEGO' | 'COSECHA' | 'ENFERMA';
-  icon: string;
   image: string;
   title: string;
   description: string;

@@ -7,8 +7,19 @@
     <div class="chat-panel__handle"></div>
 
     <div class="chat-panel__header">
-      <h3 class="chat-panel__titulo">🌱 Asistente del huerto</h3>
-      <button class="chat-panel__cerrar" type="button" (click)="onTancar()" aria-label="Cerrar">✕</button>
+      <h3 class="chat-panel__titulo">
+        <svg class="titulo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V13"/>
+          <path d="M12 13C12 8 8 5 3 5c0 5 3 9 8 9Z"/>
+          <path d="M12 13c0-4 3-7 8-7 0 4-3 7-8 7Z"/>
+        </svg>
+        Asistente del huerto
+      </h3>
+      <button class="chat-panel__cerrar" type="button" (click)="onTancar()" aria-label="Cerrar">
+        <svg class="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"/><path d="M6 6 18 18"/>
+        </svg>
+      </button>
     </div>
 
     <!-- Missatges -->
@@ -61,7 +72,11 @@
                    class="chat-footer__foto-img" />
               <button type="button" class="chat-footer__foto-eliminar"
                       (click)="imatgeBase64.set(null)"
-                      aria-label="Eliminar foto">✕</button>
+                      aria-label="Eliminar foto">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18"/><path d="M6 6 18 18"/>
+                </svg>
+              </button>
             </div>
           }
           <input

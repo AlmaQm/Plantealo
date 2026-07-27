@@ -115,12 +115,19 @@
   }
 
   &__cerrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
-    font-size: 16px;
     color: $green-5;
     cursor: pointer;
     padding: 4px;
+
+    .icon-x {
+      width: 16px;
+      height: 16px;
+    }
   }
 
   &__lista {
@@ -201,12 +208,19 @@
 
   &__eliminar {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     background: transparent;
     color: $green-5;
-    font-size: 13px;
     padding: 0 12px;
     cursor: pointer;
+
+    .icon-x {
+      width: 13px;
+      height: 13px;
+    }
 
     &:hover { color: $md-danger; }
   }

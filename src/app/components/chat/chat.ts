@@ -48,8 +48,8 @@ export class ChatComponent {
     const inventari = this.plantasService.inventario();
     const noms = inventari.map(p => p.nombre_planta);
     const text = inventari.length > 0
-      ? `🌱 ¡Hola! Bienvenido a tu huerto. Tienes ${inventari.length} plantas: ${noms.join(', ')}. ¿Qué necesitas?`
-      : `🌱 ¡Hola! Bienvenido a tu huerto. Aún no tienes plantas registradas. ¿Qué necesitas?`;
+      ? `¡Hola! Bienvenido a tu huerto. Tienes ${inventari.length} plantas: ${noms.join(', ')}. ¿Qué necesitas?`
+      : `¡Hola! Bienvenido a tu huerto. Aún no tienes plantas registradas. ¿Qué necesitas?`;
     this.missatges.set([{ rol: 'assistant', text }]);
     this.scrollAlFinal();
   }
@@ -67,7 +67,7 @@ export class ChatComponent {
     if ((!text && !this.imatgeBase64()) || this.carregant()) return;
 
     // Si només hi ha imatge sense text, usa un text per defecte
-    const textFinal = text || '📷';
+    const textFinal = text || 'Foto enviada';
 
     // Captura la imatge abans de netejar el signal, perquè la necessitem
     // tant a la bombolla com al body de la petició.
@@ -104,7 +104,7 @@ export class ChatComponent {
       },
       error: (err) => {
         const detall = err?.error?.detail ?? 'No he podido conectar con el asistente.';
-        this.missatges.update(m => [...m, { rol: 'assistant', text: `⚠️ ${detall}` }]);
+        this.missatges.update(m => [...m, { rol: 'assistant', text: `Aviso: ${detall}` }]);
         this.carregant.set(false);
       },
     });

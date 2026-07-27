@@ -41,13 +41,19 @@
   }
 
   &__cerrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
-    font-size: 18px;
     color: $green-5;
     cursor: pointer;
-    line-height: 1;
     padding: 4px;
+
+    .icon-x {
+      width: 18px;
+      height: 18px;
+    }
   }
 
   &__body { margin-bottom: 20px; }
