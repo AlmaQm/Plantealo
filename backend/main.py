@@ -177,7 +177,18 @@ async def subir_avatar(
     # nunca resuelve desde el navegador de un usuario real), derivamos la
     # base de la propia request entrante.
     backend_url = os.getenv('BACKEND_URL', '').rstrip('/')
-    base_url = backend_url or str(request.base_url).rstrip('/')
+    if backend_url:
+        base_url = backend_url
+    else:
+        base_url = str(request.base_url).rstrip('/')
+        # Render (y proxies similares) terminan TLS en el borde y reenvían
+        # HTTP en texto plano al contenedor, así que request.base_url
+        # reportará "http://" salvo que uvicorn confíe explícitamente en
+        # X-Forwarded-Proto (no configurado en este repo). Forzamos https
+        # salvo en desarrollo local, para no servir contenido mixto a una
+        # página cargada por https.
+        if base_url.startswith('http://') and request.url.hostname not in ('localhost', '127.0.0.1'):
+            base_url = 'https://' + base_url[len('http://'):]
     url = f"{base_url}/uploads/avatars/{nombre_archivo}"
     usuario.imagen_url = url
     db.commit()
