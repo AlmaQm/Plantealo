@@ -22,6 +22,7 @@ interface ApiConversacionResumen {
   otro_nombre: string;
   ultimo_mensaje: string;
   ultima_fecha: string;
+  no_leidos: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -58,6 +59,7 @@ export class MensajesService {
       otro_nombre: d.otro_nombre,
       ultimo_mensaje: d.ultimo_mensaje,
       ultima_fecha: new Date(d.ultima_fecha),
+      no_leidos: d.no_leidos,
     };
   }
 
@@ -92,5 +94,12 @@ export class MensajesService {
       this.http.get<ApiConversacionResumen[]>(`${this.apiUrl}/mensajes/conversaciones`, { headers })
     );
     return docs.map(d => this.mapConversacion(d));
+  }
+
+  async contarNoLeidos(): Promise<number> {
+    const headers = await this.authHeaders();
+    return firstValueFrom(
+      this.http.get<number>(`${this.apiUrl}/mensajes/no-leidos`, { headers })
+    );
   }
 }

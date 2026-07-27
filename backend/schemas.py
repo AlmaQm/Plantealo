@@ -211,6 +211,7 @@ class Mensaje(BaseModel):
     remitente_nombre: str
     destinatario_uid: str
     texto: str
+    leido: bool
     fecha: datetime
     class Config:
         from_attributes = True
@@ -222,6 +223,7 @@ class ConversacionResumen(BaseModel):
     otro_nombre: str
     ultimo_mensaje: str
     ultima_fecha: datetime
+    no_leidos: int
 
 # --- Nivel 1: ¿Qué puedo cocinar con mi huerto? ---
 

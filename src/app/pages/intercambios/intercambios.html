@@ -8,6 +8,9 @@
 
   <button class="intercambios-page__mensajes" (click)="abrirConversaciones()">
     Mis conversaciones
+    @if (noLeidosTotal() > 0) {
+      <span class="badge-no-leidos">{{ noLeidosTotal() }}</span>
+    }
   </button>
 
   <div class="intercambios-page__filtros">
@@ -81,7 +84,12 @@
       } @else {
         @for (c of conversaciones(); track c.intercambio_id + c.otro_uid) {
           <button class="conversacion-item" (click)="abrirChatDesdeConversacion(c)">
-            <span class="conversacion-item__nombre">{{ c.otro_nombre }}</span>
+            <div class="conversacion-item__cabecera">
+              <span class="conversacion-item__nombre">{{ c.otro_nombre }}</span>
+              @if (c.no_leidos > 0) {
+                <span class="badge-no-leidos">{{ c.no_leidos }}</span>
+              }
+            </div>
             <span class="conversacion-item__planta">sobre {{ c.nombre_planta }}</span>
             <span class="conversacion-item__ultimo">{{ c.ultimo_mensaje }}</span>
           </button>

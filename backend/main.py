@@ -578,3 +578,11 @@ def listar_conversaciones_endpoint(
     db: Session = Depends(get_db)
 ):
     return crud.listar_conversaciones(db, uid)
+
+
+@app.get("/mensajes/no-leidos", response_model=int)
+def contar_no_leidos_endpoint(
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    return crud.contar_no_leidos(db, uid)

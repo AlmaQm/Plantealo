@@ -618,7 +618,10 @@ def enviar_mensaje(
     return mensaje
 
 def listar_mensajes(db: Session, intercambio_id: int, uid_a: str, uid_b: str) -> list[models.Mensaje]:
-    return (
+    """uid_a es siempre el uid verificado (quien pide la conversacion). De
+    paso, marca como leidos los mensajes que uid_a tenia pendientes de esta
+    conversacion -- abrirla equivale a leerla."""
+    mensajes = (
         db.query(models.Mensaje)
         .filter(
             models.Mensaje.intercambio_id == intercambio_id,
@@ -629,6 +632,19 @@ def listar_mensajes(db: Session, intercambio_id: int, uid_a: str, uid_b: str) ->
         )
         .order_by(models.Mensaje.fecha.asc())
         .all()
+    )
+    pendientes = [m for m in mensajes if m.destinatario_uid == uid_a and not m.leido]
+    if pendientes:
+        for m in pendientes:
+            m.leido = True
+        db.commit()
+    return mensajes
+
+def contar_no_leidos(db: Session, uid: str) -> int:
+    return (
+        db.query(models.Mensaje)
+        .filter(models.Mensaje.destinatario_uid == uid, models.Mensaje.leido.is_(False))
+        .count()
     )
 
 def listar_conversaciones(db: Session, uid: str) -> list[schemas.ConversacionResumen]:
@@ -662,6 +678,16 @@ def listar_conversaciones(db: Session, uid: str) -> list[schemas.ConversacionRes
                 .first()
             )
             otro_nombre = primero_de_otro.remitente_nombre if primero_de_otro else "Usuario"
+        no_leidos = (
+            db.query(models.Mensaje)
+            .filter(
+                models.Mensaje.intercambio_id == m.intercambio_id,
+                models.Mensaje.remitente_uid == otro,
+                models.Mensaje.destinatario_uid == uid,
+                models.Mensaje.leido.is_(False),
+            )
+            .count()
+        )
         resumen[clave] = schemas.ConversacionResumen(
             intercambio_id=m.intercambio_id,
             nombre_planta=intercambio.especie.nombre_planta,
@@ -669,5 +695,6 @@ def listar_conversaciones(db: Session, uid: str) -> list[schemas.ConversacionRes
             otro_nombre=otro_nombre,
             ultimo_mensaje=m.texto,
             ultima_fecha=m.fecha,
+            no_leidos=no_leidos,
         )
     return list(resumen.values())
