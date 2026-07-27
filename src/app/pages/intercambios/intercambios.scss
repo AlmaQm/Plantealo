@@ -1,4 +1,5 @@
 @use 'styles/model-d-home' as *;
+@use 'styles/variables' as *;
 
 .intercambios-page {
   min-height: 100vh;
@@ -25,7 +26,7 @@
     grid-column: 1 / -1;
     text-align: center;
     font-size: 13px;
-    color: $md-ink-muted;
+    color: $green-5;
     padding: 32px 16px;
   }
 }
@@ -38,7 +39,7 @@
   border-radius: $md-radius-md;
   background: $md-surface;
   box-shadow: $md-shadow;
-  color: $md-accent;
+  color: $green-6;
   font-size: 13px;
   font-weight: 700;
   font-family: $md-font;
@@ -84,7 +85,7 @@
     margin: 0;
     font-size: 16px;
     font-weight: 700;
-    color: $md-ink;
+    color: $green-7;
     font-family: $md-font;
   }
 
@@ -92,7 +93,7 @@
     background: none;
     border: none;
     font-size: 16px;
-    color: $md-ink-muted;
+    color: $green-5;
     cursor: pointer;
     padding: 4px;
   }
@@ -107,7 +108,7 @@
   &__vacio {
     text-align: center;
     font-size: 13px;
-    color: $md-ink-muted;
+    color: $green-5;
     padding: 20px 0;
     font-family: $md-font;
   }
@@ -128,11 +129,11 @@
   cursor: pointer;
   font-family: $md-font;
 
-  &__nombre { font-size: 13px; font-weight: 700; color: $md-ink; }
-  &__planta { font-size: 11px; color: $md-accent; }
+  &__nombre { font-size: 13px; font-weight: 700; color: $green-7; }
+  &__planta { font-size: 11px; color: $green-6; }
   &__ultimo {
     font-size: 11px;
-    color: $md-ink-muted;
+    color: $green-5;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
