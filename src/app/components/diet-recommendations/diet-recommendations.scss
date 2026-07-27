@@ -132,6 +132,28 @@
   overflow: hidden;
 }
 
+/* DETALLE DE VERDURA — popover anclado sobre la card pulsada, no centrado en pantalla */
+.detalle-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  animation: detalleFadeIn 0.15s ease;
+}
+
+.detalle-popover {
+  position: fixed;
+  z-index: 201;
+  border-radius: 20px;
+  box-shadow: 0 20px 48px rgba(50, 41, 32, 0.28);
+  animation: detalleFadeIn 0.18s ease;
+}
+
+@keyframes detalleFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* RECOMENDACIÓN DE RECETA — debajo de las cards de verduras del mes */
 .recs-receta {
   margin-top: 14px;
