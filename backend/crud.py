@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case, select, insert, delete, and_
+from sqlalchemy import func, case, select, insert, delete, and_, or_
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 from typing import List, Optional
@@ -595,3 +595,79 @@ def cerrar_intercambio(db: Session, intercambio_id: int, usuario_id: str) -> mod
     db.commit()
     db.refresh(intercambio)
     return intercambio
+
+# --- LÓGICA PARA CHAT DE INTERCAMBIOS ---
+
+def enviar_mensaje(
+    db: Session, intercambio_id: int, remitente_uid: str, remitente_nombre: str,
+    destinatario_uid: str, texto: str
+) -> models.Mensaje:
+    intercambio = db.query(models.Intercambio).filter(models.Intercambio.id == intercambio_id).first()
+    if not intercambio:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada")
+    mensaje = models.Mensaje(
+        intercambio_id=intercambio_id,
+        remitente_uid=remitente_uid,
+        remitente_nombre=remitente_nombre,
+        destinatario_uid=destinatario_uid,
+        texto=texto,
+    )
+    db.add(mensaje)
+    db.commit()
+    db.refresh(mensaje)
+    return mensaje
+
+def listar_mensajes(db: Session, intercambio_id: int, uid_a: str, uid_b: str) -> list[models.Mensaje]:
+    return (
+        db.query(models.Mensaje)
+        .filter(
+            models.Mensaje.intercambio_id == intercambio_id,
+            or_(
+                and_(models.Mensaje.remitente_uid == uid_a, models.Mensaje.destinatario_uid == uid_b),
+                and_(models.Mensaje.remitente_uid == uid_b, models.Mensaje.destinatario_uid == uid_a),
+            )
+        )
+        .order_by(models.Mensaje.fecha.asc())
+        .all()
+    )
+
+def listar_conversaciones(db: Session, uid: str) -> list[schemas.ConversacionResumen]:
+    """Una fila por (publicación, otro participante) donde uid interviene,
+    con el último mensaje. Solo existen conversaciones autor<->interesado
+    (nunca interesado<->interesado), así que el nombre del "otro" siempre se
+    puede resolver: si es el autor, ya lo sabemos por Intercambio.nombre_usuario;
+    si no, tuvo que escribir el primer mensaje para iniciar el contacto."""
+    mensajes = (
+        db.query(models.Mensaje)
+        .filter(or_(models.Mensaje.remitente_uid == uid, models.Mensaje.destinatario_uid == uid))
+        .order_by(models.Mensaje.fecha.desc())
+        .all()
+    )
+    resumen: dict[tuple[int, str], schemas.ConversacionResumen] = {}
+    for m in mensajes:
+        otro = m.destinatario_uid if m.remitente_uid == uid else m.remitente_uid
+        clave = (m.intercambio_id, otro)
+        if clave in resumen:
+            continue
+        intercambio = db.query(models.Intercambio).filter(models.Intercambio.id == m.intercambio_id).first()
+        if not intercambio:
+            continue
+        if otro == intercambio.usuario_id:
+            otro_nombre = intercambio.nombre_usuario
+        else:
+            primero_de_otro = (
+                db.query(models.Mensaje)
+                .filter(models.Mensaje.intercambio_id == m.intercambio_id, models.Mensaje.remitente_uid == otro)
+                .order_by(models.Mensaje.fecha.asc())
+                .first()
+            )
+            otro_nombre = primero_de_otro.remitente_nombre if primero_de_otro else "Usuario"
+        resumen[clave] = schemas.ConversacionResumen(
+            intercambio_id=m.intercambio_id,
+            nombre_planta=intercambio.especie.nombre_planta,
+            otro_uid=otro,
+            otro_nombre=otro_nombre,
+            ultimo_mensaje=m.texto,
+            ultima_fecha=m.fecha,
+        )
+    return list(resumen.values())

@@ -87,6 +87,25 @@ export interface Intercambio {
   fecha_creacion: Date;
 }
 
+export interface MensajeChat {
+  id: number;
+  intercambio_id: number;
+  remitente_uid: string;
+  remitente_nombre: string;
+  destinatario_uid: string;
+  texto: string;
+  fecha: Date;
+}
+
+export interface ConversacionResumen {
+  intercambio_id: number;
+  nombre_planta: string;
+  otro_uid: string;
+  otro_nombre: string;
+  ultimo_mensaje: string;
+  ultima_fecha: Date;
+}
+
 export interface Comentario {
   comentario_id: string;
   usuario_id: string;

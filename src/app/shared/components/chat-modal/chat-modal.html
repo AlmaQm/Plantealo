@@ -1,0 +1,43 @@
+<div class="modal-overlay" (click)="cerrar.emit()"></div>
+<div class="chat-dialog" (click)="$event.stopPropagation()">
+
+  <div class="chat-dialog__header">
+    <div class="chat-dialog__titulos">
+      <h3 class="chat-dialog__titulo">{{ otroNombre() }}</h3>
+      <p class="chat-dialog__subtitulo">sobre {{ nombrePlanta() }}</p>
+    </div>
+    <button class="chat-dialog__cerrar" (click)="cerrar.emit()" aria-label="Cerrar">✕</button>
+  </div>
+
+  <div class="chat-dialog__mensajes">
+    @if (cargando()) {
+      <p class="chat-dialog__vacio">Cargando conversación...</p>
+    } @else if (mensajes().length === 0) {
+      <p class="chat-dialog__vacio">Aún no hay mensajes. Escribe el primero.</p>
+    } @else {
+      @for (m of mensajes(); track m.id) {
+        <div class="burbuja" [class.burbuja--propia]="m.remitente_uid === miUid">
+          <span class="burbuja__texto">{{ m.texto }}</span>
+        </div>
+      }
+    }
+  </div>
+
+  @if (error()) {
+    <p class="chat-dialog__error">{{ error() }}</p>
+  }
+
+  <div class="chat-dialog__footer">
+    <input
+      type="text"
+      class="chat-dialog__input"
+      placeholder="Escribe un mensaje..."
+      [ngModel]="texto()"
+      (ngModelChange)="texto.set($event)"
+      (keyup.enter)="enviar()">
+    <button class="chat-dialog__enviar" [disabled]="!texto().trim() || enviando()" (click)="enviar()">
+      {{ enviando() ? '...' : 'Enviar' }}
+    </button>
+  </div>
+
+</div>
