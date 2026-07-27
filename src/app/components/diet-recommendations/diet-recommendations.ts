@@ -430,8 +430,11 @@ export class DietRecommendationsComponent implements OnInit {
     const espacioArriba = rect.top - MARGEN;
     const abreAbajo = espacioAbajo >= espacioArriba;
 
-    let left = rect.left + rect.width / 2 - ancho / 2;
-    left = Math.max(16, Math.min(left, window.innerWidth - ancho - 16));
+    // Centrado en el ancho de la pantalla, no en el de la card: el popover
+    // (hasta 320px) es mas ancho que una sola card de una cuadricula de 4
+    // columnas, asi que centrarlo sobre la card casi siempre chocaba contra
+    // el margen de pantalla y quedaba pegado a un lado en vez de centrado.
+    const left = (window.innerWidth - ancho) / 2;
 
     this.detallePos.set({
       left,
