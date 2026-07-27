@@ -2,8 +2,8 @@
 
   <!-- Cabecera -->
   <div class="pub-card__header">
-    @if (publicacion.usuario_imagen_url) {
-      <img class="pub-card__avatar pub-card__avatar--img" [src]="publicacion.usuario_imagen_url" [alt]="publicacion.nombre_usuario" />
+    @if (publicacion.usuario_imagen_url && !imageFailed()) {
+      <img class="pub-card__avatar pub-card__avatar--img" [src]="publicacion.usuario_imagen_url" [alt]="publicacion.nombre_usuario" (error)="onAvatarError()" />
     } @else {
       <div class="pub-card__avatar">{{ publicacion.avatar_inicial }}</div>
     }
