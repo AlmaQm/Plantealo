@@ -407,7 +407,17 @@ export class DietRecommendationsComponent implements OnInit {
   }
 
   abrirCalendario() {
-    this.calModal.present();
+    // Ionic mide el alto del sheet de forma sincrona dentro de present(), y en
+    // ese instante Angular puede no haber terminado de pintar el contenido
+    // proyectado (.cal-wrap con --height:100%) dentro del <ng-template>. Si
+    // mide antes de tiempo, el sheet sale mas bajo de lo real (hueco abajo)
+    // hasta que un gesto posterior fuerza un remedido. Esperar dos frames
+    // garantiza que el layout ya esta asentado cuando Ionic mide.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.calModal.present();
+      });
+    });
   }
 
   abrirDetalle(planta: Planta, event: MouseEvent) {
