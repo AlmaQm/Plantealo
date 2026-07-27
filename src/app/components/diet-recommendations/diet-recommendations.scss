@@ -132,7 +132,8 @@
   overflow: hidden;
 }
 
-/* DETALLE DE VERDURA — popover anclado sobre la card pulsada, no centrado en pantalla */
+/* DETALLE DE VERDURA — popover centrado en pantalla (viewport actual, no en
+   el documento), asi que sale centrado estes donde estes con el scroll */
 .detalle-backdrop {
   position: fixed;
   inset: 0;
@@ -143,15 +144,24 @@
 
 .detalle-popover {
   position: fixed;
+  top: 50%;
+  left: 50%;
   z-index: 201;
+  width: min(320px, calc(100vw - 32px));
+  max-height: min(80dvh, 640px);
   border-radius: 20px;
   box-shadow: 0 20px 48px rgba(50, 41, 32, 0.28);
-  animation: detalleFadeIn 0.18s ease;
+  animation: detalleCentrado 0.18s ease forwards;
 }
 
 @keyframes detalleFadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes detalleCentrado {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
 /* RECOMENDACIÓN DE RECETA — debajo de las cards de verduras del mes */

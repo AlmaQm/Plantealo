@@ -16,14 +16,6 @@ interface Planta {
   consejo: string;
 }
 
-interface DetallePosicion {
-  left: number;
-  ancho: number;
-  maxAlto: number;
-  arriba?: number;
-  abajo?: number;
-}
-
 const IMG = (f: string) => `/assets/images/${f}`;
 
 const DESCRIPCIONES: Record<string, string> = {
@@ -272,7 +264,6 @@ export class DietRecommendationsComponent implements OnInit {
 
   verduraSeleccionada = signal<Planta | null>(null);
   detalleAbierto = signal(false);
-  detallePos = signal<DetallePosicion | null>(null);
 
   // Recomanació de recepta amb el sistema de recetes de l'Alma (RecetaHuerto)
   private readonly authService = inject(AuthService);
@@ -456,29 +447,11 @@ export class DietRecommendationsComponent implements OnInit {
     window.addEventListener('pointercancel', this.calUpListener);
   }
 
-  abrirDetalle(planta: Planta, event: MouseEvent) {
+  abrirDetalle(planta: Planta) {
+    // Centrado en pantalla por CSS (position:fixed + centrado clasico): al
+    // ser relativo al viewport actual, sale centrado estes donde estes con
+    // el scroll, sin depender de la posicion de la card pulsada.
     this.verduraSeleccionada.set(planta);
-
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const MARGEN = 10;
-    const ancho = Math.min(320, window.innerWidth - 32);
-    const espacioAbajo = window.innerHeight - rect.bottom - MARGEN;
-    const espacioArriba = rect.top - MARGEN;
-    const abreAbajo = espacioAbajo >= espacioArriba;
-
-    // Centrado en el ancho de la pantalla, no en el de la card: el popover
-    // (hasta 320px) es mas ancho que una sola card de una cuadricula de 4
-    // columnas, asi que centrarlo sobre la card casi siempre chocaba contra
-    // el margen de pantalla y quedaba pegado a un lado en vez de centrado.
-    const left = (window.innerWidth - ancho) / 2;
-
-    this.detallePos.set({
-      left,
-      ancho,
-      maxAlto: Math.max(200, abreAbajo ? espacioAbajo : espacioArriba),
-      arriba: abreAbajo ? rect.bottom + MARGEN : undefined,
-      abajo: abreAbajo ? undefined : window.innerHeight - rect.top + MARGEN,
-    });
     this.detalleAbierto.set(true);
   }
 

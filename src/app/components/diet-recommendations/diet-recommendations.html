@@ -16,7 +16,7 @@
 
 <div class="recs-grid">
   @for (planta of plantas; track planta.nombre) {
-    <div class="rec-card" (click)="abrirDetalle(planta, $event)">
+    <div class="rec-card" (click)="abrirDetalle(planta)">
       <img [src]="planta.imagen" [alt]="planta.nombre" class="rec-img" />
       <div class="rec-overlay"></div>
       <div class="rec-info">
@@ -138,12 +138,7 @@
 @if (detalleAbierto()) {
   <div class="detalle-backdrop" (click)="cerrarDetalle()"></div>
   @if (verduraSeleccionada(); as v) {
-    <div class="detalle-popover"
-      [style.left.px]="detallePos()?.left"
-      [style.width.px]="detallePos()?.ancho"
-      [style.max-height.px]="detallePos()?.maxAlto"
-      [style.top.px]="detallePos()?.arriba"
-      [style.bottom.px]="detallePos()?.abajo">
+    <div class="detalle-popover">
       <div class="detalle-wrap">
         <img [src]="v.imagen" [alt]="v.nombre" class="detalle-img" />
         <button class="detalle-close" (click)="cerrarDetalle()">
