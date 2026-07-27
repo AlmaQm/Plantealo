@@ -406,18 +406,41 @@ export class DietRecommendationsComponent implements OnInit {
     this.errorTimer = setTimeout(() => this.errorPlantar.set(null), 2500);
   }
 
+  private visualViewportListener?: () => void;
+
   abrirCalendario() {
     // Ionic mide el alto del sheet de forma sincrona dentro de present(), y en
     // ese instante Angular puede no haber terminado de pintar el contenido
-    // proyectado (.cal-wrap con --height:100%) dentro del <ng-template>. Si
+    // proyectado (.cal-wrap con --height:100dvh) dentro del <ng-template>. Si
     // mide antes de tiempo, el sheet sale mas bajo de lo real (hueco abajo)
     // hasta que un gesto posterior fuerza un remedido. Esperar dos frames
     // garantiza que el layout ya esta asentado cuando Ionic mide.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         this.calModal.present();
+
+        // En Chrome Android la barra de direcciones puede colapsar DESPUES de
+        // presentar (dando mas alto real a la pantalla), y ese cambio de
+        // tamaño no se refleja en la posicion ya fijada del sheet hasta que
+        // algo fuerza un recalculo. Escuchamos el viewport visual mientras el
+        // modal esta abierto y forzamos a Ionic a recolocarse en ese caso.
+        const vv = window.visualViewport;
+        if (vv) {
+          this.visualViewportListener = () => {
+            this.calModal.setCurrentBreakpoint(0.92).catch(() => {});
+          };
+          vv.addEventListener('resize', this.visualViewportListener);
+        }
       });
     });
+  }
+
+  cerrarCalendarioListener() {
+    const vv = window.visualViewport;
+    if (vv && this.visualViewportListener) {
+      vv.removeEventListener('resize', this.visualViewportListener);
+      this.visualViewportListener = undefined;
+    }
   }
 
   abrirDetalle(planta: Planta, event: MouseEvent) {
