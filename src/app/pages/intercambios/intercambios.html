@@ -6,6 +6,10 @@
     [bg]="'md-bg'">
   </app-page-header>
 
+  <button class="intercambios-page__mensajes" (click)="abrirConversaciones()">
+    Mis conversaciones
+  </button>
+
   <div class="intercambios-page__filtros">
     <select class="campo-select"
       [ngModel]="ciudadFiltro()"
@@ -46,12 +50,10 @@
             <span class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</span>
           }
         </div>
-        @if (i.email) {
-          <!-- TODO: de momento se muestra tambien en publicaciones propias para
-               poder probarlo con una sola cuenta; volver a "i.usuario_id !== miUid && i.email"
-               antes de dar la feature por definitiva. -->
-          <a class="intercambio-card__contactar" [href]="mailtoHref(i)">Contactar</a>
-        }
+        <!-- TODO: de momento se muestra tambien en publicaciones propias para
+             poder probarlo con una sola cuenta; volver a "i.usuario_id !== miUid"
+             antes de dar la feature por definitiva. -->
+        <button class="intercambio-card__contactar" (click)="abrirChatDesdeTarjeta(i)">Contactar</button>
         <div class="intercambio-card__meta">
           <span>{{ formatFecha(i.fecha_creacion) }}</span>
           @if (i.usuario_id === miUid) {
@@ -69,3 +71,38 @@
   </div>
 
 </div>
+
+@if (conversacionesAbierto()) {
+  <div class="modal-overlay" (click)="cerrarConversaciones()"></div>
+  <div class="conversaciones-dialog" (click)="$event.stopPropagation()">
+    <div class="conversaciones-dialog__header">
+      <h3 class="conversaciones-dialog__titulo">Mis conversaciones</h3>
+      <button class="conversaciones-dialog__cerrar" (click)="cerrarConversaciones()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="conversaciones-dialog__lista">
+      @if (cargandoConversaciones()) {
+        <p class="conversaciones-dialog__vacio">Cargando...</p>
+      } @else if (conversaciones().length === 0) {
+        <p class="conversaciones-dialog__vacio">Aún no tienes conversaciones.</p>
+      } @else {
+        @for (c of conversaciones(); track c.intercambio_id + c.otro_uid) {
+          <button class="conversacion-item" (click)="abrirChatDesdeConversacion(c)">
+            <span class="conversacion-item__nombre">{{ c.otro_nombre }}</span>
+            <span class="conversacion-item__planta">sobre {{ c.nombre_planta }}</span>
+            <span class="conversacion-item__ultimo">{{ c.ultimo_mensaje }}</span>
+          </button>
+        }
+      }
+    </div>
+  </div>
+}
+
+@if (chatActivo()) {
+  <app-chat-modal
+    [intercambioId]="chatActivo()!.intercambioId"
+    [otroUid]="chatActivo()!.otroUid"
+    [otroNombre]="chatActivo()!.otroNombre"
+    [nombrePlanta]="chatActivo()!.nombrePlanta"
+    (cerrar)="cerrarChat()">
+  </app-chat-modal>
+}
