@@ -123,6 +123,7 @@ class Publicacion(Base):
     nombre_usuario = Column(String(50), nullable=False)
     username = Column(String(50), nullable=False)
     avatar_inicial = Column(String(5))
+    usuario_imagen_url = Column(Text, nullable=True)  # ADITIVO: requiere ALTER manual en Aiven
     imagen_url = Column(Text)
     categoria = Column(String(20), nullable=False)
     descripcion = Column(Text, nullable=False)

@@ -134,6 +134,7 @@ class PublicacionCreate(BaseModel):
     nombre_usuario: str
     username: str
     avatar_inicial: str
+    usuario_imagen_url: Optional[str] = None
     categoria: str
     descripcion: str
     imagen_url: Optional[str] = None
@@ -144,6 +145,7 @@ class Publicacion(BaseModel):
     nombre_usuario: str
     username: str
     avatar_inicial: Optional[str] = None
+    usuario_imagen_url: Optional[str] = None
     imagen_url: Optional[str] = None
     categoria: str
     descripcion: str

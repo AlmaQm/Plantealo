@@ -9,6 +9,7 @@ const mockPublicacion: Publicacion = {
   nombre_usuario: 'Test User',
   username: '@test',
   avatar_inicial: 'T',
+  usuario_imagen_url: null,
   imagen_url: 'assets/test.jpg',
   categoria: 'HUERTO',
   descripcion: 'Descripción de prueba',

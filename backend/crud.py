@@ -159,6 +159,7 @@ def serializar_publicacion(pub: models.Publicacion, uid: str | None) -> schemas.
         nombre_usuario=pub.nombre_usuario,
         username=pub.username,
         avatar_inicial=pub.avatar_inicial,
+        usuario_imagen_url=pub.usuario_imagen_url,
         imagen_url=pub.imagen_url,
         categoria=pub.categoria,
         descripcion=pub.descripcion,

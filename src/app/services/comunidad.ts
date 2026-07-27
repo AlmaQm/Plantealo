@@ -22,6 +22,7 @@ interface ApiPublicacion {
   nombre_usuario: string;
   username: string;
   avatar_inicial: string;
+  usuario_imagen_url: string | null;
   imagen_url: string | null;
   categoria: Publicacion['categoria'];
   descripcion: string;
@@ -80,6 +81,7 @@ export class ComunidadService {
       nombre_usuario: d.nombre_usuario,
       username: d.username,
       avatar_inicial: d.avatar_inicial,
+      usuario_imagen_url: d.usuario_imagen_url ?? null,
       imagen_url: d.imagen_url ?? 'assets/images/placeholder-receta.jpg',
       categoria: d.categoria,
       descripcion: d.descripcion,
@@ -131,6 +133,7 @@ export class ComunidadService {
       nombre_usuario: nombre,
       username: `@${nombreUsuario}`,
       avatar_inicial: nombre.charAt(0).toUpperCase(),
+      usuario_imagen_url: usuario?.imagen_url ?? null,
       categoria,
       descripcion,
       imagen_url: null
