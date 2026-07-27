@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from groq import Groq
 import httpx
 import models, schemas, crud, database
+from ciudades import CIUDADES
 import os
 import time
 import csv
@@ -115,6 +116,14 @@ def upload_catalogo_csv(file: UploadFile = File(...), db: Session = Depends(get_
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo CSV: {str(e)}")
 
 
+# --- CIUDADES (catálogo cerrado para registro e Intercambios) ---
+
+@app.get("/ciudades/", response_model=List[str])
+def get_ciudades():
+    """Lista cerrada de ciudades: única fuente de verdad para registro e Intercambios."""
+    return CIUDADES
+
+
 # --- SINCRONIZACIÓN FIREBASE ↔ AIVEN ---
 
 @app.post("/usuarios/sync", response_model=schemas.UsuarioOut)
@@ -169,6 +178,7 @@ def get_plantas_by_uid(firebase_uid: str, db: Session = Depends(get_db)):
     filas = crud.get_plantas_usuario(db, usuario.usuario_id)
     return [
         schemas.PUsuarioDetall(
+            id=pu.id,
             planta_id=pu.planta_id,
             usuario_id=pu.usuario_id,
             f_siembra=pu.f_siembra,
@@ -193,21 +203,21 @@ def add_planta_by_uid(firebase_uid: str, planta: schemas.PUsuarioCreate, db: Ses
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return crud.crear_planta_usuario(db=db, planta=planta, usuario_id=usuario.usuario_id)
 
-@app.delete("/usuarios/by-uid/{firebase_uid}/plantas/{planta_id}")
+@app.delete("/usuarios/by-uid/{firebase_uid}/plantas/registro/{id}")
 def eliminar_planta_usuario(
     firebase_uid: str,
-    planta_id: int,
+    id: int,
     db: Session = Depends(get_db)
 ):
     usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    print(f"DELETE: firebase_uid={firebase_uid}, planta_id={planta_id}, usuario={usuario.usuario_id if usuario else None}")
+    print(f"DELETE: firebase_uid={firebase_uid}, id={id}, usuario={usuario.usuario_id if usuario else None}")
 
     planta = db.query(models.PUsuario).filter(
         models.PUsuario.usuario_id == usuario.usuario_id,
-        models.PUsuario.planta_id == planta_id
+        models.PUsuario.id == id
     ).first()
 
     if not planta:
@@ -217,22 +227,22 @@ def eliminar_planta_usuario(
     db.commit()
     return {"mensaje": "Planta eliminada correctamente"}
 
-@app.patch("/usuarios/by-uid/{firebase_uid}/plantas/{planta_id}/riego", response_model=schemas.PUsuario)
-def marcar_riego_by_uid(firebase_uid: str, planta_id: int, data: schemas.RiegoUpdate, db: Session = Depends(get_db)):
+@app.patch("/usuarios/by-uid/{firebase_uid}/plantas/registro/{id}/riego", response_model=schemas.PUsuario)
+def marcar_riego_by_uid(firebase_uid: str, id: int, data: schemas.RiegoUpdate, db: Session = Depends(get_db)):
     usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    planta = crud.marcar_riego(db, usuario.usuario_id, planta_id, data.regado)
+    planta = crud.marcar_riego(db, usuario.usuario_id, id, data.regado)
     if not planta:
         raise HTTPException(status_code=404, detail="Planta no encontrada")
     return planta
 
-@app.patch("/usuarios/by-uid/{firebase_uid}/plantas/{planta_id}/cosecha", response_model=schemas.PUsuario)
-def marcar_cosecha_by_uid(firebase_uid: str, planta_id: int, data: schemas.CosechaUpdate, db: Session = Depends(get_db)):
+@app.patch("/usuarios/by-uid/{firebase_uid}/plantas/registro/{id}/cosecha", response_model=schemas.PUsuario)
+def marcar_cosecha_by_uid(firebase_uid: str, id: int, data: schemas.CosechaUpdate, db: Session = Depends(get_db)):
     usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    planta = crud.marcar_cosecha(db, usuario.usuario_id, planta_id, data.cosechado)
+    planta = crud.marcar_cosecha(db, usuario.usuario_id, id, data.cosechado)
     if not planta:
         raise HTTPException(status_code=404, detail="Planta no encontrada")
     return planta
@@ -242,6 +252,7 @@ def get_plantas_de_usuario(usuario_id: int, db: Session = Depends(get_db)):
     filas = crud.get_plantas_usuario(db, usuario_id)
     return [
         schemas.PUsuarioDetall(
+            id=pu.id,
             planta_id=pu.planta_id,
             usuario_id=pu.usuario_id,
             f_siembra=pu.f_siembra,
@@ -510,3 +521,27 @@ def desguardar_receta_endpoint(usuario_id: int, id_receta: int, db: Session = De
 def listar_recetas_guardadas(usuario_id: int, db: Session = Depends(get_db)):
     """Devuelve las recetas que el usuario tiene guardadas."""
     return crud.get_recetas_guardadas(db=db, usuario_id=usuario_id)
+
+
+# --- INTERCAMBIOS ---
+
+@app.post("/intercambios/", response_model=schemas.Intercambio)
+def crear_intercambio_endpoint(data: schemas.IntercambioCreate, db: Session = Depends(get_db)):
+    return crud.crear_intercambio(db, data)
+
+
+@app.get("/intercambios/", response_model=List[schemas.Intercambio])
+def listar_intercambios_endpoint(
+    ciudad: Optional[str] = None,
+    planta_id: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    return crud.listar_intercambios(db, ciudad=ciudad, planta_id=planta_id)
+
+
+@app.patch("/intercambios/{intercambio_id}/cerrar", response_model=schemas.Intercambio)
+def cerrar_intercambio_endpoint(intercambio_id: int, body: schemas.IntercambioCerrar, db: Session = Depends(get_db)):
+    intercambio = crud.cerrar_intercambio(db, intercambio_id, body.usuario_id)
+    if not intercambio:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
+    return crud._serializar_intercambio(intercambio)

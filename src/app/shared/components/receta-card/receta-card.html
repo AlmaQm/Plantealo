@@ -2,14 +2,15 @@
   <div class="receta-card__image">
     <img [src]="recipe.imagen_url" [alt]="recipe.nombre_receta"
          (error)="$any($event.target).src='assets/images/placeholder-receta.jpg'">
-    <button
-      type="button"
-      class="receta-card__guardar"
-      [class.guardada]="recipe.guardada"
-      (click)="toggleGuardar($event)">
-      {{ recipe.guardada ? '❤️' : '🤍' }}
-    </button>
   </div>
+
+  <button
+    type="button"
+    class="receta-card__guardar"
+    [class.guardada]="recipe.guardada"
+    (click)="toggleGuardar($event)">
+    <svg lucideHeart class="receta-card__guardar-icon"></svg>
+  </button>
 
   <div class="receta-card__content">
     <h3 class="receta-card__title">{{ recipe.nombre_receta }}</h3>
@@ -17,19 +18,19 @@
     <div class="receta-card__meta">
       @if (getTiempo()) {
         <div class="meta-item">
-          <span class="meta-icon">⏱️</span>
+          <svg lucideClock class="meta-icon"></svg>
           <span>{{ getTiempo() }}</span>
         </div>
       }
       @if (recipe.num_comensales) {
         <div class="meta-item">
-          <span class="meta-icon">👥</span>
+          <svg lucideUsers class="meta-icon"></svg>
           <span>{{ recipe.num_comensales }} personas</span>
         </div>
       }
       @if (recipe.dificultad) {
         <div class="meta-item">
-          <span class="meta-icon">📊</span>
+          <svg lucideChartColumn class="meta-icon"></svg>
           <span>{{ recipe.dificultad | titlecase }}</span>
         </div>
       }
@@ -37,20 +38,35 @@
 
     <div class="receta-card__badges">
       @if (recipe.tipo_dieta === 'VEGANA') {
-        <span class="badge badge--vegana">🌱 Vegana</span>
+        <span class="badge badge--vegana"><svg lucideLeaf class="badge-icon"></svg>Vegana</span>
       }
       @if (recipe.tipo_dieta === 'VEGETARIANA') {
-        <span class="badge badge--vegetariana">🥬 Vegetariana</span>
+        <span class="badge badge--vegetariana"><svg lucideSalad class="badge-icon"></svg>Vegetariana</span>
+      }
+      @if (recipe.tipo_dieta === 'OMNIVORA') {
+        <span class="badge badge--omnivora"><svg lucideBeef class="badge-icon"></svg>Omnívoro</span>
       }
       @if (recipe.categoria) {
-        <span class="badge badge--category">{{ getCategoriaText() }}</span>
+        <span class="badge badge--category">
+          @if (recipe.categoria === 'PRINCIPAL') {
+            <svg lucideUtensilsCrossed class="badge-icon"></svg>
+          }
+          {{ getCategoriaText() }}
+        </span>
       }
     </div>
 
     <p class="receta-card__description">{{ recipe.descripcion }}</p>
 
     <span class="badge-faltantes" [class]="getFaltantesClase()">
-      {{ getFaltantesIcono() }} {{ getFaltantesTexto() }}
+      @if (recipe.ingredientes_faltantes === 0) {
+        <svg lucideCircleCheck class="badge-icon"></svg>
+      } @else if (recipe.ingredientes_faltantes === 1) {
+        <svg lucideCircleAlert class="badge-icon"></svg>
+      } @else {
+        <svg lucideCircleX class="badge-icon"></svg>
+      }
+      {{ getFaltantesTexto() }}
     </span>
   </div>
 </div>

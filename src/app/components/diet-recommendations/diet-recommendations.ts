@@ -260,7 +260,9 @@ export class DietRecommendationsComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly recetasService = inject(RecetasService);
   private readonly destroyRef = inject(DestroyRef);
-  recetaRecomendada: RecetaHuerto | null = null;
+  // Signal: esta app no usa zone.js, así que una propiedad plana mutada dentro
+  // de un .subscribe() async no dispara detección de cambios por sí sola.
+  recetaRecomendada = signal<RecetaHuerto | null>(null);
   usuarioId = 0;
   private dietaUsuario = 'OMNIVORA';
   mostrarRecetaModal = signal(false);
@@ -287,7 +289,7 @@ export class DietRecommendationsComponent implements OnInit {
         this.dietaUsuario = usuario.tipo_dieta || 'OMNIVORA';
         this.cargarRecetaRecomendada();
       } else {
-        this.recetaRecomendada = null;
+        this.recetaRecomendada.set(null);
       }
     });
   }
@@ -307,11 +309,11 @@ export class DietRecommendationsComponent implements OnInit {
       next: (recetas) => {
         const compatibles = recetas.filter(r => this.encajaConDieta(r.tipo_dieta));
         const [mejor] = [...compatibles].sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);
-        this.recetaRecomendada = mejor ?? null;
+        this.recetaRecomendada.set(mejor ?? null);
       },
       error: (err) => {
         console.error('❌ [cargarRecetaRecomendada] Error al cargar la receta recomendada:', err);
-        this.recetaRecomendada = null;
+        this.recetaRecomendada.set(null);
       },
     });
   }
@@ -368,6 +370,7 @@ export class DietRecommendationsComponent implements OnInit {
     cosecha.setDate(cosecha.getDate() + diasHastaCosecha(t.nombre));
 
     const nueva: PlantaHuerto = {
+      id: 0,
       planta_id: planta.planta_id,
       usuario_id: 1,
       nombre_planta: t.nombre,

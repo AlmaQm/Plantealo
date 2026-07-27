@@ -1,12 +1,24 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RecetaHuerto, IngredienteEstado } from '../../../models/interfaces';
-import { getFaltantesIcono, getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
+import { getFaltantesTexto, getFaltantesClase, formatTiempoPreparacion } from '../../utils/recetas.util';
+import {
+  LucideX, LucideClock, LucideUsers, LucideChartColumn,
+  LucideLeaf, LucideSalad, LucideBeef, LucideUtensilsCrossed,
+  LucideCircleCheck, LucideCircleAlert, LucideCircleX,
+  LucideShoppingBasket, LucideNotebookText, LucideChefHat, LucideSparkles
+} from '@lucide/angular';
 
 @Component({
   selector: 'app-receta-window',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    LucideX, LucideClock, LucideUsers, LucideChartColumn,
+    LucideLeaf, LucideSalad, LucideBeef, LucideUtensilsCrossed,
+    LucideCircleCheck, LucideCircleAlert, LucideCircleX,
+    LucideShoppingBasket, LucideNotebookText, LucideChefHat, LucideSparkles
+  ],
   templateUrl: './receta-window.html',
   styleUrls: ['./receta-window.scss']
 })
@@ -19,22 +31,16 @@ export class RecetaWindowComponent {
   }
 
   getCategoriaText(): string {
-    const map: Record<string, string> = {
-      'ENTRANTE': '🥗 Entrante', 'PRINCIPAL': '🍽️ Principal',
-      'POSTRE': '🍰 Postre',    'BEBIDA': '🥤 Bebida'
-    };
-    return map[this.recipe?.categoria ?? ''] ?? this.recipe?.categoria ?? '';
+    const categoria = this.recipe?.categoria ?? '';
+    if (!categoria) return '';
+    return categoria.charAt(0).toUpperCase() + categoria.slice(1).toLowerCase();
   }
 
   getDietaText(): string {
     const map: Record<string, string> = {
-      'VEGANA': '🌱 Vegana', 'VEGETARIANA': '🥬 Vegetariana', 'OMNIVORA': '🍖 Omnívora'
+      'VEGANA': 'Vegana', 'VEGETARIANA': 'Vegetariana', 'OMNIVORA': 'Omnívora'
     };
     return map[this.recipe?.tipo_dieta ?? ''] ?? '';
-  }
-
-  getFaltantesIcono(): string {
-    return this.recipe ? getFaltantesIcono(this.recipe.ingredientes_faltantes, this.recipe.tiene_ingredientes_registrados) : '';
   }
 
   getFaltantesTexto(): string {

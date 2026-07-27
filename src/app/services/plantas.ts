@@ -215,6 +215,7 @@ interface PlantaCatAiven {
 }
 
 interface PUsuarioDetallAiven {
+  id: number;
   planta_id: number;
   usuario_id: number;
   f_siembra: string;
@@ -268,7 +269,7 @@ const IMAGEN_PLANTA: Record<string, string> = {
   'Guindillas':       'assets/images/pimientos.jpg',
 };
 
-function getImagenPlanta(nombre: string): string {
+export function getImagenPlanta(nombre: string): string {
   return IMAGEN_PLANTA[nombre] ?? 'assets/images/placeholder-receta.jpg';
 }
 
@@ -343,34 +344,34 @@ export class PlantasService {
     await this.cargarInventario(this.uid);
   }
 
-  deletePlanta(plantaId: number): void {
+  deletePlanta(id: number): void {
     const uid = this.uid;
     if (!uid) return;
 
     this.http.delete(
-      `${environment.apiUrl}/usuarios/by-uid/${uid}/plantas/${plantaId}`
+      `${environment.apiUrl}/usuarios/by-uid/${uid}/plantas/registro/${id}`
     ).subscribe({
       next: () => this.cargarInventario(uid),
       error: (err) => console.error('Error eliminant planta', err),
     });
   }
 
-  async marcarRiego(plantaId: number, regado: boolean): Promise<void> {
+  async marcarRiego(id: number, regado: boolean): Promise<void> {
     if (!this.uid) return;
     await firstValueFrom(
       this.http.patch(
-        `${environment.apiUrl}/usuarios/by-uid/${this.uid}/plantas/${plantaId}/riego`,
+        `${environment.apiUrl}/usuarios/by-uid/${this.uid}/plantas/registro/${id}/riego`,
         { regado }
       )
     );
     await this.cargarInventario(this.uid);
   }
 
-  async marcarCosecha(plantaId: number, cosechado: boolean): Promise<void> {
+  async marcarCosecha(id: number, cosechado: boolean): Promise<void> {
     if (!this.uid) return;
     await firstValueFrom(
       this.http.patch(
-        `${environment.apiUrl}/usuarios/by-uid/${this.uid}/plantas/${plantaId}/cosecha`,
+        `${environment.apiUrl}/usuarios/by-uid/${this.uid}/plantas/registro/${id}/cosecha`,
         { cosechado }
       )
     );
@@ -385,6 +386,7 @@ export class PlantasService {
       : this.calcularRecogida(f_siembra, d.nombre_planta);
 
     return {
+      id:            d.id,
       planta_id:     d.planta_id,
       usuario_id:    0,
       nombre_planta: d.nombre_planta,

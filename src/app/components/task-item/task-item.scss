@@ -38,6 +38,16 @@
          font-size: 0.95rem;
          color: $md-ink;
          font-weight: 600;
+         display: flex;
+         align-items: center;
+         gap: 6px;
+      }
+
+      .cosecha-icon {
+         width: 16px;
+         height: 16px;
+         stroke: $md-accent;
+         flex-shrink: 0;
       }
 
       p {
@@ -60,6 +70,18 @@
 
       h3 {
          text-decoration: line-through;
+      }
+   }
+
+   // Cosechar es la tarea con más "premio" del día: se destaca del resto
+   // (riego, enferma) con el único acento de acción del modelo, sin pisar
+   // el color de alerta reservado a plantas enfermas.
+   &.cosecha:not(.completed) {
+      border-left: 4px solid $md-accent;
+      padding-left: 12px;
+
+      h3 {
+         color: $md-accent-hover;
       }
    }
 }

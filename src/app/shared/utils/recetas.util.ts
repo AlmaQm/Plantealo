@@ -1,10 +1,3 @@
-export function getFaltantesIcono(faltantes: number, tieneIngredientes: boolean): string {
-  if (!tieneIngredientes) return '⚪';
-  if (faltantes === 0) return '🟢';
-  if (faltantes === 1) return '🟡';
-  return '🔴';
-}
-
 export function getFaltantesTexto(faltantes: number, tieneIngredientes: boolean): string {
   if (!tieneIngredientes) return 'Ingredientes no especificados';
   if (faltantes === 0) return '¡Tienes todo en tu huerto!';

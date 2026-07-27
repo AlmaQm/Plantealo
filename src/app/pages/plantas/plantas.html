@@ -18,7 +18,7 @@
         <span>Dale al <strong>+</strong> y añade tu primera planta</span>
       </div>
     }
-    @for (planta of plantasFiltradas(); track planta.planta_id) {
+    @for (planta of plantasFiltradas(); track planta.id) {
       <app-planta-card [planta]="planta" />
     }
   </div>

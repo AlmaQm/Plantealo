@@ -9,6 +9,7 @@ class UsuarioBase(BaseModel):
     email: EmailStr
     tipo_dieta: str
     imagen_url: Optional[str] = None
+    ciudad: Optional[str] = None
 
 class UsuarioCreate(UsuarioBase):
     contrasena: str
@@ -26,6 +27,7 @@ class UsuarioSync(BaseModel):
     email: EmailStr
     tipo_dieta: str
     imagen_url: Optional[str] = None
+    ciudad: Optional[str] = None
 
 # Usuario de salida (incluye usuario_id y firebase_uid)
 class UsuarioOut(BaseModel):
@@ -36,6 +38,7 @@ class UsuarioOut(BaseModel):
     email: EmailStr
     tipo_dieta: str
     imagen_url: Optional[str] = None
+    ciudad: Optional[str] = None
     class Config:
         from_attributes = True
 
@@ -90,6 +93,7 @@ class PlantaCat(BaseModel):
 
 # Planta personal del usuario + datos del catálogo (join p_usuario + plantas)
 class PUsuarioDetall(BaseModel):
+    id: int
     planta_id: int
     usuario_id: int
     f_siembra: date
@@ -164,6 +168,34 @@ class GuardarToggle(BaseModel):
 
 class ImagenUpdate(BaseModel):
     imagen_url: str
+
+# --- INTERCAMBIOS ---
+
+class IntercambioCreate(BaseModel):
+    usuario_id: str
+    nombre_usuario: str
+    email: Optional[str] = None
+    planta_id: int
+    cantidad_aprox: Optional[str] = None
+    ciudad: str
+
+class Intercambio(BaseModel):
+    id: int
+    usuario_id: str
+    nombre_usuario: str
+    email: Optional[str] = None
+    planta_id: int
+    nombre_planta: str
+    imagen_url: Optional[str] = None
+    cantidad_aprox: Optional[str] = None
+    ciudad: str
+    estado: str
+    fecha_creacion: datetime
+    class Config:
+        from_attributes = True
+
+class IntercambioCerrar(BaseModel):
+    usuario_id: str
 
 # --- Nivel 1: ¿Qué puedo cocinar con mi huerto? ---
 

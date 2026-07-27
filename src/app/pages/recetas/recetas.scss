@@ -8,8 +8,17 @@
   
   // El header el pinta <app-page-header>; cercador i panell de filtres van al seu ng-content.
 
-  &__search {
+  &__search-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
     margin-bottom: 8px;
+  }
+
+  &__search {
+    flex: 1;
+    min-width: 0;
 
     .search-box .search-input {
       width: 100%;
@@ -92,38 +101,53 @@
 }
 
 .filters-toggle {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
   background: white;
   border: none;
-  border-radius: 20px;
-  padding: 9px 14px;
-  font-size: 13px;
-  font-weight: 600;
+  border-radius: 50%;
   color: $green-7;
   cursor: pointer;
-  font-family: inherit;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2px;
+  }
 
   &__count {
+    position: absolute;
+    top: -2px;
+    right: -2px;
     background: $green-6;
     color: white;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 10px;
-    margin-left: 6px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 2px solid $earth-1;
   }
 
-  &__chev {
-    color: $green-5;
-    transition: transform 0.2s ease;
-  }
+  &--active,
+  &--open {
+    background: $green-6;
+    color: white;
 
-  &--open &__chev {
-    transform: rotate(180deg);
+    .filters-toggle__count {
+      border-color: $green-6;
+    }
   }
 }
 

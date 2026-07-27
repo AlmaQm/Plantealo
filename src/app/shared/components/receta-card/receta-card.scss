@@ -1,6 +1,7 @@
 ﻿@use 'styles/variables' as *;
 
 .receta-card {
+  position: relative;
   background: white;
   border-radius: 20px;
   overflow: hidden;
@@ -39,21 +40,20 @@
 
   &__guardar {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 8px;
+    right: 8px;
     width: 30px;
     height: 30px;
-    border-radius: 50%;
     border: none;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(4px);
+    background: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    line-height: 1;
+    color: $green-7;
     cursor: pointer;
     transition: transform 0.15s ease;
+    flex-shrink: 0;
+    padding: 0;
     z-index: 2;
 
     &:hover {
@@ -61,8 +61,18 @@
     }
 
     &.guardada {
-      background: rgba(0, 0, 0, 0.35);
+      color: #e11d48;
+
+      .receta-card__guardar-icon {
+        fill: currentColor;
+      }
     }
+  }
+
+  &__guardar-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2px;
   }
 
   &__content {
@@ -96,7 +106,10 @@
       color: $green-6;
 
       .meta-icon {
-        font-size: 12px;
+        width: 12px;
+        height: 12px;
+        stroke-width: 2px;
+        flex-shrink: 0;
       }
     }
   }
@@ -108,19 +121,28 @@
     flex-wrap: wrap;
 
     .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
       padding: 3px 8px;
       border-radius: 12px;
       font-size: 10px;
       font-weight: 500;
 
       &--vegana {
-        background: #a7f3d0;
-        color: #064e3b;
+        // Mismo verde oliva que el botón "Calendario" del Home.
+        background: #848f70;
+        color: #f7efdf;
       }
 
       &--vegetariana {
         background: $green-2;
         color: $green-7;
+      }
+
+      &--omnivora {
+        background: $earth-2;
+        color: $earth-9;
       }
 
       &--category {
@@ -159,7 +181,9 @@
 }
 
 .badge-faltantes {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 11px;
@@ -185,4 +209,11 @@
     background: $earth-1;
     color: $earth-9;
   }
+}
+
+.badge-icon {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.5px;
+  flex-shrink: 0;
 }
