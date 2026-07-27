@@ -11,23 +11,17 @@
   </button>
 
   <div class="intercambios-page__filtros">
-    <select class="campo-select"
-      [ngModel]="ciudadFiltro()"
-      (ngModelChange)="onCiudadChange($event)">
-      <option value="">Todas las ciudades</option>
-      @for (c of ciudades(); track c) {
-        <option [value]="c">{{ c }}</option>
-      }
-    </select>
+    <app-select-plantas
+      [opciones]="opcionesCiudad()"
+      [value]="ciudadIndiceSeleccionado()"
+      [placeholder]="'Todas las ciudades'"
+      (valueChange)="onCiudadIndiceChange($event)" />
 
-    <select class="campo-select"
-      [ngModel]="plantaFiltro()"
-      (ngModelChange)="onPlantaChange($event)">
-      <option [ngValue]="null">Todas las verduras</option>
-      @for (p of catalogo(); track p.planta_id) {
-        <option [ngValue]="p.planta_id">{{ p.nombre_planta }}</option>
-      }
-    </select>
+    <app-select-plantas
+      [opciones]="opcionesVerdura()"
+      [value]="plantaSeleccionada()"
+      [placeholder]="'Todas las verduras'"
+      (valueChange)="onPlantaChange($event)" />
   </div>
 
   <div class="intercambios-page__lista">

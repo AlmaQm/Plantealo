@@ -1,13 +1,18 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Auth } from '@angular/fire/auth';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 import { ChatModalComponent } from '../../shared/components/chat-modal/chat-modal';
+import { SelectPlantasComponent, SelectOpcion } from '../../components/select-plantas/select-plantas';
 import { IntercambiosService } from '../../services/intercambios';
 import { PlantasService } from '../../services/plantas';
 import { MensajesService } from '../../services/mensajes';
 import { Intercambio, ConversacionResumen } from '../../models/interfaces';
+
+// Mismo patron que la dieta en Configuracion: el select reutilizable es
+// numerico, asi que ciudad/verdura se mapean a un indice/id numerico.
+// -1 = "Todas" (sin filtro).
+const SIN_FILTRO = -1;
 
 interface ChatActivo {
   intercambioId: number;
@@ -19,7 +24,7 @@ interface ChatActivo {
 @Component({
   selector: 'app-intercambios',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, ChatModalComponent],
+  imports: [CommonModule, PageHeaderComponent, ChatModalComponent, SelectPlantasComponent],
   templateUrl: './intercambios.html',
   styleUrls: ['./intercambios.scss']
 })
@@ -41,6 +46,22 @@ export class IntercambiosComponent {
   readonly conversacionesAbierto = signal(false);
   readonly conversaciones = signal<ConversacionResumen[]>([]);
   readonly cargandoConversaciones = signal(false);
+
+  // --- Opciones para app-select-plantas (mismo componente reutilizable
+  // que "Añadir planta" y la dieta de Configuración) ---
+
+  readonly opcionesCiudad = computed<SelectOpcion[]>(() => [
+    { valor: SIN_FILTRO, etiqueta: 'Todas las ciudades' },
+    ...this.ciudades().map((c, i) => ({ valor: i, etiqueta: c })),
+  ]);
+
+  readonly opcionesVerdura = computed<SelectOpcion[]>(() => [
+    { valor: SIN_FILTRO, etiqueta: 'Todas las verduras' },
+    ...this.catalogo().map(p => ({ valor: p.planta_id, etiqueta: p.nombre_planta })),
+  ]);
+
+  readonly ciudadIndiceSeleccionado = signal<number>(SIN_FILTRO);
+  readonly plantaSeleccionada = signal<number>(SIN_FILTRO);
 
   get miUid(): string | null {
     return this.auth.currentUser?.uid ?? null;
@@ -68,13 +89,15 @@ export class IntercambiosComponent {
     }
   }
 
-  onCiudadChange(ciudad: string): void {
-    this.ciudadFiltro.set(ciudad);
+  onCiudadIndiceChange(indice: number): void {
+    this.ciudadIndiceSeleccionado.set(indice);
+    this.ciudadFiltro.set(indice === SIN_FILTRO ? '' : this.ciudades()[indice]);
     this.cargar();
   }
 
-  onPlantaChange(plantaId: number | null): void {
-    this.plantaFiltro.set(plantaId);
+  onPlantaChange(plantaId: number): void {
+    this.plantaSeleccionada.set(plantaId);
+    this.plantaFiltro.set(plantaId === SIN_FILTRO ? null : plantaId);
     this.cargar();
   }
 

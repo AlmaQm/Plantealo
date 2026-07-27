@@ -1,6 +1,7 @@
-import { Component, OnInit, input, output, signal } from '@angular/core';
+import { Component, OnInit, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { SelectPlantasComponent, SelectOpcion } from '../../../components/select-plantas/select-plantas';
 
 export interface SobraCosechaDatos {
   cantidad_aprox?: string;
@@ -10,7 +11,7 @@ export interface SobraCosechaDatos {
 @Component({
   selector: 'app-sobra-cosecha-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SelectPlantasComponent],
   templateUrl: './sobra-cosecha-modal.html',
   styleUrls: ['./sobra-cosecha-modal.scss'],
 })
@@ -28,6 +29,19 @@ export class SobraCosechaModalComponent implements OnInit {
   cantidad = signal('');
   ciudadSeleccionada = signal('');
   avisoCiudad = signal(false);
+
+  // Mismo componente reutilizable que "Añadir planta": es numérico, así que
+  // la ciudad (string) se mapea a su índice dentro de ciudades().
+  readonly opcionesCiudad = computed<SelectOpcion[]>(() =>
+    this.ciudades().map((c, i) => ({ valor: i, etiqueta: c }))
+  );
+
+  readonly ciudadIndice = computed<number>(() => this.ciudades().indexOf(this.ciudadSeleccionada()));
+
+  onCiudadIndiceChange(indice: number): void {
+    this.ciudadSeleccionada.set(this.ciudades()[indice] ?? '');
+    this.avisoCiudad.set(false);
+  }
 
   ngOnInit(): void {
     this.ciudadSeleccionada.set(this.ciudadInicial());
