@@ -63,6 +63,7 @@ export interface Usuario {
   email: string;
   tipo_dieta: 'OMNIVORA' | 'VEGETARIANA' | 'VEGANA';
   imagen_url?: string;
+  ciudad?: string;
   fechaRegistro?: Date;
 }
 
@@ -71,6 +72,19 @@ export interface GardenPlant {
   name: string;
   quantity: number;
   unit: string;
+}
+
+export interface Intercambio {
+  id: number;
+  usuario_id: string;
+  nombre_usuario: string;
+  email: string | null;
+  planta_id: number;
+  nombre_planta: string;
+  imagen_url: string;
+  cantidad_aprox: string | null;
+  ciudad: string;
+  fecha_creacion: Date;
 }
 
 export interface Comentario {

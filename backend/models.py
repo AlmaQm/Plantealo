@@ -38,6 +38,7 @@ class Usuario(Base):
     contrasena = Column(String(255), nullable=True)  # ya era nullable en la BD (Firebase gestiona auth)
     tipo_dieta = Column(String(20), nullable=False) # OMNIVORA, VEGETARIANA, VEGANA
     imagen_url = Column(String(255))  # ampliado para URLs de Firebase Storage (antes String(100))
+    ciudad = Column(String(80), nullable=True)  # ADITIVO: requiere ALTER manual en Aiven (ver plan Intercambios)
 
     perfil = relationship("PerfilUsuario", back_populates="usuario", uselist=False)
     mis_plantas = relationship("PUsuario", back_populates="propietario")
@@ -156,3 +157,22 @@ class Comentario(Base):
     fecha = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     publicacion = relationship("Publicacion", back_populates="comentarios")
+
+# --- INTERCAMBIOS ---
+# usuario_id aqui es el uid de Firebase Auth (string), mismo patron que Publicacion:
+# el excedente se identifica por autor via Firebase, los datos de la publicacion
+# viven siempre en esta base de datos, independiente de la entidad Publicacion.
+
+class Intercambio(Base):
+    __tablename__ = "intercambios"
+    id = Column(Integer, primary_key=True, index=True)
+    usuario_id = Column(String(128), nullable=False, index=True)
+    nombre_usuario = Column(String(50), nullable=False)
+    email = Column(String(120), nullable=True)  # ADITIVO: para el boton "Contactar" (mailto)
+    planta_id = Column(Integer, ForeignKey("plantas.planta_id"), nullable=False, index=True)
+    cantidad_aprox = Column(String(80), nullable=True)
+    ciudad = Column(String(80), nullable=False)
+    estado = Column(String(10), nullable=False, default="ACTIVA")  # ACTIVA, CERRADA
+    fecha_creacion = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    especie = relationship("PlantaCat")

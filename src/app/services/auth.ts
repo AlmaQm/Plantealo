@@ -95,8 +95,13 @@ export class AuthService {
       );
 
       if (res) {
-        this.saveStoredUser(res);
-        return res;
+        // El backend (schemas.UsuarioOut) devuelve `firebase_uid`, no `uid`: si se
+        // guardara `res` tal cual, el usuario en localStorage se quedaría sin `uid`
+        // (undefined), rompiendo en silencio cualquier flujo que dependa de
+        // getStoredUser()?.uid (p. ej. publicar excedente de cosecha desde Home).
+        const usuario: Usuario = { ...res, uid };
+        this.saveStoredUser(usuario);
+        return usuario;
       }
 
       // Si no existeix a Aiven, crear un usuari mínim
@@ -122,6 +127,11 @@ export class AuthService {
 
   // Sincronitzar amb Aiven (POST /usuarios/sync)
   private async syncWithAiven(usuario: Usuario, uid: string): Promise<boolean> {
+    // Repara cualquier objeto ya guardado en localStorage al que le falte 'uid'
+    // (p. ej. sesiones cacheadas antes de que syncUserFromAiven empezara a
+    // adjuntarlo): sin esto, un usuario con datos viejos en caché nunca
+    // recupera el uid solo con los syncs en segundo plano.
+    usuario.uid = uid;
     try {
       const payload = {
         firebase_uid: uid,
@@ -130,6 +140,7 @@ export class AuthService {
         email: usuario.email || '',
         tipo_dieta: usuario.tipo_dieta || 'OMNIVORA',
         imagen_url: usuario.imagen_url || null,
+        ciudad: usuario.ciudad || null,
       };
 
       const res = await firstValueFrom(
@@ -164,6 +175,7 @@ export class AuthService {
     nombre_usuario: string;
     tipo_dieta: Usuario['tipo_dieta'];
     imagen_url?: string;
+    ciudad?: string;
   }): Promise<boolean> {
     const usuarioActual = this.getStoredUser();
     const uid = this.auth.currentUser?.uid;
@@ -283,6 +295,7 @@ export class AuthService {
         email: data.email,
         tipo_dieta: data.tipo_dieta,
         imagen_url: usuario.imagen_url || null,
+        ciudad: data.ciudad || null,
       };
 
       const res = await firstValueFrom(

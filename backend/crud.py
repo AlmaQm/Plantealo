@@ -3,7 +3,7 @@ from sqlalchemy import func, case, select, insert, delete, and_
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 from typing import List, Optional
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 import models
 import schemas
 
@@ -25,6 +25,8 @@ def upsert_usuario(db: Session, data: schemas.UsuarioSync):
         usuario.nombre_usuario = data.nombre_usuario
         usuario.email = data.email
         usuario.tipo_dieta = data.tipo_dieta
+        if data.ciudad:
+            usuario.ciudad = data.ciudad
         if data.imagen_url:
             usuario.imagen_url = data.imagen_url
     else:
@@ -36,6 +38,7 @@ def upsert_usuario(db: Session, data: schemas.UsuarioSync):
             email=data.email,
             tipo_dieta=data.tipo_dieta,
             imagen_url=data.imagen_url,
+            ciudad=data.ciudad,
             contrasena=None
         )
         db.add(usuario)
@@ -87,8 +90,9 @@ def crear_usuario(db: Session, usuario: schemas.UsuarioCreate):
         nombre=usuario.nombre,
         nombre_usuario=usuario.nombre_usuario,
         email=usuario.email,
-        contrasena=usuario.contrasena, 
-        tipo_dieta=usuario.tipo_dieta
+        contrasena=usuario.contrasena,
+        tipo_dieta=usuario.tipo_dieta,
+        ciudad=usuario.ciudad
     )
     db.add(db_usuario)
     db.commit() 
@@ -524,3 +528,70 @@ def crear_receta_completa(db: Session, receta_in: schemas.RecetaCreate, usuario_
     db.commit()
     db.refresh(db_receta)
     return db_receta
+
+# --- LÓGICA PARA INTERCAMBIOS ---
+
+INTERCAMBIO_DIAS_CADUCIDAD = 7
+
+def _serializar_intercambio(i: models.Intercambio) -> schemas.Intercambio:
+    return schemas.Intercambio(
+        id=i.id,
+        usuario_id=i.usuario_id,
+        nombre_usuario=i.nombre_usuario,
+        email=i.email,
+        planta_id=i.planta_id,
+        nombre_planta=i.especie.nombre_planta,
+        imagen_url=i.especie.imagen_url,
+        cantidad_aprox=i.cantidad_aprox,
+        ciudad=i.ciudad,
+        estado=i.estado,
+        fecha_creacion=i.fecha_creacion,
+    )
+
+def _limite_caducidad_intercambios() -> datetime:
+    return datetime.now(timezone.utc) - timedelta(days=INTERCAMBIO_DIAS_CADUCIDAD)
+
+def crear_intercambio(db: Session, data: schemas.IntercambioCreate) -> schemas.Intercambio:
+    duplicado = (
+        db.query(models.Intercambio)
+        .filter(
+            models.Intercambio.usuario_id == data.usuario_id,
+            models.Intercambio.planta_id == data.planta_id,
+            models.Intercambio.estado == "ACTIVA",
+            models.Intercambio.fecha_creacion >= _limite_caducidad_intercambios(),
+        )
+        .first()
+    )
+    if duplicado:
+        raise HTTPException(
+            status_code=409,
+            detail="Ya tienes una publicación activa de excedente para esta planta"
+        )
+    db_intercambio = models.Intercambio(**data.model_dump())
+    db.add(db_intercambio)
+    db.commit()
+    db.refresh(db_intercambio)
+    return _serializar_intercambio(db_intercambio)
+
+def listar_intercambios(
+    db: Session, ciudad: Optional[str] = None, planta_id: Optional[int] = None
+) -> list[schemas.Intercambio]:
+    query = db.query(models.Intercambio).filter(
+        models.Intercambio.estado == "ACTIVA",
+        models.Intercambio.fecha_creacion >= _limite_caducidad_intercambios(),
+    )
+    if ciudad:
+        query = query.filter(models.Intercambio.ciudad == ciudad)
+    if planta_id:
+        query = query.filter(models.Intercambio.planta_id == planta_id)
+    intercambios = query.order_by(models.Intercambio.fecha_creacion.desc()).all()
+    return [_serializar_intercambio(i) for i in intercambios]
+
+def cerrar_intercambio(db: Session, intercambio_id: int, usuario_id: str) -> models.Intercambio | None:
+    intercambio = db.query(models.Intercambio).filter(models.Intercambio.id == intercambio_id).first()
+    if not intercambio or intercambio.usuario_id != usuario_id:
+        return None
+    intercambio.estado = "CERRADA"
+    db.commit()
+    db.refresh(intercambio)
+    return intercambio

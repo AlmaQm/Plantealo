@@ -1,0 +1,68 @@
+<div class="intercambios-page">
+
+  <app-page-header
+    [titulo]="'Intercambios'"
+    [subtitulo]="'Descubre quién tiene excedente de cosecha cerca de ti'"
+    [bg]="'md-bg'">
+  </app-page-header>
+
+  <div class="intercambios-page__filtros">
+    <select class="campo-select"
+      [ngModel]="ciudadFiltro()"
+      (ngModelChange)="onCiudadChange($event)">
+      <option value="">Todas las ciudades</option>
+      @for (c of ciudades(); track c) {
+        <option [value]="c">{{ c }}</option>
+      }
+    </select>
+
+    <select class="campo-select"
+      [ngModel]="plantaFiltro()"
+      (ngModelChange)="onPlantaChange($event)">
+      <option [ngValue]="null">Todas las verduras</option>
+      @for (p of catalogo(); track p.planta_id) {
+        <option [ngValue]="p.planta_id">{{ p.nombre_planta }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="intercambios-page__lista">
+    @for (i of lista(); track i.id) {
+      <div class="intercambio-card">
+        <div class="intercambio-card__pin"></div>
+        <img class="intercambio-card__imagen"
+             [src]="i.imagen_url"
+             [alt]="i.nombre_planta"
+             (error)="$any($event.target).src='assets/images/placeholder-receta.jpg'">
+        <div class="intercambio-card__top">
+          <div class="intercambio-card__info">
+            <span class="intercambio-card__planta">{{ i.nombre_planta }}</span>
+            <span class="intercambio-card__autor">{{ i.nombre_usuario }}</span>
+          </div>
+        </div>
+        <div class="intercambio-card__tags">
+          <span class="intercambio-card__ciudad">{{ i.ciudad }}</span>
+          @if (i.cantidad_aprox) {
+            <span class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</span>
+          }
+        </div>
+        @if (i.usuario_id !== miUid && i.email) {
+          <a class="intercambio-card__contactar" [href]="mailtoHref(i)">Contactar</a>
+        }
+        <div class="intercambio-card__meta">
+          <span>{{ formatFecha(i.fecha_creacion) }}</span>
+          @if (i.usuario_id === miUid) {
+            <button class="intercambio-card__cerrar" (click)="cerrar(i)">Ya no disponible</button>
+          }
+        </div>
+      </div>
+    } @empty {
+      @if (cargando()) {
+        <p class="intercambios-page__vacio">Cargando...</p>
+      } @else {
+        <p class="intercambios-page__vacio">No hay excedentes publicados con estos filtros.</p>
+      }
+    }
+  </div>
+
+</div>

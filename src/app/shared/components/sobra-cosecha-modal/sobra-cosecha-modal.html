@@ -1,0 +1,58 @@
+<div class="modal-overlay" (click)="cerrar.emit()"></div>
+<div class="modal-dialog" (click)="$event.stopPropagation()">
+
+  @if (paso() === 'preguntar') {
+    <div class="modal-dialog__header">
+      <h3 class="modal-dialog__titulo">¿Te ha sobrado cosecha?</h3>
+    </div>
+
+    <div class="modal-dialog__body">
+      <p class="sobra-cosecha__pregunta">
+        ¿Te ha sobrado cosecha de {{ nombrePlanta() }}?
+      </p>
+    </div>
+
+    <div class="modal-dialog__footer sobra-cosecha__botones">
+      <button class="btn-secundario" (click)="cerrar.emit()">No</button>
+      <button class="btn-primario" (click)="responderSi()">Sí</button>
+    </div>
+  } @else {
+    <div class="modal-dialog__header">
+      <h3 class="modal-dialog__titulo">Publicar excedente</h3>
+      <button class="modal-dialog__cerrar" (click)="cerrar.emit()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="modal-dialog__body">
+      <label class="campo-label">Cantidad (opcional)</label>
+      <input type="text" class="campo-input" placeholder="ej. un par de kilos"
+        [ngModel]="cantidad()" (ngModelChange)="cantidad.set($event)">
+
+      <label class="campo-label campo-label--mt">Ciudad</label>
+      <select class="campo-input"
+        [class.campo-input--error]="avisoCiudad() && !ciudadSeleccionada()"
+        [ngModel]="ciudadSeleccionada()"
+        (ngModelChange)="ciudadSeleccionada.set($event); avisoCiudad.set(false)">
+        <option value="" disabled>Selecciona tu ciudad</option>
+        @for (c of ciudades(); track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+      @if (avisoCiudad() && !ciudadSeleccionada()) {
+        <p class="campo-error">Selecciona una ciudad para publicar.</p>
+      }
+
+      @if (error()) {
+        <p class="campo-error">{{ error() }}</p>
+      }
+    </div>
+
+    <div class="modal-dialog__footer">
+      <button class="btn-publicar-full"
+        [disabled]="publicando()"
+        (click)="confirmarPublicar()">
+        {{ publicando() ? 'Publicando...' : 'Publicar' }}
+      </button>
+    </div>
+  }
+
+</div>
