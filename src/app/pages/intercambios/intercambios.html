@@ -46,7 +46,10 @@
             <span class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</span>
           }
         </div>
-        @if (i.usuario_id !== miUid && i.email) {
+        @if (i.email) {
+          <!-- TODO: de momento se muestra tambien en publicaciones propias para
+               poder probarlo con una sola cuenta; volver a "i.usuario_id !== miUid && i.email"
+               antes de dar la feature por definitiva. -->
           <a class="intercambio-card__contactar" [href]="mailtoHref(i)">Contactar</a>
         }
         <div class="intercambio-card__meta">
