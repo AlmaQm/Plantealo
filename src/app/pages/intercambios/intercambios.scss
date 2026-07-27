@@ -154,14 +154,22 @@
 
   &__meta {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px 6px;
     font-size: 9px;
     color: $md-ink-muted;
-    margin-top: 8px;
-    padding-top: 6px;
+    margin-top: 6px;
+    padding-top: 5px;
     border-top: 1px dashed $md-earth-soft;
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
   &__cerrar {
