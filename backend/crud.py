@@ -538,6 +538,7 @@ def _serializar_intercambio(i: models.Intercambio) -> schemas.Intercambio:
         id=i.id,
         usuario_id=i.usuario_id,
         nombre_usuario=i.nombre_usuario,
+        email=i.email,
         planta_id=i.planta_id,
         nombre_planta=i.especie.nombre_planta,
         imagen_url=i.especie.imagen_url,

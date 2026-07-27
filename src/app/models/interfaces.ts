@@ -78,6 +78,7 @@ export interface Intercambio {
   id: number;
   usuario_id: string;
   nombre_usuario: string;
+  email: string | null;
   planta_id: number;
   nombre_planta: string;
   imagen_url: string;

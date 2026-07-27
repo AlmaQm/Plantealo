@@ -9,6 +9,7 @@ interface ApiIntercambio {
   id: number;
   usuario_id: string;
   nombre_usuario: string;
+  email: string | null;
   planta_id: number;
   nombre_planta: string;
   imagen_url: string | null;
@@ -28,6 +29,7 @@ export class IntercambiosService {
       id: d.id,
       usuario_id: d.usuario_id,
       nombre_usuario: d.nombre_usuario,
+      email: d.email,
       planta_id: d.planta_id,
       nombre_planta: d.nombre_planta,
       imagen_url: getImagenPlanta(d.nombre_planta),
@@ -48,6 +50,7 @@ export class IntercambiosService {
   async crear(data: {
     usuario_id: string;
     nombre_usuario: string;
+    email?: string;
     planta_id: number;
     cantidad_aprox?: string;
     ciudad: string;

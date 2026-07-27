@@ -77,4 +77,11 @@ export class IntercambiosComponent {
   formatFecha(fecha: Date): string {
     return new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   }
+
+  mailtoHref(intercambio: Intercambio): string {
+    const asunto = `Excedente de ${intercambio.nombre_planta} en Plantéalo`;
+    const cuerpo = `Hola ${intercambio.nombre_usuario},\n\nHe visto en Plantéalo que tienes ` +
+      `${intercambio.nombre_planta.toLowerCase()} de sobra (${intercambio.ciudad}) y me interesa. ¿Sigue disponible?`;
+    return `mailto:${intercambio.email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+  }
 }

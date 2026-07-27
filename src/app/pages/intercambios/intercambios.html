@@ -46,6 +46,9 @@
             <span class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</span>
           }
         </div>
+        @if (i.usuario_id !== miUid && i.email) {
+          <a class="intercambio-card__contactar" [href]="mailtoHref(i)">Contactar</a>
+        }
         <div class="intercambio-card__meta">
           <span>{{ formatFecha(i.fecha_creacion) }}</span>
           @if (i.usuario_id === miUid) {

@@ -176,6 +176,7 @@ export class HomeComponent {
       await this.intercambiosService.crear({
         usuario_id: usuario.uid,
         nombre_usuario: usuario.nombre,
+        email: usuario.email,
         planta_id: planta.planta_id,
         cantidad_aprox: datos.cantidad_aprox,
         ciudad: datos.ciudad,

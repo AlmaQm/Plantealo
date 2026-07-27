@@ -174,6 +174,7 @@ class ImagenUpdate(BaseModel):
 class IntercambioCreate(BaseModel):
     usuario_id: str
     nombre_usuario: str
+    email: Optional[str] = None
     planta_id: int
     cantidad_aprox: Optional[str] = None
     ciudad: str
@@ -182,6 +183,7 @@ class Intercambio(BaseModel):
     id: int
     usuario_id: str
     nombre_usuario: str
+    email: Optional[str] = None
     planta_id: int
     nombre_planta: str
     imagen_url: Optional[str] = None

@@ -168,6 +168,7 @@ class Intercambio(Base):
     id = Column(Integer, primary_key=True, index=True)
     usuario_id = Column(String(128), nullable=False, index=True)
     nombre_usuario = Column(String(50), nullable=False)
+    email = Column(String(120), nullable=True)  # ADITIVO: para el boton "Contactar" (mailto)
     planta_id = Column(Integer, ForeignKey("plantas.planta_id"), nullable=False, index=True)
     cantidad_aprox = Column(String(80), nullable=True)
     ciudad = Column(String(80), nullable=False)
