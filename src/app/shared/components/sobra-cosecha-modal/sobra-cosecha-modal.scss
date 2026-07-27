@@ -20,7 +20,10 @@
   width: calc(100% - 40px);
   max-width: 380px;
   max-height: 88vh;
-  overflow-y: auto;
+  // 'visible' (no scroll propio): el contenido de esta mini card siempre es
+  // corto, y con overflow-y:auto el panel del selector de ciudad quedaba
+  // recortado por el borde del modal en vez de desplegarse por encima.
+  overflow: visible;
   animation: zoomIn 0.22s ease;
 
   &__header {
