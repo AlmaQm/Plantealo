@@ -12,11 +12,22 @@
 }
 
 .auth-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-size: 26px;
   font-weight: 700;
   color: $green-7;
-  margin-bottom: 28px;
+  margin: 0 0 28px;
   text-align: center;
+  letter-spacing: -0.01em;
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
 }
 
 .auth-card {
