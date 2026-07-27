@@ -46,13 +46,19 @@
   </app-receta-window>
 }
 
-<!-- MODAL CALENDARIO -->
-<ion-modal #calModal mode="ios" class="cal-modal" [initialBreakpoint]="0.92" [breakpoints]="[0, 0.92, 1]" [handle]="true" (didDismiss)="cerrarCalendarioListener()">
-  <ng-template>
-    <div class="cal-wrap">
+<!-- CALENDARIO — sheet propio anclado al fondo real de la pantalla -->
+<div class="cal-backdrop" [class.cal-backdrop--visible]="calAbierto()" (click)="cerrarCalendario()"></div>
+<div #calSheet class="cal-sheet"
+  [class.cal-sheet--abierto]="calAbierto()"
+  [class.cal-sheet--arrastrando]="calArrastrando()"
+  [style.transform]="calArrastrando() ? 'translateY(' + calArrastreOffset() + 'px)' : null">
+  <div class="cal-wrap">
 
-      <!-- CABECERA -->
-      <div class="cal-header">
+    <!-- CABECERA (arrastrable: cierra deslizando hacia abajo) -->
+    <div class="cal-header"
+      (pointerdown)="onCalArrastreInicio($event)">
+      <span class="cal-handle-bar"></span>
+      <div class="cal-header-row">
         <div class="cal-header-left">
           <svg lucideSprout class="cal-header-icon"></svg>
           <div>
@@ -60,12 +66,13 @@
             <p class="cal-header-sub">Cuándo plantar en clima mediterráneo</p>
           </div>
         </div>
-        <button class="cal-close" (click)="calModal.dismiss()">
+        <button class="cal-close" (click)="cerrarCalendario()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
       </div>
+    </div>
 
       <!-- LEYENDA DE COLORES -->
       <div class="cal-color-legend">
@@ -124,9 +131,8 @@
         }
       </div>
 
-    </div>
-  </ng-template>
-</ion-modal>
+  </div>
+</div>
 
 <!-- DETALLE DE VERDURA — popover anclado sobre la card pulsada -->
 @if (detalleAbierto()) {

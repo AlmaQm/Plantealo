@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild, signal, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, signal, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { IonModal } from '@ionic/angular/standalone';
 import { switchMap } from 'rxjs';
 import { PlantasService, diasHastaCosecha, getTipoPlanta } from '../../services/plantas';
 import { AuthService } from '../../services/auth';
@@ -240,12 +239,22 @@ function normalizar(s: string): string {
 @Component({
   selector: 'app-diet-recommendations',
   standalone: true,
-  imports: [CommonModule, IonModal, LucideDynamicIcon, LucideSprout, LucideCheck, RecetaCardComponent, RecetaWindowComponent],
+  imports: [CommonModule, LucideDynamicIcon, LucideSprout, LucideCheck, RecetaCardComponent, RecetaWindowComponent],
   templateUrl: './diet-recommendations.html',
   styleUrls: ['./diet-recommendations.scss'],
 })
 export class DietRecommendationsComponent implements OnInit {
-  @ViewChild('calModal') calModal!: IonModal;
+  @ViewChild('calSheet') calSheetEl!: ElementRef<HTMLElement>;
+
+  // Sheet propio (sin ion-modal): position:fixed anclado de verdad al fondo
+  // real de la pantalla, con arrastre tactil para cerrar.
+  calAbierto = signal(false);
+  calArrastreOffset = signal(0);
+  calArrastrando = signal(false);
+  private calAlturaSheet = 0;
+  private calArrastreInicioY = 0;
+  private calMoveListener?: (e: PointerEvent) => void;
+  private calUpListener?: (e: PointerEvent) => void;
 
   plantas: Planta[] = [];
   temporadas: Temporada[] = [];
@@ -406,41 +415,45 @@ export class DietRecommendationsComponent implements OnInit {
     this.errorTimer = setTimeout(() => this.errorPlantar.set(null), 2500);
   }
 
-  private visualViewportListener?: () => void;
-
   abrirCalendario() {
-    // Ionic mide el alto del sheet de forma sincrona dentro de present(), y en
-    // ese instante Angular puede no haber terminado de pintar el contenido
-    // proyectado (.cal-wrap con --height:100dvh) dentro del <ng-template>. Si
-    // mide antes de tiempo, el sheet sale mas bajo de lo real (hueco abajo)
-    // hasta que un gesto posterior fuerza un remedido. Esperar dos frames
-    // garantiza que el layout ya esta asentado cuando Ionic mide.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.calModal.present();
-
-        // En Chrome Android la barra de direcciones puede colapsar DESPUES de
-        // presentar (dando mas alto real a la pantalla), y ese cambio de
-        // tamaño no se refleja en la posicion ya fijada del sheet hasta que
-        // algo fuerza un recalculo. Escuchamos el viewport visual mientras el
-        // modal esta abierto y forzamos a Ionic a recolocarse en ese caso.
-        const vv = window.visualViewport;
-        if (vv) {
-          this.visualViewportListener = () => {
-            this.calModal.setCurrentBreakpoint(0.92).catch(() => {});
-          };
-          vv.addEventListener('resize', this.visualViewportListener);
-        }
-      });
-    });
+    this.calArrastreOffset.set(0);
+    this.calAbierto.set(true);
   }
 
-  cerrarCalendarioListener() {
-    const vv = window.visualViewport;
-    if (vv && this.visualViewportListener) {
-      vv.removeEventListener('resize', this.visualViewportListener);
-      this.visualViewportListener = undefined;
-    }
+  cerrarCalendario() {
+    this.calAbierto.set(false);
+    this.calArrastreOffset.set(0);
+  }
+
+  // Arrastre tactil/raton del sheet: solo desde el handle/cabecera (el cuerpo
+  // con la lista de plantas sigue teniendo su propio scroll normal).
+  onCalArrastreInicio(event: PointerEvent): void {
+    if ((event.target as HTMLElement).closest('.cal-close')) return;
+    event.preventDefault();
+    this.calArrastrando.set(true);
+    this.calArrastreInicioY = event.clientY;
+    this.calAlturaSheet = this.calSheetEl.nativeElement.getBoundingClientRect().height;
+
+    this.calMoveListener = (e: PointerEvent) => {
+      const delta = Math.max(0, e.clientY - this.calArrastreInicioY);
+      this.calArrastreOffset.set(delta);
+    };
+    this.calUpListener = () => {
+      window.removeEventListener('pointermove', this.calMoveListener!);
+      window.removeEventListener('pointerup', this.calUpListener!);
+      window.removeEventListener('pointercancel', this.calUpListener!);
+      this.calArrastrando.set(false);
+
+      const umbral = this.calAlturaSheet * 0.3;
+      if (this.calArrastreOffset() > umbral) {
+        this.cerrarCalendario();
+      } else {
+        this.calArrastreOffset.set(0);
+      }
+    };
+    window.addEventListener('pointermove', this.calMoveListener);
+    window.addEventListener('pointerup', this.calUpListener);
+    window.addEventListener('pointercancel', this.calUpListener);
   }
 
   abrirDetalle(planta: Planta, event: MouseEvent) {
