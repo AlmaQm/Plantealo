@@ -2,7 +2,11 @@
 
   <!-- Cabecera -->
   <div class="pub-card__header">
-    <div class="pub-card__avatar">{{ publicacion.avatar_inicial }}</div>
+    @if (publicacion.usuario_imagen_url) {
+      <img class="pub-card__avatar pub-card__avatar--img" [src]="publicacion.usuario_imagen_url" [alt]="publicacion.nombre_usuario" />
+    } @else {
+      <div class="pub-card__avatar">{{ publicacion.avatar_inicial }}</div>
+    }
     <div class="pub-card__user">
       <span class="pub-card__nombre">{{ publicacion.nombre_usuario }}</span>
       <span class="pub-card__username">{{ publicacion.username }}</span>

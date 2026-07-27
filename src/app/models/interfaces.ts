@@ -122,6 +122,7 @@ export interface Publicacion {
   nombre_usuario: string;
   username: string;
   avatar_inicial: string;
+  usuario_imagen_url: string | null;
   imagen_url: string;
   categoria: 'HUERTO' | 'RECETA' | 'CONSEJO' | 'COSECHA';
   descripcion: string;
