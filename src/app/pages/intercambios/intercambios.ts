@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Auth } from '@angular/fire/auth';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
@@ -13,6 +13,7 @@ import { Intercambio, ConversacionResumen } from '../../models/interfaces';
 // numerico, asi que ciudad/verdura se mapean a un indice/id numerico.
 // -1 = "Todas" (sin filtro).
 const SIN_FILTRO = -1;
+const INTERVALO_NO_LEIDOS_MS = 6000;
 
 interface ChatActivo {
   intercambioId: number;
@@ -28,7 +29,7 @@ interface ChatActivo {
   templateUrl: './intercambios.html',
   styleUrls: ['./intercambios.scss']
 })
-export class IntercambiosComponent {
+export class IntercambiosComponent implements OnDestroy {
   private readonly intercambiosService = inject(IntercambiosService);
   private readonly plantasService = inject(PlantasService);
   private readonly mensajesService = inject(MensajesService);
@@ -46,6 +47,8 @@ export class IntercambiosComponent {
   readonly conversacionesAbierto = signal(false);
   readonly conversaciones = signal<ConversacionResumen[]>([]);
   readonly cargandoConversaciones = signal(false);
+  readonly noLeidosTotal = signal(0);
+  private intervaloNoLeidos?: ReturnType<typeof setInterval>;
 
   // --- Opciones para app-select-plantas (mismo componente reutilizable
   // que "Añadir planta" y la dieta de Configuración) ---
@@ -72,6 +75,21 @@ export class IntercambiosComponent {
       .then(ciudades => this.ciudades.set(ciudades))
       .catch(() => this.ciudades.set([]));
     this.cargar();
+
+    this.actualizarNoLeidos();
+    this.intervaloNoLeidos = setInterval(() => this.actualizarNoLeidos(), INTERVALO_NO_LEIDOS_MS);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervaloNoLeidos) clearInterval(this.intervaloNoLeidos);
+  }
+
+  private async actualizarNoLeidos(): Promise<void> {
+    try {
+      this.noLeidosTotal.set(await this.mensajesService.contarNoLeidos());
+    } catch {
+      // sin sesión válida todavía u otro error puntual: no interrumpe la página
+    }
   }
 
   async cargar(): Promise<void> {
@@ -112,6 +130,18 @@ export class IntercambiosComponent {
     }
   }
 
+  async eliminar(intercambio: Intercambio): Promise<void> {
+    const uid = this.miUid;
+    if (!uid) return;
+    if (!confirm('¿Eliminar esta publicación? No se puede deshacer.')) return;
+    try {
+      await this.intercambiosService.eliminar(intercambio.id, uid);
+      this.lista.update(lista => lista.filter(i => i.id !== intercambio.id));
+    } catch (e) {
+      console.error('Error al eliminar el intercambio:', e);
+    }
+  }
+
   formatFecha(fecha: Date): string {
     return new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   }
@@ -139,6 +169,8 @@ export class IntercambiosComponent {
 
   cerrarChat(): void {
     this.chatActivo.set(null);
+    // abrir el chat marca sus mensajes como leidos en el backend: refresca el contador.
+    this.actualizarNoLeidos();
   }
 
   async abrirConversaciones(): Promise<void> {
@@ -156,5 +188,18 @@ export class IntercambiosComponent {
 
   cerrarConversaciones(): void {
     this.conversacionesAbierto.set(false);
+  }
+
+  async eliminarConversacion(c: ConversacionResumen): Promise<void> {
+    if (!confirm(`¿Eliminar la conversación con ${c.otro_nombre}? No se puede deshacer.`)) return;
+    try {
+      await this.mensajesService.eliminarConversacion(c.intercambio_id, c.otro_uid);
+      this.conversaciones.update(lista =>
+        lista.filter(x => !(x.intercambio_id === c.intercambio_id && x.otro_uid === c.otro_uid))
+      );
+      this.actualizarNoLeidos();
+    } catch (e) {
+      console.error('Error al eliminar la conversación:', e);
+    }
   }
 }

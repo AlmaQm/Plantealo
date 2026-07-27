@@ -596,6 +596,14 @@ def cerrar_intercambio(db: Session, intercambio_id: int, usuario_id: str) -> mod
     db.refresh(intercambio)
     return intercambio
 
+def eliminar_intercambio(db: Session, intercambio_id: int, usuario_id: str) -> bool:
+    intercambio = db.query(models.Intercambio).filter(models.Intercambio.id == intercambio_id).first()
+    if not intercambio or intercambio.usuario_id != usuario_id:
+        return False
+    db.delete(intercambio)  # los mensajes asociados caen en cascada (ondelete="CASCADE")
+    db.commit()
+    return True
+
 # --- LÓGICA PARA CHAT DE INTERCAMBIOS ---
 
 def enviar_mensaje(
@@ -618,7 +626,10 @@ def enviar_mensaje(
     return mensaje
 
 def listar_mensajes(db: Session, intercambio_id: int, uid_a: str, uid_b: str) -> list[models.Mensaje]:
-    return (
+    """uid_a es siempre el uid verificado (quien pide la conversacion). De
+    paso, marca como leidos los mensajes que uid_a tenia pendientes de esta
+    conversacion -- abrirla equivale a leerla."""
+    mensajes = (
         db.query(models.Mensaje)
         .filter(
             models.Mensaje.intercambio_id == intercambio_id,
@@ -630,6 +641,37 @@ def listar_mensajes(db: Session, intercambio_id: int, uid_a: str, uid_b: str) ->
         .order_by(models.Mensaje.fecha.asc())
         .all()
     )
+    pendientes = [m for m in mensajes if m.destinatario_uid == uid_a and not m.leido]
+    if pendientes:
+        for m in pendientes:
+            m.leido = True
+        db.commit()
+    return mensajes
+
+def contar_no_leidos(db: Session, uid: str) -> int:
+    return (
+        db.query(models.Mensaje)
+        .filter(models.Mensaje.destinatario_uid == uid, models.Mensaje.leido.is_(False))
+        .count()
+    )
+
+def eliminar_conversacion(db: Session, intercambio_id: int, uid: str, otro_uid: str) -> None:
+    """Borra los mensajes entre uid (verificado) y otro_uid para esta
+    publicacion. El filtro por participante hace que uid solo pueda borrar
+    conversaciones en las que interviene: si otro_uid no le ha escrito nunca,
+    no hay filas que coincidan y no pasa nada."""
+    (
+        db.query(models.Mensaje)
+        .filter(
+            models.Mensaje.intercambio_id == intercambio_id,
+            or_(
+                and_(models.Mensaje.remitente_uid == uid, models.Mensaje.destinatario_uid == otro_uid),
+                and_(models.Mensaje.remitente_uid == otro_uid, models.Mensaje.destinatario_uid == uid),
+            )
+        )
+        .delete(synchronize_session=False)
+    )
+    db.commit()
 
 def listar_conversaciones(db: Session, uid: str) -> list[schemas.ConversacionResumen]:
     """Una fila por (publicación, otro participante) donde uid interviene,
@@ -662,6 +704,16 @@ def listar_conversaciones(db: Session, uid: str) -> list[schemas.ConversacionRes
                 .first()
             )
             otro_nombre = primero_de_otro.remitente_nombre if primero_de_otro else "Usuario"
+        no_leidos = (
+            db.query(models.Mensaje)
+            .filter(
+                models.Mensaje.intercambio_id == m.intercambio_id,
+                models.Mensaje.remitente_uid == otro,
+                models.Mensaje.destinatario_uid == uid,
+                models.Mensaje.leido.is_(False),
+            )
+            .count()
+        )
         resumen[clave] = schemas.ConversacionResumen(
             intercambio_id=m.intercambio_id,
             nombre_planta=intercambio.especie.nombre_planta,
@@ -669,5 +721,6 @@ def listar_conversaciones(db: Session, uid: str) -> list[schemas.ConversacionRes
             otro_nombre=otro_nombre,
             ultimo_mensaje=m.texto,
             ultima_fecha=m.fecha,
+            no_leidos=no_leidos,
         )
     return list(resumen.values())

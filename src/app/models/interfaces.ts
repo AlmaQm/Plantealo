@@ -104,6 +104,7 @@ export interface ConversacionResumen {
   otro_nombre: string;
   ultimo_mensaje: string;
   ultima_fecha: Date;
+  no_leidos: number;
 }
 
 export interface Comentario {

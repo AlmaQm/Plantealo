@@ -8,6 +8,9 @@
 
   <button class="intercambios-page__mensajes" (click)="abrirConversaciones()">
     Mis conversaciones
+    @if (noLeidosTotal() > 0) {
+      <span class="badge-no-leidos">{{ noLeidosTotal() }}</span>
+    }
   </button>
 
   <div class="intercambios-page__filtros">
@@ -44,14 +47,16 @@
             <span class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</span>
           }
         </div>
-        <!-- TODO: de momento se muestra tambien en publicaciones propias para
-             poder probarlo con una sola cuenta; volver a "i.usuario_id !== miUid"
-             antes de dar la feature por definitiva. -->
-        <button class="intercambio-card__contactar" (click)="abrirChatDesdeTarjeta(i)">Contactar</button>
+        @if (i.usuario_id !== miUid) {
+          <button class="intercambio-card__contactar" (click)="abrirChatDesdeTarjeta(i)">Contactar</button>
+        }
         <div class="intercambio-card__meta">
           <span>{{ formatFecha(i.fecha_creacion) }}</span>
           @if (i.usuario_id === miUid) {
-            <button class="intercambio-card__cerrar" (click)="cerrar(i)">Ya no disponible</button>
+            <div class="intercambio-card__acciones">
+              <button class="intercambio-card__cerrar" (click)="cerrar(i)">Ya no disponible</button>
+              <button class="intercambio-card__eliminar" (click)="eliminar(i)">Eliminar</button>
+            </div>
           }
         </div>
       </div>
@@ -80,11 +85,19 @@
         <p class="conversaciones-dialog__vacio">Aún no tienes conversaciones.</p>
       } @else {
         @for (c of conversaciones(); track c.intercambio_id + c.otro_uid) {
-          <button class="conversacion-item" (click)="abrirChatDesdeConversacion(c)">
-            <span class="conversacion-item__nombre">{{ c.otro_nombre }}</span>
-            <span class="conversacion-item__planta">sobre {{ c.nombre_planta }}</span>
-            <span class="conversacion-item__ultimo">{{ c.ultimo_mensaje }}</span>
-          </button>
+          <div class="conversacion-item">
+            <button class="conversacion-item__cuerpo" (click)="abrirChatDesdeConversacion(c)">
+              <div class="conversacion-item__cabecera">
+                <span class="conversacion-item__nombre">{{ c.otro_nombre }}</span>
+                @if (c.no_leidos > 0) {
+                  <span class="badge-no-leidos">{{ c.no_leidos }}</span>
+                }
+              </div>
+              <span class="conversacion-item__planta">sobre {{ c.nombre_planta }}</span>
+              <span class="conversacion-item__ultimo">{{ c.ultimo_mensaje }}</span>
+            </button>
+            <button class="conversacion-item__eliminar" (click)="eliminarConversacion(c)" aria-label="Eliminar conversación">✕</button>
+          </div>
         }
       }
     </div>
