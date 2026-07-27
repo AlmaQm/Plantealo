@@ -317,7 +317,14 @@
     }
   }
 
-  &__cerrar {
+  &__acciones {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  &__cerrar,
+  &__eliminar {
     padding: 0;
     border: none;
     background: transparent;
@@ -328,6 +335,7 @@
     font-family: inherit;
     text-decoration: underline;
     text-underline-offset: 2px;
+    white-space: nowrap;
 
     &:hover { color: $md-danger; }
   }

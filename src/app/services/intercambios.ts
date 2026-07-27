@@ -65,6 +65,12 @@ export class IntercambiosService {
     );
   }
 
+  async eliminar(id: number, usuarioId: string): Promise<void> {
+    await firstValueFrom(
+      this.http.delete(`${this.apiUrl}/${id}`, { params: { usuario_id: usuarioId } })
+    );
+  }
+
   async getCiudades(): Promise<string[]> {
     return firstValueFrom(this.http.get<string[]>(`${environment.apiUrl}/ciudades/`));
   }

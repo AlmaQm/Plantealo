@@ -596,6 +596,14 @@ def cerrar_intercambio(db: Session, intercambio_id: int, usuario_id: str) -> mod
     db.refresh(intercambio)
     return intercambio
 
+def eliminar_intercambio(db: Session, intercambio_id: int, usuario_id: str) -> bool:
+    intercambio = db.query(models.Intercambio).filter(models.Intercambio.id == intercambio_id).first()
+    if not intercambio or intercambio.usuario_id != usuario_id:
+        return False
+    db.delete(intercambio)  # los mensajes asociados caen en cascada (ondelete="CASCADE")
+    db.commit()
+    return True
+
 # --- LÓGICA PARA CHAT DE INTERCAMBIOS ---
 
 def enviar_mensaje(

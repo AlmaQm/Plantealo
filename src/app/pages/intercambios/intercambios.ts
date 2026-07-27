@@ -130,6 +130,18 @@ export class IntercambiosComponent implements OnDestroy {
     }
   }
 
+  async eliminar(intercambio: Intercambio): Promise<void> {
+    const uid = this.miUid;
+    if (!uid) return;
+    if (!confirm('¿Eliminar esta publicación? No se puede deshacer.')) return;
+    try {
+      await this.intercambiosService.eliminar(intercambio.id, uid);
+      this.lista.update(lista => lista.filter(i => i.id !== intercambio.id));
+    } catch (e) {
+      console.error('Error al eliminar el intercambio:', e);
+    }
+  }
+
   formatFecha(fecha: Date): string {
     return new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   }

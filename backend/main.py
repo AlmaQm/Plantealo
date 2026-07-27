@@ -548,6 +548,14 @@ def cerrar_intercambio_endpoint(intercambio_id: int, body: schemas.IntercambioCe
     return crud._serializar_intercambio(intercambio)
 
 
+@app.delete("/intercambios/{intercambio_id}")
+def eliminar_intercambio_endpoint(intercambio_id: int, usuario_id: str, db: Session = Depends(get_db)):
+    ok = crud.eliminar_intercambio(db, intercambio_id, usuario_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
+    return {"status": "eliminada"}
+
+
 # --- CHAT DE INTERCAMBIOS ---
 # uid siempre viene del token de Firebase verificado (Depends(verificar_token)),
 # nunca del cliente: es la primera zona del backend con esa comprobación real.
