@@ -142,7 +142,6 @@ export class HomeComponent {
 
   sobraCosechaVisible = signal(false);
   sobraCosechaPlanta = signal<{ planta_id: number; nombre_planta: string } | null>(null);
-  sobraCosechaCiudadInicial = signal('');
   sobraCosechaCiudades = signal<string[]>([]);
   sobraCosechaPublicando = signal(false);
   sobraCosechaError = signal('');
@@ -150,9 +149,6 @@ export class HomeComponent {
   private abrirSobraCosecha(planta: Planta): void {
     this.sobraCosechaPlanta.set({ planta_id: planta.planta_id, nombre_planta: planta.nombre_planta });
     this.sobraCosechaError.set('');
-
-    const usuario = this.authService.getStoredUser();
-    this.sobraCosechaCiudadInicial.set(usuario?.ciudad ?? '');
     this.sobraCosechaVisible.set(true);
 
     this.intercambiosService.getCiudades()
@@ -181,13 +177,6 @@ export class HomeComponent {
         cantidad_aprox: datos.cantidad_aprox,
         ciudad: datos.ciudad,
       });
-
-      // se recuerda la ciudad para preseleccionarla la próxima vez que se publique.
-      this.authService.actualizarPerfil({
-        nombre_usuario: usuario.nombre_usuario,
-        tipo_dieta: usuario.tipo_dieta,
-        ciudad: datos.ciudad,
-      }).catch(err => console.error('Error al guardar la ciudad en el perfil', err));
 
       this.cerrarSobraCosecha();
     } catch (err) {

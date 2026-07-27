@@ -28,15 +28,11 @@
         [ngModel]="cantidad()" (ngModelChange)="cantidad.set($event)">
 
       <label class="campo-label campo-label--mt">Ciudad</label>
-      <select class="campo-input"
-        [class.campo-input--error]="avisoCiudad() && !ciudadSeleccionada()"
-        [ngModel]="ciudadSeleccionada()"
-        (ngModelChange)="ciudadSeleccionada.set($event); avisoCiudad.set(false)">
-        <option value="" disabled>Selecciona tu ciudad</option>
-        @for (c of ciudades(); track c) {
-          <option [value]="c">{{ c }}</option>
-        }
-      </select>
+      <app-select-plantas
+        [opciones]="opcionesCiudad()"
+        [value]="ciudadIndice()"
+        [placeholder]="'Selecciona tu ciudad'"
+        (valueChange)="onCiudadIndiceChange($event)" />
       @if (avisoCiudad() && !ciudadSeleccionada()) {
         <p class="campo-error">Selecciona una ciudad para publicar.</p>
       }

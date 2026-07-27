@@ -1,22 +1,37 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Auth } from '@angular/fire/auth';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
+import { ChatModalComponent } from '../../shared/components/chat-modal/chat-modal';
+import { SelectPlantasComponent, SelectOpcion } from '../../components/select-plantas/select-plantas';
 import { IntercambiosService } from '../../services/intercambios';
 import { PlantasService } from '../../services/plantas';
-import { Intercambio } from '../../models/interfaces';
+import { MensajesService } from '../../services/mensajes';
+import { Intercambio, ConversacionResumen } from '../../models/interfaces';
+
+// Mismo patron que la dieta en Configuracion: el select reutilizable es
+// numerico, asi que ciudad/verdura se mapean a un indice/id numerico.
+// -1 = "Todas" (sin filtro).
+const SIN_FILTRO = -1;
+
+interface ChatActivo {
+  intercambioId: number;
+  otroUid: string;
+  otroNombre: string;
+  nombrePlanta: string;
+}
 
 @Component({
   selector: 'app-intercambios',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, PageHeaderComponent, ChatModalComponent, SelectPlantasComponent],
   templateUrl: './intercambios.html',
   styleUrls: ['./intercambios.scss']
 })
 export class IntercambiosComponent {
   private readonly intercambiosService = inject(IntercambiosService);
   private readonly plantasService = inject(PlantasService);
+  private readonly mensajesService = inject(MensajesService);
   private readonly auth = inject(Auth);
 
   readonly catalogo = this.plantasService.catalogo;
@@ -26,6 +41,27 @@ export class IntercambiosComponent {
   readonly ciudadFiltro = signal('');
   readonly plantaFiltro = signal<number | null>(null);
   readonly ciudades = signal<string[]>([]);
+
+  readonly chatActivo = signal<ChatActivo | null>(null);
+  readonly conversacionesAbierto = signal(false);
+  readonly conversaciones = signal<ConversacionResumen[]>([]);
+  readonly cargandoConversaciones = signal(false);
+
+  // --- Opciones para app-select-plantas (mismo componente reutilizable
+  // que "Añadir planta" y la dieta de Configuración) ---
+
+  readonly opcionesCiudad = computed<SelectOpcion[]>(() => [
+    { valor: SIN_FILTRO, etiqueta: 'Todas las ciudades' },
+    ...this.ciudades().map((c, i) => ({ valor: i, etiqueta: c })),
+  ]);
+
+  readonly opcionesVerdura = computed<SelectOpcion[]>(() => [
+    { valor: SIN_FILTRO, etiqueta: 'Todas las verduras' },
+    ...this.catalogo().map(p => ({ valor: p.planta_id, etiqueta: p.nombre_planta })),
+  ]);
+
+  readonly ciudadIndiceSeleccionado = signal<number>(SIN_FILTRO);
+  readonly plantaSeleccionada = signal<number>(SIN_FILTRO);
 
   get miUid(): string | null {
     return this.auth.currentUser?.uid ?? null;
@@ -53,13 +89,15 @@ export class IntercambiosComponent {
     }
   }
 
-  onCiudadChange(ciudad: string): void {
-    this.ciudadFiltro.set(ciudad);
+  onCiudadIndiceChange(indice: number): void {
+    this.ciudadIndiceSeleccionado.set(indice);
+    this.ciudadFiltro.set(indice === SIN_FILTRO ? '' : this.ciudades()[indice]);
     this.cargar();
   }
 
-  onPlantaChange(plantaId: number | null): void {
-    this.plantaFiltro.set(plantaId);
+  onPlantaChange(plantaId: number): void {
+    this.plantaSeleccionada.set(plantaId);
+    this.plantaFiltro.set(plantaId === SIN_FILTRO ? null : plantaId);
     this.cargar();
   }
 
@@ -78,10 +116,45 @@ export class IntercambiosComponent {
     return new Date(fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   }
 
-  mailtoHref(intercambio: Intercambio): string {
-    const asunto = `Excedente de ${intercambio.nombre_planta} en Plantéalo`;
-    const cuerpo = `Hola ${intercambio.nombre_usuario},\n\nHe visto en Plantéalo que tienes ` +
-      `${intercambio.nombre_planta.toLowerCase()} de sobra (${intercambio.ciudad}) y me interesa. ¿Sigue disponible?`;
-    return `mailto:${intercambio.email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+  // --- Chat ---
+
+  abrirChatDesdeTarjeta(i: Intercambio): void {
+    this.chatActivo.set({
+      intercambioId: i.id,
+      otroUid: i.usuario_id,
+      otroNombre: i.nombre_usuario,
+      nombrePlanta: i.nombre_planta,
+    });
+  }
+
+  abrirChatDesdeConversacion(c: ConversacionResumen): void {
+    this.chatActivo.set({
+      intercambioId: c.intercambio_id,
+      otroUid: c.otro_uid,
+      otroNombre: c.otro_nombre,
+      nombrePlanta: c.nombre_planta,
+    });
+    this.conversacionesAbierto.set(false);
+  }
+
+  cerrarChat(): void {
+    this.chatActivo.set(null);
+  }
+
+  async abrirConversaciones(): Promise<void> {
+    this.conversacionesAbierto.set(true);
+    this.cargandoConversaciones.set(true);
+    try {
+      this.conversaciones.set(await this.mensajesService.listarConversaciones());
+    } catch (e) {
+      console.error('Error al cargar las conversaciones:', e);
+      this.conversaciones.set([]);
+    } finally {
+      this.cargandoConversaciones.set(false);
+    }
+  }
+
+  cerrarConversaciones(): void {
+    this.conversacionesAbierto.set(false);
   }
 }

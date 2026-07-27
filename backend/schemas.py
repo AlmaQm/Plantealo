@@ -197,6 +197,32 @@ class Intercambio(BaseModel):
 class IntercambioCerrar(BaseModel):
     usuario_id: str
 
+# --- CHAT DE INTERCAMBIOS ---
+
+class MensajeCreate(BaseModel):
+    destinatario_uid: str
+    remitente_nombre: str
+    texto: str
+
+class Mensaje(BaseModel):
+    id: int
+    intercambio_id: int
+    remitente_uid: str
+    remitente_nombre: str
+    destinatario_uid: str
+    texto: str
+    fecha: datetime
+    class Config:
+        from_attributes = True
+
+class ConversacionResumen(BaseModel):
+    intercambio_id: int
+    nombre_planta: str
+    otro_uid: str
+    otro_nombre: str
+    ultimo_mensaje: str
+    ultima_fecha: datetime
+
 # --- Nivel 1: ¿Qué puedo cocinar con mi huerto? ---
 
 class ConsultaHuertoRequest(BaseModel):
