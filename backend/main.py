@@ -9,6 +9,7 @@ from groq import Groq
 import httpx
 import models, schemas, crud, database
 from ciudades import CIUDADES
+from firebase_auth import verificar_token
 import os
 import time
 import csv
@@ -545,3 +546,35 @@ def cerrar_intercambio_endpoint(intercambio_id: int, body: schemas.IntercambioCe
     if not intercambio:
         raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
     return crud._serializar_intercambio(intercambio)
+
+
+# --- CHAT DE INTERCAMBIOS ---
+# uid siempre viene del token de Firebase verificado (Depends(verificar_token)),
+# nunca del cliente: es la primera zona del backend con esa comprobación real.
+
+@app.get("/intercambios/{intercambio_id}/mensajes", response_model=List[schemas.Mensaje])
+def listar_mensajes_endpoint(
+    intercambio_id: int,
+    con: str,
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    return crud.listar_mensajes(db, intercambio_id, uid, con)
+
+
+@app.post("/intercambios/{intercambio_id}/mensajes", response_model=schemas.Mensaje)
+def enviar_mensaje_endpoint(
+    intercambio_id: int,
+    body: schemas.MensajeCreate,
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    return crud.enviar_mensaje(db, intercambio_id, uid, body.remitente_nombre, body.destinatario_uid, body.texto)
+
+
+@app.get("/mensajes/conversaciones", response_model=List[schemas.ConversacionResumen])
+def listar_conversaciones_endpoint(
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    return crud.listar_conversaciones(db, uid)

@@ -44,6 +44,7 @@ __screenshots__/
 Thumbs.db
 
 backend/.env
+backend/firebase-service-account.json
 
 # Python
 __pycache__/

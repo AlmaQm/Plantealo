@@ -176,3 +176,18 @@ class Intercambio(Base):
     fecha_creacion = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     especie = relationship("PlantaCat")
+
+# --- CHAT DE INTERCAMBIOS ---
+# Conversacion 1:1 ligada a una publicacion concreta. remitente_uid viene
+# siempre del token de Firebase verificado (backend/firebase_auth.py), nunca
+# del cliente -- es el primer endpoint del proyecto con esa comprobacion real.
+
+class Mensaje(Base):
+    __tablename__ = "mensajes"
+    id = Column(Integer, primary_key=True, index=True)
+    intercambio_id = Column(Integer, ForeignKey("intercambios.id", ondelete="CASCADE"), nullable=False, index=True)
+    remitente_uid = Column(String(128), nullable=False, index=True)
+    remitente_nombre = Column(String(50), nullable=False)
+    destinatario_uid = Column(String(128), nullable=False, index=True)
+    texto = Column(Text, nullable=False)
+    fecha = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
