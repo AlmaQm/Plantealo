@@ -18,7 +18,7 @@
   border-radius: $md-radius-xl;
   box-shadow: $md-shadow;
   z-index: 201;
-  width: calc(100% - 40px);
+  width: calc(100% - 32px);
   max-width: 380px;
   height: min(72vh, 560px);
   display: flex;
@@ -35,12 +35,20 @@
     background: $md-surface;
   }
 
+  &__titulos {
+    min-width: 0;
+    flex: 1;
+  }
+
   &__titulo {
     margin: 0;
     font-size: 16px;
     font-weight: 700;
     color: $green-7;
     font-family: $md-font;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__subtitulo {
@@ -48,6 +56,9 @@
     font-size: 11px;
     color: $green-5;
     font-family: $md-font;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__cerrar {
