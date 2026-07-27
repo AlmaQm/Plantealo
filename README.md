@@ -8,11 +8,11 @@
 
 **Plantealo** es una plataforma integral desarrollada en **Angular + FastAPI** diseñada para transformar la experiencia de cultivar en casa. Desde el control climático hasta la mesa, esta app te ayuda a gestionar los tiempos de vida de tus plantas, cocinar con lo que cosechas, intercambiar excedentes con otros usuarios y conectar con la comunidad de agricultores urbanos.
 
-[![Angular](https://img.shields.io/badge/Angular-21-4C3D19?logo=angular&logoColor=white)](https://angular.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-4C3D19?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-4C3D19?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Aiven-4C3D19?logo=postgresql&logoColor=white)](https://aiven.io/)
-[![Firebase](https://img.shields.io/badge/Firebase-Auth-4C3D19?logo=firebase&logoColor=white)](https://firebase.google.com/)
+[![Angular](https://img.shields.io/badge/Angular-21-B5C99A?logo=angular&logoColor=black)](https://angular.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-B5C99A?logo=typescript&logoColor=black)](https://www.typescriptlang.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-B5C99A?logo=fastapi&logoColor=black)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Aiven-B5C99A?logo=postgresql&logoColor=black)](https://aiven.io/)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth-B5C99A?logo=firebase&logoColor=black)](https://firebase.google.com/)
 
 **[Funcionalidades](#-funcionalidades-destacadas) · [Stack](#️-stack-tecnológico) · [Estructura](#-estructura-del-repositorio) · [Instalación](#️-instalación-y-ejecución) · [Tests](#-tests)**
 
