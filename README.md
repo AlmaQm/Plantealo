@@ -1,17 +1,18 @@
 <div align="center">
 
-<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='84' height='84' fill='none' stroke='%23354024' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22V13'/%3E%3Cpath d='M12 13C12 8 8 5 3 5c0 5 3 9 8 9Z'/%3E%3Cpath d='M12 13c0-4 3-7 8-7 0 4-3 7-8 7Z'/%3E%3C/svg%3E" width="84" height="84" alt="Plantealo" />
+<img src="public/assets/images/logo-plantealo.svg" width="84" height="84" alt="Plantealo" />
 
 # PLANTEALO
+
 ### Tu Huerto Inteligente
 
 **Plantealo** es una plataforma integral desarrollada en **Angular + FastAPI** diseñada para transformar la experiencia de cultivar en casa. Desde el control climático hasta la mesa, esta app te ayuda a gestionar los tiempos de vida de tus plantas, cocinar con lo que cosechas, intercambiar excedentes con otros usuarios y conectar con la comunidad de agricultores urbanos.
 
-[![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)](https://angular.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-black?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Aiven-4169E1?logo=postgresql&logoColor=white)](https://aiven.io/)
-[![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Angular](https://img.shields.io/badge/Angular-21-4C3D19?logo=angular&logoColor=white)](https://angular.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-4C3D19?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-4C3D19?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Aiven-4C3D19?logo=postgresql&logoColor=white)](https://aiven.io/)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth-4C3D19?logo=firebase&logoColor=white)](https://firebase.google.com/)
 
 **[Funcionalidades](#-funcionalidades-destacadas) · [Stack](#️-stack-tecnológico) · [Estructura](#-estructura-del-repositorio) · [Instalación](#️-instalación-y-ejecución) · [Tests](#-tests)**
 
