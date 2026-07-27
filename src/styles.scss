@@ -76,40 +76,84 @@ input, button, textarea, select {
 
 button { cursor: pointer; }
 
-/* ===== MODAL CALENDARIO TEMPORADAS — Modelo D ===== */
+/* ===== CALENDARIO DE SIEMBRA — Modelo D ===== */
+/* Sheet propio (sin ion-modal): position:fixed anclado de verdad al borde
+   inferior real de la pantalla, con arrastre tactil para cerrar. */
 
-/* el wrapper interno de ion-modal tiene su propio radio/fondo; si no coincide
-   con el de .cal-wrap, sus esquinas cuadradas asoman como puntas por encima
-   de la cabecera redondeada */
-ion-modal.cal-modal {
-  /* dvh (dynamic viewport height) en vez de % : sigue en tiempo real los
-     cambios de alto cuando la barra de direcciones del movil se
-     colapsa/expande, en vez de quedarse con el valor de cuando se abrio. */
-  --height: 100dvh;
-  --border-radius: 20px;
-  --background: transparent;
+.cal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+
+  &--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
-/* contenedor raíz del modal — absolute para fijar altura real */
-.cal-wrap {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+.cal-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 92dvh;
+  max-height: 92dvh;
+  z-index: 201;
+  background: $md-bg;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -8px 30px rgba(50, 41, 32, 0.28);
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
   display: flex;
   flex-direction: column;
-  background: $md-bg;
   overflow: hidden;
-  border-radius: 20px 20px 0 0;
+
+  &--abierto {
+    transform: translateY(0);
+  }
+
+  &--arrastrando {
+    transition: none;
+  }
 }
 
-/* CABECERA — color sólido de marca, sin gradiente decorativo */
+.cal-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* CABECERA — color sólido de marca, sin gradiente decorativo. Arrastrable:
+   toque/raton aquí cierra el sheet deslizando hacia abajo. */
 .cal-header {
   background: $md-accent;
-  padding: 18px 16px 16px;
+  padding: 8px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border-radius: 20px 20px 0 0;
+  touch-action: none;
+  cursor: grab;
+}
+
+.cal-handle-bar {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba($md-on-accent, 0.35);
+  margin: 0 auto 10px;
+}
+
+.cal-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-shrink: 0;
-  border-radius: 20px 20px 0 0;
 }
 
 .cal-header-left {
