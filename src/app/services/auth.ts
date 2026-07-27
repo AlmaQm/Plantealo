@@ -262,31 +262,20 @@ export class AuthService {
       throw new Error(mapAuthError(error as { code?: string }));
     }
 
-    // Paso 1b: subir el avatar si el usuario ha elegido uno (opcional, no bloqueante)
-    let imagenUrl: string | undefined;
-    if (avatarFile) {
-      try {
-        imagenUrl = await this.uploadAvatar(avatarFile, uid);
-      } catch (error) {
-        console.error('❌ [register] Error al subir el avatar (se continúa sin foto):', error);
-      }
-    }
-
-    // Paso 2: crear objeto usuario
+    // Paso 2: crear objeto usuario y sincronizar DIRECTAMENT amb Aiven (sense
+    // Firestore), sin foto todavía: el registro en Aiven tiene que existir
+    // antes de poder subir el avatar, porque el backend busca el usuario por
+    // firebase_uid en /usuarios/by-uid/{uid}/avatar y responde 404 si no existe.
     const usuario: Usuario = {
       uid,
       nombre: data.nombre,
       nombre_usuario: data.nombre_usuario,
       email: data.email,
       tipo_dieta: data.tipo_dieta,
-      imagen_url: imagenUrl ?? data.imagen_url,
+      imagen_url: data.imagen_url ?? undefined,
       fechaRegistro: new Date(),
     };
 
-    // Paso 3: guardar en localStorage
-    this.saveStoredUser(usuario);
-
-    // Paso 4: Sincronitzar DIRECTAMENT amb Aiven (sense Firestore)
     try {
       const payload = {
         firebase_uid: uid,
@@ -316,11 +305,25 @@ export class AuthService {
 
       if (res?.usuario_id) {
         usuario.usuario_id = res.usuario_id;
-        this.saveStoredUser(usuario);
       }
     } catch (err) {
       console.error('❌ [register] Error inesperat en sync:', err);
     }
+
+    // Paso 3: ahora que el usuario ya existe en Aiven, subir el avatar si el
+    // usuario ha elegido uno (opcional, no bloqueante). El propio endpoint de
+    // avatar ya persiste imagen_url en Aiven, así que solo hace falta
+    // reflejar la URL devuelta en el objeto local.
+    if (avatarFile) {
+      try {
+        usuario.imagen_url = await this.uploadAvatar(avatarFile, uid);
+      } catch (error) {
+        console.error('❌ [register] Error al subir el avatar (se continúa sin foto):', error);
+      }
+    }
+
+    // Paso 4: guardar el usuario final (con imagen_url ya resuelta) en localStorage
+    this.saveStoredUser(usuario);
   }
 
   async loginConGoogle(): Promise<void> {
