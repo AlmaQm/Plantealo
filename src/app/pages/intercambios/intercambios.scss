@@ -18,8 +18,14 @@
 
   &__lista {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    // 2 columnas por defecto (movil estrecho, 320-390px): con 3 las tarjetas
+    // quedan demasiado apretadas. A partir de ~400px hay sitio de sobra para 3.
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px 10px;
+
+    @media (min-width: 400px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 
   &__vacio {
@@ -84,7 +90,7 @@
   border-radius: $md-radius-xl;
   box-shadow: $md-shadow;
   z-index: 201;
-  width: calc(100% - 40px);
+  width: calc(100% - 32px);
   max-width: 380px;
   max-height: 72vh;
   overflow-y: auto;
@@ -167,8 +173,23 @@
     width: 100%;
     gap: 8px;
   }
-  &__nombre { font-size: 13px; font-weight: 700; color: $green-7; }
-  &__planta { font-size: 11px; color: $green-6; }
+  &__nombre {
+    font-size: 13px;
+    font-weight: 700;
+    color: $green-7;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &__planta {
+    font-size: 11px;
+    color: $green-6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
   &__ultimo {
     font-size: 11px;
     color: $green-5;
