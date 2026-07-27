@@ -102,4 +102,14 @@ export class MensajesService {
       this.http.get<number>(`${this.apiUrl}/mensajes/no-leidos`, { headers })
     );
   }
+
+  async eliminarConversacion(intercambioId: number, conUid: string): Promise<void> {
+    const headers = await this.authHeaders();
+    await firstValueFrom(
+      this.http.delete(`${this.apiUrl}/intercambios/${intercambioId}/mensajes`, {
+        headers,
+        params: { con: conUid },
+      })
+    );
+  }
 }

@@ -655,6 +655,24 @@ def contar_no_leidos(db: Session, uid: str) -> int:
         .count()
     )
 
+def eliminar_conversacion(db: Session, intercambio_id: int, uid: str, otro_uid: str) -> None:
+    """Borra los mensajes entre uid (verificado) y otro_uid para esta
+    publicacion. El filtro por participante hace que uid solo pueda borrar
+    conversaciones en las que interviene: si otro_uid no le ha escrito nunca,
+    no hay filas que coincidan y no pasa nada."""
+    (
+        db.query(models.Mensaje)
+        .filter(
+            models.Mensaje.intercambio_id == intercambio_id,
+            or_(
+                and_(models.Mensaje.remitente_uid == uid, models.Mensaje.destinatario_uid == otro_uid),
+                and_(models.Mensaje.remitente_uid == otro_uid, models.Mensaje.destinatario_uid == uid),
+            )
+        )
+        .delete(synchronize_session=False)
+    )
+    db.commit()
+
 def listar_conversaciones(db: Session, uid: str) -> list[schemas.ConversacionResumen]:
     """Una fila por (publicación, otro participante) donde uid interviene,
     con el último mensaje. Solo existen conversaciones autor<->interesado

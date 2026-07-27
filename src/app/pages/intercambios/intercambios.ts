@@ -189,4 +189,17 @@ export class IntercambiosComponent implements OnDestroy {
   cerrarConversaciones(): void {
     this.conversacionesAbierto.set(false);
   }
+
+  async eliminarConversacion(c: ConversacionResumen): Promise<void> {
+    if (!confirm(`¿Eliminar la conversación con ${c.otro_nombre}? No se puede deshacer.`)) return;
+    try {
+      await this.mensajesService.eliminarConversacion(c.intercambio_id, c.otro_uid);
+      this.conversaciones.update(lista =>
+        lista.filter(x => !(x.intercambio_id === c.intercambio_id && x.otro_uid === c.otro_uid))
+      );
+      this.actualizarNoLeidos();
+    } catch (e) {
+      console.error('Error al eliminar la conversación:', e);
+    }
+  }
 }

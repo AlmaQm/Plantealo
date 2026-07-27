@@ -85,16 +85,19 @@
         <p class="conversaciones-dialog__vacio">Aún no tienes conversaciones.</p>
       } @else {
         @for (c of conversaciones(); track c.intercambio_id + c.otro_uid) {
-          <button class="conversacion-item" (click)="abrirChatDesdeConversacion(c)">
-            <div class="conversacion-item__cabecera">
-              <span class="conversacion-item__nombre">{{ c.otro_nombre }}</span>
-              @if (c.no_leidos > 0) {
-                <span class="badge-no-leidos">{{ c.no_leidos }}</span>
-              }
-            </div>
-            <span class="conversacion-item__planta">sobre {{ c.nombre_planta }}</span>
-            <span class="conversacion-item__ultimo">{{ c.ultimo_mensaje }}</span>
-          </button>
+          <div class="conversacion-item">
+            <button class="conversacion-item__cuerpo" (click)="abrirChatDesdeConversacion(c)">
+              <div class="conversacion-item__cabecera">
+                <span class="conversacion-item__nombre">{{ c.otro_nombre }}</span>
+                @if (c.no_leidos > 0) {
+                  <span class="badge-no-leidos">{{ c.no_leidos }}</span>
+                }
+              </div>
+              <span class="conversacion-item__planta">sobre {{ c.nombre_planta }}</span>
+              <span class="conversacion-item__ultimo">{{ c.ultimo_mensaje }}</span>
+            </button>
+            <button class="conversacion-item__eliminar" (click)="eliminarConversacion(c)" aria-label="Eliminar conversación">✕</button>
+          </div>
         }
       }
     </div>

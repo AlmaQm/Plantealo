@@ -135,18 +135,30 @@
 
 .conversacion-item {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  align-items: stretch;
+  gap: 6px;
   width: 100%;
-  text-align: left;
-  border: none;
   background: $md-surface;
   border-radius: $md-radius-md;
   box-shadow: $md-shadow;
-  padding: 10px 12px;
-  cursor: pointer;
   font-family: $md-font;
+
+  &__cuerpo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+    border: none;
+    background: transparent;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-family: $md-font;
+
+    &:hover { background: $md-accent-soft; }
+  }
 
   &__cabecera {
     display: flex;
@@ -166,7 +178,17 @@
     max-width: 100%;
   }
 
-  &:hover { background: $md-accent-soft; }
+  &__eliminar {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: $green-5;
+    font-size: 13px;
+    padding: 0 12px;
+    cursor: pointer;
+
+    &:hover { color: $md-danger; }
+  }
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

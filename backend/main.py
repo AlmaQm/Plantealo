@@ -594,3 +594,14 @@ def contar_no_leidos_endpoint(
     db: Session = Depends(get_db)
 ):
     return crud.contar_no_leidos(db, uid)
+
+
+@app.delete("/intercambios/{intercambio_id}/mensajes")
+def eliminar_conversacion_endpoint(
+    intercambio_id: int,
+    con: str,
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    crud.eliminar_conversacion(db, intercambio_id, uid, con)
+    return {"status": "eliminada"}
