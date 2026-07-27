@@ -82,7 +82,10 @@ button { cursor: pointer; }
    con el de .cal-wrap, sus esquinas cuadradas asoman como puntas por encima
    de la cabecera redondeada */
 ion-modal.cal-modal {
-  --height: 100%;
+  /* dvh (dynamic viewport height) en vez de % : sigue en tiempo real los
+     cambios de alto cuando la barra de direcciones del movil se
+     colapsa/expande, en vez de quedarse con el valor de cuando se abrio. */
+  --height: 100dvh;
   --border-radius: 20px;
   --background: transparent;
 }
