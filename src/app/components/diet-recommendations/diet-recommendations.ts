@@ -17,6 +17,14 @@ interface Planta {
   consejo: string;
 }
 
+interface DetallePosicion {
+  left: number;
+  ancho: number;
+  maxAlto: number;
+  arriba?: number;
+  abajo?: number;
+}
+
 const IMG = (f: string) => `/assets/images/${f}`;
 
 const DESCRIPCIONES: Record<string, string> = {
@@ -238,7 +246,6 @@ function normalizar(s: string): string {
 })
 export class DietRecommendationsComponent implements OnInit {
   @ViewChild('calModal') calModal!: IonModal;
-  @ViewChild('detalleModal') detalleModal!: IonModal;
 
   plantas: Planta[] = [];
   temporadas: Temporada[] = [];
@@ -255,6 +262,8 @@ export class DietRecommendationsComponent implements OnInit {
   private errorTimer: any;
 
   verduraSeleccionada = signal<Planta | null>(null);
+  detalleAbierto = signal(false);
+  detallePos = signal<DetallePosicion | null>(null);
 
   // Recomanació de recepta amb el sistema de recetes de l'Alma (RecetaHuerto)
   private readonly authService = inject(AuthService);
@@ -401,9 +410,31 @@ export class DietRecommendationsComponent implements OnInit {
     this.calModal.present();
   }
 
-  abrirDetalle(planta: Planta) {
+  abrirDetalle(planta: Planta, event: MouseEvent) {
     this.verduraSeleccionada.set(planta);
-    this.detalleModal.present();
+
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const MARGEN = 10;
+    const ancho = Math.min(320, window.innerWidth - 32);
+    const espacioAbajo = window.innerHeight - rect.bottom - MARGEN;
+    const espacioArriba = rect.top - MARGEN;
+    const abreAbajo = espacioAbajo >= espacioArriba;
+
+    let left = rect.left + rect.width / 2 - ancho / 2;
+    left = Math.max(16, Math.min(left, window.innerWidth - ancho - 16));
+
+    this.detallePos.set({
+      left,
+      ancho,
+      maxAlto: Math.max(200, abreAbajo ? espacioAbajo : espacioArriba),
+      arriba: abreAbajo ? rect.bottom + MARGEN : undefined,
+      abajo: abreAbajo ? undefined : window.innerHeight - rect.top + MARGEN,
+    });
+    this.detalleAbierto.set(true);
+  }
+
+  cerrarDetalle() {
+    this.detalleAbierto.set(false);
   }
 
   getDescripcion(nombre: string): string {
