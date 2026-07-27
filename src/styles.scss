@@ -82,6 +82,7 @@ button { cursor: pointer; }
    con el de .cal-wrap, sus esquinas cuadradas asoman como puntas por encima
    de la cabecera redondeada */
 ion-modal.cal-modal {
+  --height: 100%;
   --border-radius: 20px;
   --background: transparent;
 }
