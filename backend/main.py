@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
@@ -149,6 +149,7 @@ def eliminar_usuario_endpoint(firebase_uid: str, db: Session = Depends(get_db)):
 @app.post("/usuarios/by-uid/{firebase_uid}/avatar")
 async def subir_avatar(
     firebase_uid: str,
+    request: Request,
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
@@ -160,12 +161,24 @@ async def subir_avatar(
     nombre_archivo = f"{firebase_uid}.{extension}"
     ruta = f"uploads/avatars/{nombre_archivo}"
 
+    # NOTA (almacenamiento efímero): en Render, sin disco persistente,
+    # todo lo que se escriba en uploads/avatars/ se borra en cada redeploy
+    # o reinicio del servicio. A medio plazo hay que mover los avatares a
+    # un storage externo (Firebase Storage, S3, Cloudinary, etc.) en vez
+    # de depender del filesystem local.
     with open(ruta, "wb") as f:
         contenido = await file.read()
         f.write(contenido)
 
-    # URL completa que el frontend pueda usar
-    url = f"{os.getenv('BACKEND_URL', 'http://localhost:8000')}/uploads/avatars/{nombre_archivo}"
+    # URL completa que el frontend pueda usar.
+    # No confiamos ciegamente en BACKEND_URL: si no está seteada (p.ej.
+    # porque en Render se olvidó configurarla o quedó copiada del .env
+    # local), en vez de caer en silencio a "http://localhost:8000" (que
+    # nunca resuelve desde el navegador de un usuario real), derivamos la
+    # base de la propia request entrante.
+    backend_url = os.getenv('BACKEND_URL', '').rstrip('/')
+    base_url = backend_url or str(request.base_url).rstrip('/')
+    url = f"{base_url}/uploads/avatars/{nombre_archivo}"
     usuario.imagen_url = url
     db.commit()
 
