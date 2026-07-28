@@ -235,7 +235,7 @@ const IMAGEN_PLANTA: Record<string, string> = {
   'Remolacha':        'assets/images/remolacha.jpg',
   'Coliflor':         'assets/images/coliflor.jpg',
   'Brócoli':          'assets/images/brocoli.jpg',
-  'Tomate':           'assets/images/tomate-cherry.jpg',
+  'Tomate':           'assets/images/tomate-ramillete.jpg',
   'Lechuga':          'assets/images/lechuga.jpg',
   'Zanahoria':        'assets/images/zanahoria.jpg',
   'Pimiento':         'assets/images/pimientos.jpg',
@@ -256,16 +256,16 @@ const IMAGEN_PLANTA: Record<string, string> = {
   'Cilantro':         'assets/images/cilantro.jpg',
   'Pimientos':        'assets/images/pimientos.jpg',
   'Calabacín':        'assets/images/calabacin.jpg',
-  'Tomate ramillete': 'assets/images/toamte-ramillete.jpg',
+  'Tomate ramillete': 'assets/images/tomate-ramillete.jpg',
   'Tomate pera':      'assets/images/tomate-pera.jpg',
   'Espinacas':        'assets/images/espinacas.jpg',
   'Rúcula':           'assets/images/rucula.jpg',
-  'Pepino':           'assets/images/pepino.jpg',
+  'Pepino':           'assets/images/pepinos.jpg',
   'Berenjenas':       'assets/images/berenjenasç.jpg',
   'Romero':           'assets/images/romero.jpg',
   'Ajos':             'assets/images/ajo.webp',
   'Fresones':         'assets/images/fresas.jpg',
-  'Guindillas':       'assets/images/pimientos.jpg',
+  'Guindillas':       'assets/images/guindillas.jpg',
 };
 
 function getImagenPlanta(nombre: string): string {

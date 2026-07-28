@@ -223,6 +223,11 @@ const ALIAS_CATALOGO: Record<string, string[]> = {
   'Pepinos':       ['Pepino'],
   'Tomates':       ['Tomate', 'Tomates Cherry'],
   'Judías verdes': ['Judías Verdes', 'Judias Verdes'],
+  // Tras limpiar los duplicados en singular/plural de la tabla plantas
+  // (ver backend/seeds/limpiar_duplicados_plantas.sql), el catálogo solo
+  // conserva la forma singular de estos dos.
+  'Lechugas':      ['Lechuga'],
+  'Pimientos':     ['Pimiento'],
 };
 
 function normalizar(s: string): string {

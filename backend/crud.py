@@ -98,7 +98,13 @@ def crear_usuario(db: Session, usuario: schemas.UsuarioCreate):
 # --- LÓGICA PARA PLANTAS ---
 
 def get_plantas(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.PlantaCat).offset(skip).limit(limit).all()
+    return (
+        db.query(models.PlantaCat)
+        .order_by(func.lower(models.PlantaCat.nombre_planta).asc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 def crear_planta_usuario(db: Session, planta: schemas.PUsuarioCreate, usuario_id: int):
     db_planta = models.PUsuario(**planta.model_dump(), usuario_id=usuario_id)

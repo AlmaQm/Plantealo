@@ -73,7 +73,7 @@ export class PlantasComponent {
         planta_id: planta.planta_id,
         usuario_id: 0,
         nombre_planta: planta.nombre_planta,
-        imagen_url: planta.imagen_url ?? 'assets/images/placeholder.jpg',
+        imagen_url: planta.imagen_url ?? 'assets/images/placeholder-receta.jpg',
         tipo_planta: getTipoPlanta(planta.nombre_planta),
         f_siembra,
         f_recogida,
