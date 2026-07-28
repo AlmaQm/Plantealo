@@ -82,7 +82,7 @@ export class ComunidadService {
       username: d.username,
       avatar_inicial: d.avatar_inicial,
       usuario_imagen_url: d.usuario_imagen_url ?? null,
-      imagen_url: d.imagen_url ?? 'assets/images/placeholder-receta.jpg',
+      imagen_url: d.imagen_url ?? 'assets/images/logo-plantealo.svg',
       categoria: d.categoria,
       descripcion: d.descripcion,
       fecha: new Date(d.fecha),
