@@ -29,32 +29,6 @@
   &:hover { color: $green-6; }
 }
 
-.install-fab {
-  position: fixed;
-  top: 14px;
-  left: 16px;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: $green-3;
-  color: $green-7;
-  border: none;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
-
-  svg {
-    width: 17px;
-    height: 17px;
-  }
-
-  &:hover { color: $green-6; }
-}
-
 .chat-fab {
   position: fixed;
   top: 14px;
