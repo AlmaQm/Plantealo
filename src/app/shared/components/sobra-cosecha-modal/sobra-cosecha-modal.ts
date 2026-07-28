@@ -39,8 +39,8 @@ export class SobraCosechaModalComponent {
 
   readonly ciudadIndice = computed<number>(() => this.ciudades().indexOf(this.ciudadSeleccionada()));
 
-  onCiudadIndiceChange(indice: number): void {
-    this.ciudadSeleccionada.set(this.ciudades()[indice] ?? '');
+  onCiudadIndiceChange(indice: number | string): void {
+    this.ciudadSeleccionada.set(this.ciudades()[Number(indice)] ?? '');
     this.avisoCiudad.set(false);
   }
 

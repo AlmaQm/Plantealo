@@ -52,6 +52,13 @@ export class PlantasComponent {
     this.filtroActivo.set(filtro);
   }
 
+  // app-select-plantas admite valores numéricos o de texto (lo necesita el
+  // selector de categoría de Comunidad); esta lista de plantas concreta
+  // siempre usa IDs numéricos, así que aquí simplemente lo recuperamos como number.
+  onPlantaIdChange(valor: number | string): void {
+    this.plantaIdSeleccionada.set(Number(valor));
+  }
+
   abrirModal(): void {
     this.plantaIdSeleccionada.set(null);
     this.fechaSiembra.set(this.hoy);

@@ -52,7 +52,7 @@
       <app-select-plantas
         [opciones]="opcionesPlantas()"
         [value]="plantaIdSeleccionada()"
-        (valueChange)="plantaIdSeleccionada.set($event)" />
+        (valueChange)="onPlantaIdChange($event)" />
 
       <label class="campo-label" style="margin-top:16px">¿Cuándo la plantaste?</label>
       <app-datepicker

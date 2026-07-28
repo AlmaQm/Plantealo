@@ -82,7 +82,8 @@ export class ConfiguracionComponent implements OnInit {
     }
   }
 
-  onDietaChange(valor: number): void {
+  onDietaChange(valorEntrada: number | string): void {
+    const valor = Number(valorEntrada);
     const dieta = NUMERO_A_DIETA[valor];
     this.form.controls.tipo_dieta.setValue(dieta);
     this.dietaValorSeleccionado.set(valor);

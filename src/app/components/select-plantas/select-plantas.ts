@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 export interface SelectOpcion {
-  valor: number;
+  valor: number | string;
   etiqueta: string;
 }
 
@@ -23,9 +23,9 @@ export interface SelectOpcion {
 export class SelectPlantasComponent {
   // --- API pública ---
   opciones = input<SelectOpcion[]>([]);
-  value = input<number | null>(null);
+  value = input<number | string | null>(null);
   placeholder = input<string>('— Elige una planta —');
-  valueChange = output<number>();
+  valueChange = output<number | string>();
 
   private el = inject(ElementRef);
 

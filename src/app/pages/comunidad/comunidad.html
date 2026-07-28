@@ -33,13 +33,10 @@
     <div class="modal-dialog__body">
 
       <label class="campo-label">Tipo de publicación</label>
-      <select class="campo-select"
-        [ngModel]="nuevaCategoria()"
-        (ngModelChange)="nuevaCategoria.set($event)">
-        @for (cat of categorias; track cat) {
-          <option [value]="cat">{{ cat | titlecase }}</option>
-        }
-      </select>
+      <app-select-plantas
+        [opciones]="opcionesCategoria"
+        [value]="nuevaCategoria()"
+        (valueChange)="onCategoriaChange($event)" />
 
       <label class="campo-label campo-label--mt">Imagen</label>
       <div class="upload-zone" [class.upload-zone--has-image]="nuevaImagenPreview()" (click)="fileInput.click()">
