@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PublicacionCardComponent } from '../../shared/components/publicacion-card/publicacion-card';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
+import { SelectPlantasComponent, SelectOpcion } from '../../components/select-plantas/select-plantas';
 import { Publicacion } from '../../models/interfaces';
 import { ComunidadService } from '../../services/comunidad';
 
 @Component({
   selector: 'app-comunidad',
   standalone: true,
-  imports: [CommonModule, FormsModule, PublicacionCardComponent, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PublicacionCardComponent, PageHeaderComponent, SelectPlantasComponent],
   templateUrl: './comunidad.html',
   styleUrls: ['./comunidad.scss']
 })
@@ -27,6 +28,15 @@ export class Comunidad {
   private nuevaImagenFile: File | null = null;
 
   readonly categorias: Publicacion['categoria'][] = ['HUERTO', 'RECETA', 'CONSEJO', 'COSECHA'];
+
+  readonly opcionesCategoria: SelectOpcion[] = this.categorias.map(c => ({
+    valor: c,
+    etiqueta: c.charAt(0) + c.slice(1).toLowerCase(),
+  }));
+
+  onCategoriaChange(valor: number | string): void {
+    this.nuevaCategoria.set(valor as Publicacion['categoria']);
+  }
 
   abrirModal(): void {
     this.nuevaDesc.set('');

@@ -107,13 +107,15 @@ export class IntercambiosComponent implements OnDestroy {
     }
   }
 
-  onCiudadIndiceChange(indice: number): void {
+  onCiudadIndiceChange(indiceEntrada: number | string): void {
+    const indice = Number(indiceEntrada);
     this.ciudadIndiceSeleccionado.set(indice);
     this.ciudadFiltro.set(indice === SIN_FILTRO ? '' : this.ciudades()[indice]);
     this.cargar();
   }
 
-  onPlantaChange(plantaId: number): void {
+  onPlantaChange(plantaIdEntrada: number | string): void {
+    const plantaId = Number(plantaIdEntrada);
     this.plantaSeleccionada.set(plantaId);
     this.plantaFiltro.set(plantaId === SIN_FILTRO ? null : plantaId);
     this.cargar();

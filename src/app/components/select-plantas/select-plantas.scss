@@ -14,7 +14,9 @@
     border: 1.5px solid $green-3;
     border-radius: 12px;
     font-size: 15px;
-    color: $green-7;
+    // Verde visible en vez del $green-7 casi negro que usan los títulos:
+    // aquí queremos que se note claramente que es verde, no tinta oscura.
+    color: $green-6;
     background: white;
     cursor: pointer;
     transition: border-color 0.2s ease;
@@ -68,6 +70,25 @@
     flex-direction: column;
     gap: 2px;
     animation: spIn 0.14s ease;
+
+    // Barra de scroll acorde al diseño (por defecto el navegador pinta una
+    // gris/negra que desentona con la paleta verde/tierra de la app).
+    scrollbar-width: thin;
+    scrollbar-color: $green-3 transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: $green-3;
+      border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: $green-4;
+    }
 
     // Se despliega hacia arriba cuando no hay sitio debajo del trigger
     // (p. ej. el select está al fondo del bottomsheet).

@@ -26,9 +26,15 @@
       border: 2px solid white;
       border-radius: 24px;
       font-size: 14px;
+      color: $green-7;
       background: white;
+      font-family: inherit;
       transition: all 0.2s ease;
       box-sizing: border-box;
+
+      &::placeholder {
+        color: $green-5;
+      }
 
       &:focus {
         outline: none;
@@ -85,7 +91,19 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 4px 16px;
   }
-  
+
+  // El texto de mat-checkbox hereda el color de cuerpo por defecto (gris/negro
+  // del tema Material), que desentona con la paleta verde/tierra de la app.
+  &__dieta-row,
+  &__categoria-checkboxes {
+    ::ng-deep .mdc-form-field,
+    ::ng-deep label {
+      color: $green-7;
+      font-size: 14px;
+    }
+  }
+
+
   &__grid {
     display: grid;
     grid-template-columns: 1fr;
