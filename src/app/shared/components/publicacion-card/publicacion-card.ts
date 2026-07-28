@@ -131,7 +131,7 @@ export class PublicacionCardComponent implements OnInit {
   }
 
   onImageError(event: Event): void {
-    (event.target as HTMLImageElement).src = 'assets/images/placeholder-receta.jpg';
+    (event.target as HTMLImageElement).src = 'assets/images/logo-plantealo.svg';
   }
 
   onAvatarError(): void {

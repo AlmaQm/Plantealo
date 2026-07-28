@@ -14,7 +14,7 @@
   } @else {
     @for (r of recetasGuardadas().slice(0, 3); track r.id_receta) {
       <div class="guardadas__row">
-        <div class="guardadas__thumb" [style.background-image]="'url(' + (r.imagen_url || 'assets/images/placeholder-receta.jpg') + ')'"></div>
+        <div class="guardadas__thumb" [style.background-image]="'url(' + (r.imagen_url || 'assets/images/logo-plantealo.svg') + ')'"></div>
         <span class="guardadas__nombre">{{ r.nombre_receta }}</span>
       </div>
     }

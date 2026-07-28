@@ -270,7 +270,7 @@ const IMAGEN_PLANTA: Record<string, string> = {
 };
 
 export function getImagenPlanta(nombre: string): string {
-  return IMAGEN_PLANTA[nombre] ?? 'assets/images/placeholder-receta.jpg';
+  return IMAGEN_PLANTA[nombre] ?? 'assets/images/logo-plantealo.svg';
 }
 
 @Injectable({ providedIn: 'root' })

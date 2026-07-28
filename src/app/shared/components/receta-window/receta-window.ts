@@ -60,7 +60,7 @@ export class RecetaWindowComponent {
   }
 
   onImageError(): void {
-    const placeholder = 'assets/images/placeholder-receta.jpg';
+    const placeholder = 'assets/images/logo-plantealo.svg';
     if (this.recipe && this.recipe.imagen_url !== placeholder) {
       this.recipe.imagen_url = placeholder;
     }
