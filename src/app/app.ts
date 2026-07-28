@@ -42,9 +42,37 @@ export class App {
     this.chatObert.update(v => !v);
   }
 
+  // Boton "Instalar app": Chrome dispara beforeinstallprompt cuando detecta
+  // que la web es instalable (manifest + service worker); guardamos el
+  // evento para poder lanzar el dialogo nativo desde un boton propio, ya
+  // que el menu de tres puntos del navegador no es nada intuitivo.
+  private deferredInstallPrompt: any = null;
+  protected readonly instalable = signal(false);
+
+  protected async instalarApp(): Promise<void> {
+    if (!this.deferredInstallPrompt) return;
+    this.deferredInstallPrompt.prompt();
+    await this.deferredInstallPrompt.userChoice;
+    this.deferredInstallPrompt = null;
+    this.instalable.set(false);
+  }
+
   constructor() {
     this.translate.addLangs(['es', 'ca', 'en']);
     this.translate.setFallbackLang('es');
     this.translate.use('es');
+
+    const yaInstalada = window.matchMedia?.('(display-mode: standalone)').matches;
+    if (!yaInstalada) {
+      window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        this.deferredInstallPrompt = event;
+        this.instalable.set(true);
+      });
+      window.addEventListener('appinstalled', () => {
+        this.deferredInstallPrompt = null;
+        this.instalable.set(false);
+      });
+    }
   }
 }
