@@ -6,6 +6,7 @@ import { Auth, authState } from '@angular/fire/auth';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth';
 import { Comentario, Publicacion } from '../models/interfaces';
+import { comprimirImagen } from '../shared/utils/imagen.util';
 
 interface ApiComentario {
   comentario_id: number;
@@ -178,7 +179,7 @@ export class ComunidadService {
 
   private async guardarImagenEnSegundoPlano(publicacionId: number, imagenFile: File): Promise<void> {
     try {
-      const imagen_url = await this.comprimirImagen(imagenFile);
+      const imagen_url = await comprimirImagen(imagenFile);
       const actualizada = await firstValueFrom(
         this.http.patch<ApiPublicacion>(`${this.apiUrl}/${publicacionId}/imagen`, { imagen_url })
       );
@@ -186,20 +187,6 @@ export class ComunidadService {
     } catch (e) {
       console.error('Error al guardar la imagen de la publicación:', e);
     }
-  }
-
-  private async comprimirImagen(file: File, maxDimension = 1280, calidad = 0.75): Promise<string> {
-    const bitmap = await createImageBitmap(file);
-    const escala = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
-    const width = Math.round(bitmap.width * escala);
-    const height = Math.round(bitmap.height * escala);
-
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    canvas.getContext('2d')!.drawImage(bitmap, 0, 0, width, height);
-
-    return canvas.toDataURL('image/jpeg', calidad);
   }
 
   async toggleLike(publicacionId: string, _currentlyLiked: boolean): Promise<void> {

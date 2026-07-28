@@ -9,9 +9,9 @@
 
       <!-- Tarjeta principal -->
       <section class="card card--main">
-         @if (usuario()?.imagen_url) {
+         @if (usuario()?.imagen_url && !avatarFailed()) {
             <div class="avatar avatar--img">
-               <img [src]="usuario()!.imagen_url" [alt]="usuario()!.nombre" />
+               <img [src]="usuario()!.imagen_url" [alt]="usuario()!.nombre" (error)="onAvatarError()" />
             </div>
          } @else {
             <div class="avatar">

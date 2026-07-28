@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Request
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
@@ -147,53 +147,23 @@ def eliminar_usuario_endpoint(firebase_uid: str, db: Session = Depends(get_db)):
     return {"status": "success", "detail": "Usuario eliminado correctamente."}
 
 @app.post("/usuarios/by-uid/{firebase_uid}/avatar")
-async def subir_avatar(
+def subir_avatar(
     firebase_uid: str,
-    request: Request,
-    file: UploadFile = File(...),
+    body: schemas.ImagenUpdate,
     db: Session = Depends(get_db)
 ):
+    # La imagen llega ya comprimida a base64 desde el frontend y se guarda
+    # como texto, igual que en las publicaciones de Comunidad: en Render, sin
+    # disco persistente, un fichero subido a uploads/avatars/ se borraría en
+    # cada redeploy o reinicio del servicio.
     usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
-    nombre_archivo = f"{firebase_uid}.{extension}"
-    ruta = f"uploads/avatars/{nombre_archivo}"
-
-    # NOTA (almacenamiento efímero): en Render, sin disco persistente,
-    # todo lo que se escriba en uploads/avatars/ se borra en cada redeploy
-    # o reinicio del servicio. A medio plazo hay que mover los avatares a
-    # un storage externo (Firebase Storage, S3, Cloudinary, etc.) en vez
-    # de depender del filesystem local.
-    with open(ruta, "wb") as f:
-        contenido = await file.read()
-        f.write(contenido)
-
-    # URL completa que el frontend pueda usar.
-    # No confiamos ciegamente en BACKEND_URL: si no está seteada (p.ej.
-    # porque en Render se olvidó configurarla o quedó copiada del .env
-    # local), en vez de caer en silencio a "http://localhost:8000" (que
-    # nunca resuelve desde el navegador de un usuario real), derivamos la
-    # base de la propia request entrante.
-    backend_url = os.getenv('BACKEND_URL', '').rstrip('/')
-    if backend_url:
-        base_url = backend_url
-    else:
-        base_url = str(request.base_url).rstrip('/')
-        # Render (y proxies similares) terminan TLS en el borde y reenvían
-        # HTTP en texto plano al contenedor, así que request.base_url
-        # reportará "http://" salvo que uvicorn confíe explícitamente en
-        # X-Forwarded-Proto (no configurado en este repo). Forzamos https
-        # salvo en desarrollo local, para no servir contenido mixto a una
-        # página cargada por https.
-        if base_url.startswith('http://') and request.url.hostname not in ('localhost', '127.0.0.1'):
-            base_url = 'https://' + base_url[len('http://'):]
-    url = f"{base_url}/uploads/avatars/{nombre_archivo}"
-    usuario.imagen_url = url
+    usuario.imagen_url = body.imagen_url
     db.commit()
 
-    return {"imagen_url": url}
+    return {"imagen_url": usuario.imagen_url}
 
 @app.get("/usuarios/by-uid/{firebase_uid}/plantas/", response_model=List[schemas.PUsuarioDetall])
 def get_plantas_by_uid(firebase_uid: str, db: Session = Depends(get_db)):

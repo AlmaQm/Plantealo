@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -28,6 +28,22 @@ export class PerfilComponent {
   readonly usuario = toSignal(this.authService.currentUser$, {
     initialValue: this.authService.getStoredUser()
   });
+
+  readonly avatarFailed = signal(false);
+
+  constructor() {
+    // Si la imagen_url cambia (p.ej. el usuario sube una foto nueva desde
+    // Configuración sin recargar la página), olvidamos el fallo anterior para
+    // darle una oportunidad de cargar la nueva foto.
+    effect(() => {
+      this.usuario()?.imagen_url;
+      this.avatarFailed.set(false);
+    });
+  }
+
+  onAvatarError(): void {
+    this.avatarFailed.set(true);
+  }
 
   // Una planta ya cosechada (f_cosecha marcado) deja de contar como activa en
   // el huerto: sigue en el inventario (para el historial) pero no aquí.

@@ -22,6 +22,7 @@ import {
 } from 'firebase/auth';
 
 import { Usuario } from '../models/interfaces';
+import { comprimirImagen } from '../shared/utils/imagen.util';
 
 export const ERROR_EMAIL_EXISTENTE = 'El usuario ya existe';
 export const ERROR_NO_REGISTRADO  = 'Usuario no registrado';
@@ -187,13 +188,16 @@ export class AuthService {
   }
 
   async uploadAvatar(file: File, uid: string): Promise<string> {
-    const formData = new FormData();
-    formData.append('file', file);
+    // Se comprime a base64 y se guarda como texto en la BD (igual que las
+    // fotos de Comunidad) en vez de subir un fichero al backend: en Render,
+    // sin disco persistente, cualquier fichero subido se borra en cada
+    // redeploy o reinicio del servicio.
+    const imagen_url = await comprimirImagen(file, 512, 0.8);
 
     const res = await firstValueFrom(
       this.http.post<{ imagen_url: string }>(
         `${environment.apiUrl}/usuarios/by-uid/${uid}/avatar`,
-        formData
+        { imagen_url }
       )
     );
     return res.imagen_url;
