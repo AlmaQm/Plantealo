@@ -281,7 +281,7 @@ def editar_publicacion(publicacion_id: int, body: schemas.PublicacionEdit, db: S
     db_pub = crud.editar_publicacion(db, publicacion_id, body.usuario_id, body.categoria, body.descripcion)
     if not db_pub:
         raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
-    return crud.serializar_publicacion(db_pub, body.usuario_id, crud.obtener_foto_actual(db, db_pub.usuario_id))
+    return crud.serializar_publicacion(db_pub, body.usuario_id, crud.obtener_datos_actuales(db, db_pub.usuario_id))
 
 @app.delete("/publicaciones/{publicacion_id}")
 def eliminar_publicacion(publicacion_id: int, usuario_id: str, db: Session = Depends(get_db)):
@@ -295,7 +295,7 @@ def actualizar_imagen_publicacion(publicacion_id: int, body: schemas.ImagenUpdat
     db_pub = crud.actualizar_imagen_publicacion(db, publicacion_id, body.imagen_url)
     if not db_pub:
         raise HTTPException(status_code=404, detail="Publicación no encontrada")
-    return crud.serializar_publicacion(db_pub, None, crud.obtener_foto_actual(db, db_pub.usuario_id))
+    return crud.serializar_publicacion(db_pub, None, crud.obtener_datos_actuales(db, db_pub.usuario_id))
 
 @app.post("/publicaciones/{publicacion_id}/like", response_model=schemas.Publicacion)
 def toggle_like(publicacion_id: int, body: schemas.LikeToggle, db: Session = Depends(get_db)):

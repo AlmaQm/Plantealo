@@ -158,30 +158,38 @@ def marcar_cosecha(db: Session, usuario_id: int, id: int, cosechado: bool):
 
 # --- LÓGICA PARA COMUNIDAD ---
 
-def obtener_foto_actual(db: Session, firebase_uid: str) -> str | None:
-    """Foto de perfil VIGENTE del autor (no la copia guardada en la publicación
-    al crearla): así, si el usuario cambia de foto, sus publicaciones antiguas
-    en Comunidad también se actualizan en vez de quedarse con la foto vieja."""
-    return db.query(models.Usuario.imagen_url).filter(
-        models.Usuario.firebase_uid == firebase_uid
-    ).scalar()
+def _datos_actuales_de(usuario: "models.Usuario") -> dict:
+    """Identidad VIGENTE del autor (nombre, @usuario, inicial y foto), a partir
+    de la fila de Usuario en vez de la copia guardada en la publicación al
+    crearla: así, si el usuario cambia de nombre, de nombre de usuario o de
+    foto, sus publicaciones y comentarios antiguos en Comunidad se actualizan
+    en vez de quedarse con los datos de cuando publicó."""
+    nombre = usuario.nombre or ''
+    return {
+        'nombre_usuario': nombre,
+        'username': f"@{usuario.nombre_usuario}" if usuario.nombre_usuario else '',
+        'avatar_inicial': nombre[0].upper() if nombre else '',
+        'imagen_url': usuario.imagen_url,
+    }
 
-def _fotos_actuales(db: Session, firebase_uids: set[str]) -> dict[str, str | None]:
-    """Versión en lote de obtener_foto_actual, para no hacer una query por
+def obtener_datos_actuales(db: Session, firebase_uid: str) -> dict:
+    usuario = get_usuario_by_firebase_uid(db, firebase_uid)
+    return _datos_actuales_de(usuario) if usuario else {}
+
+def _datos_actuales_batch(db: Session, firebase_uids: set[str]) -> dict[str, dict]:
+    """Versión en lote de obtener_datos_actuales, para no hacer una query por
     publicación al listar el feed completo."""
-    filas = db.query(models.Usuario.firebase_uid, models.Usuario.imagen_url).filter(
-        models.Usuario.firebase_uid.in_(firebase_uids)
-    ).all()
-    return dict(filas)
+    usuarios = db.query(models.Usuario).filter(models.Usuario.firebase_uid.in_(firebase_uids)).all()
+    return {u.firebase_uid: _datos_actuales_de(u) for u in usuarios}
 
-def serializar_publicacion(pub: models.Publicacion, uid: str | None, foto_actual: str | None) -> schemas.Publicacion:
+def serializar_publicacion(pub: models.Publicacion, uid: str | None, datos_actuales: dict) -> schemas.Publicacion:
     return schemas.Publicacion(
         publicacion_id=pub.publicacion_id,
         usuario_id=pub.usuario_id,
-        nombre_usuario=pub.nombre_usuario,
-        username=pub.username,
-        avatar_inicial=pub.avatar_inicial,
-        usuario_imagen_url=foto_actual,
+        nombre_usuario=datos_actuales.get('nombre_usuario', pub.nombre_usuario),
+        username=datos_actuales.get('username', pub.username),
+        avatar_inicial=datos_actuales.get('avatar_inicial', pub.avatar_inicial),
+        usuario_imagen_url=datos_actuales.get('imagen_url'),
         imagen_url=pub.imagen_url,
         categoria=pub.categoria,
         descripcion=pub.descripcion,
@@ -194,8 +202,8 @@ def serializar_publicacion(pub: models.Publicacion, uid: str | None, foto_actual
 
 def listar_publicaciones(db: Session, uid: str | None = None) -> list[schemas.Publicacion]:
     pubs = db.query(models.Publicacion).order_by(models.Publicacion.fecha.desc()).all()
-    fotos = _fotos_actuales(db, {p.usuario_id for p in pubs})
-    return [serializar_publicacion(p, uid, fotos.get(p.usuario_id)) for p in pubs]
+    datos = _datos_actuales_batch(db, {p.usuario_id for p in pubs})
+    return [serializar_publicacion(p, uid, datos.get(p.usuario_id, {})) for p in pubs]
 
 def get_publicacion(db: Session, publicacion_id: int) -> models.Publicacion | None:
     return db.query(models.Publicacion).filter(models.Publicacion.publicacion_id == publicacion_id).first()
@@ -205,7 +213,7 @@ def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate) -> sc
     db.add(db_pub)
     db.commit()
     db.refresh(db_pub)
-    return serializar_publicacion(db_pub, publicacion.usuario_id, obtener_foto_actual(db, db_pub.usuario_id))
+    return serializar_publicacion(db_pub, publicacion.usuario_id, obtener_datos_actuales(db, db_pub.usuario_id))
 
 def editar_publicacion(db: Session, publicacion_id: int, usuario_id: str, categoria: str, descripcion: str) -> models.Publicacion | None:
     db_pub = get_publicacion(db, publicacion_id)
@@ -248,7 +256,7 @@ def toggle_like(db: Session, publicacion_id: int, usuario_id: str) -> schemas.Pu
         db.add(models.PublicacionLike(publicacion_id=publicacion_id, usuario_id=usuario_id))
     db.commit()
     db.refresh(db_pub)
-    return serializar_publicacion(db_pub, usuario_id, obtener_foto_actual(db, db_pub.usuario_id))
+    return serializar_publicacion(db_pub, usuario_id, obtener_datos_actuales(db, db_pub.usuario_id))
 
 def crear_comentario(db: Session, publicacion_id: int, comentario: schemas.ComentarioCreate) -> schemas.Publicacion | None:
     db_pub = get_publicacion(db, publicacion_id)
@@ -258,7 +266,7 @@ def crear_comentario(db: Session, publicacion_id: int, comentario: schemas.Comen
     db.add(db_comentario)
     db.commit()
     db.refresh(db_pub)
-    return serializar_publicacion(db_pub, comentario.usuario_id, obtener_foto_actual(db, db_pub.usuario_id))
+    return serializar_publicacion(db_pub, comentario.usuario_id, obtener_datos_actuales(db, db_pub.usuario_id))
 
 def guardar_publicacion(db: Session, publicacion_id: int, usuario_id: str) -> schemas.Publicacion | None:
     db_pub = get_publicacion(db, publicacion_id)
@@ -272,7 +280,7 @@ def guardar_publicacion(db: Session, publicacion_id: int, usuario_id: str) -> sc
         db.add(models.PublicacionGuardada(publicacion_id=publicacion_id, usuario_id=usuario_id))
         db.commit()
         db.refresh(db_pub)
-    return serializar_publicacion(db_pub, usuario_id, obtener_foto_actual(db, db_pub.usuario_id))
+    return serializar_publicacion(db_pub, usuario_id, obtener_datos_actuales(db, db_pub.usuario_id))
 
 def desguardar_publicacion(db: Session, publicacion_id: int, usuario_id: str) -> schemas.Publicacion | None:
     db_pub = get_publicacion(db, publicacion_id)
@@ -284,7 +292,7 @@ def desguardar_publicacion(db: Session, publicacion_id: int, usuario_id: str) ->
     ).delete()
     db.commit()
     db.refresh(db_pub)
-    return serializar_publicacion(db_pub, usuario_id, obtener_foto_actual(db, db_pub.usuario_id))
+    return serializar_publicacion(db_pub, usuario_id, obtener_datos_actuales(db, db_pub.usuario_id))
 
 def get_publicaciones_guardadas(db: Session, usuario_id: str) -> list[schemas.Publicacion]:
     pubs = (
@@ -294,8 +302,8 @@ def get_publicaciones_guardadas(db: Session, usuario_id: str) -> list[schemas.Pu
         .order_by(models.Publicacion.fecha.desc())
         .all()
     )
-    fotos = _fotos_actuales(db, {p.usuario_id for p in pubs})
-    return [serializar_publicacion(p, usuario_id, fotos.get(p.usuario_id)) for p in pubs]
+    datos = _datos_actuales_batch(db, {p.usuario_id for p in pubs})
+    return [serializar_publicacion(p, usuario_id, datos.get(p.usuario_id, {})) for p in pubs]
 
 # --- LÓGICA PARA PLANTAS (continuación) ---
 
