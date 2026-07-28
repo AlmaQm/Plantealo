@@ -29,6 +29,7 @@ export class PublicacionCardComponent implements OnInit {
   descripcionEdit = signal('');
   guardandoEdicion = signal(false);
   eliminando = signal(false);
+  imageFailed = signal(false);
 
   readonly categorias: Publicacion['categoria'][] = ['HUERTO', 'RECETA', 'CONSEJO', 'COSECHA'];
 
@@ -123,13 +124,17 @@ export class PublicacionCardComponent implements OnInit {
 
   getCategoriaLabel(): string {
     const map: Record<Publicacion['categoria'], string> = {
-      'HUERTO': '🌿 Huerto', 'RECETA': '🍳 Receta',
-      'CONSEJO': '💡 Consejo', 'COSECHA': '🌾 Cosecha'
+      'HUERTO': 'Huerto', 'RECETA': 'Receta',
+      'CONSEJO': 'Consejo', 'COSECHA': 'Cosecha'
     };
     return map[this.publicacion.categoria];
   }
 
   onImageError(event: Event): void {
     (event.target as HTMLImageElement).src = 'assets/images/placeholder-receta.jpg';
+  }
+
+  onAvatarError(): void {
+    this.imageFailed.set(true);
   }
 }

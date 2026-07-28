@@ -10,6 +10,7 @@ import { RecetaCardComponent } from '../../shared/components/receta-card/receta-
 import { RecetaWindowComponent } from '../../shared/components/receta-window/receta-window';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 import { RecetaHuerto } from '../../models/interfaces';
+import { LucideSlidersHorizontal } from '@lucide/angular';
 
 type TipoDieta = 'VEGETARIANA' | 'VEGANA' | 'OMNIVORA';
 type CategoriaFiltro = 'PRINCIPAL' | 'ENTRANTE' | 'POSTRE' | 'BEBIDA' | 'GUARNICION' | 'SALSA';
@@ -17,7 +18,7 @@ type CategoriaFiltro = 'PRINCIPAL' | 'ENTRANTE' | 'POSTRE' | 'BEBIDA' | 'GUARNIC
 @Component({
   selector: 'app-recetas',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCheckboxModule, PageHeaderComponent, RecetaCardComponent, RecetaWindowComponent],
+  imports: [CommonModule, FormsModule, MatCheckboxModule, PageHeaderComponent, RecetaCardComponent, RecetaWindowComponent, LucideSlidersHorizontal],
   templateUrl: './recetas.html',
   styleUrls: ['./recetas.scss']
 })
@@ -173,7 +174,7 @@ export class RecetasComponent implements OnInit {
 
   getDietaText(): string {
     const map: Record<TipoDieta, string> = {
-      'VEGANA': '🌱 Vegana', 'VEGETARIANA': '🥬 Vegetariana', 'OMNIVORA': '🍖 Omnívora'
+      'VEGANA': 'Vegana', 'VEGETARIANA': 'Vegetariana', 'OMNIVORA': 'Omnívora'
     };
     return map[this.dietaUsuario];
   }

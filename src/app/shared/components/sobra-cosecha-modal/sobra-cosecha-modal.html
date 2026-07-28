@@ -1,0 +1,58 @@
+<div class="modal-overlay" (click)="cerrar.emit()"></div>
+<div class="modal-dialog" (click)="$event.stopPropagation()">
+
+  @if (paso() === 'preguntar') {
+    <div class="modal-dialog__header">
+      <h3 class="modal-dialog__titulo">¿Te ha sobrado cosecha?</h3>
+    </div>
+
+    <div class="modal-dialog__body">
+      <p class="sobra-cosecha__pregunta">
+        ¿Te ha sobrado cosecha de {{ nombrePlanta() }}?
+      </p>
+    </div>
+
+    <div class="modal-dialog__footer sobra-cosecha__botones">
+      <button class="btn-secundario" (click)="cerrar.emit()">No</button>
+      <button class="btn-primario" (click)="responderSi()">Sí</button>
+    </div>
+  } @else {
+    <div class="modal-dialog__header">
+      <h3 class="modal-dialog__titulo">Publicar excedente</h3>
+      <button class="modal-dialog__cerrar" (click)="cerrar.emit()" aria-label="Cerrar">
+        <svg class="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"/><path d="M6 6 18 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-dialog__body">
+      <label class="campo-label">Cantidad (opcional)</label>
+      <input type="text" class="campo-input" placeholder="ej. un par de kilos"
+        [ngModel]="cantidad()" (ngModelChange)="cantidad.set($event)">
+
+      <label class="campo-label campo-label--mt">Ciudad</label>
+      <app-select-plantas
+        [opciones]="opcionesCiudad()"
+        [value]="ciudadIndice()"
+        [placeholder]="'Selecciona tu ciudad'"
+        (valueChange)="onCiudadIndiceChange($event)" />
+      @if (avisoCiudad() && !ciudadSeleccionada()) {
+        <p class="campo-error">Selecciona una ciudad para publicar.</p>
+      }
+
+      @if (error()) {
+        <p class="campo-error">{{ error() }}</p>
+      }
+    </div>
+
+    <div class="modal-dialog__footer">
+      <button class="btn-publicar-full"
+        [disabled]="publicando()"
+        (click)="confirmarPublicar()">
+        {{ publicando() ? 'Publicando...' : 'Publicar' }}
+      </button>
+    </div>
+  }
+
+</div>

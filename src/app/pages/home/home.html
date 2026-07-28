@@ -59,3 +59,14 @@
       </app-summary-card>
    </section>
 </main>
+
+@if (sobraCosechaVisible() && sobraCosechaPlanta()) {
+   <app-sobra-cosecha-modal
+      [nombrePlanta]="sobraCosechaPlanta()!.nombre_planta"
+      [ciudades]="sobraCosechaCiudades()"
+      [publicando]="sobraCosechaPublicando()"
+      [error]="sobraCosechaError()"
+      (cerrar)="cerrarSobraCosecha()"
+      (publicar)="publicarSobraCosecha($event)">
+   </app-sobra-cosecha-modal>
+}

@@ -9,6 +9,7 @@ class UsuarioBase(BaseModel):
     email: EmailStr
     tipo_dieta: str
     imagen_url: Optional[str] = None
+    ciudad: Optional[str] = None
 
 class UsuarioCreate(UsuarioBase):
     contrasena: str
@@ -26,6 +27,7 @@ class UsuarioSync(BaseModel):
     email: EmailStr
     tipo_dieta: str
     imagen_url: Optional[str] = None
+    ciudad: Optional[str] = None
 
 # Usuario de salida (incluye usuario_id y firebase_uid)
 class UsuarioOut(BaseModel):
@@ -36,6 +38,7 @@ class UsuarioOut(BaseModel):
     email: EmailStr
     tipo_dieta: str
     imagen_url: Optional[str] = None
+    ciudad: Optional[str] = None
     class Config:
         from_attributes = True
 
@@ -90,6 +93,7 @@ class PlantaCat(BaseModel):
 
 # Planta personal del usuario + datos del catálogo (join p_usuario + plantas)
 class PUsuarioDetall(BaseModel):
+    id: int
     planta_id: int
     usuario_id: int
     f_siembra: date
@@ -130,6 +134,7 @@ class PublicacionCreate(BaseModel):
     nombre_usuario: str
     username: str
     avatar_inicial: str
+    usuario_imagen_url: Optional[str] = None
     categoria: str
     descripcion: str
     imagen_url: Optional[str] = None
@@ -140,6 +145,7 @@ class Publicacion(BaseModel):
     nombre_usuario: str
     username: str
     avatar_inicial: Optional[str] = None
+    usuario_imagen_url: Optional[str] = None
     imagen_url: Optional[str] = None
     categoria: str
     descripcion: str
@@ -164,6 +170,62 @@ class GuardarToggle(BaseModel):
 
 class ImagenUpdate(BaseModel):
     imagen_url: str
+
+# --- INTERCAMBIOS ---
+
+class IntercambioCreate(BaseModel):
+    usuario_id: str
+    nombre_usuario: str
+    email: Optional[str] = None
+    planta_id: int
+    cantidad_aprox: Optional[str] = None
+    ciudad: str
+
+class Intercambio(BaseModel):
+    id: int
+    usuario_id: str
+    nombre_usuario: str
+    email: Optional[str] = None
+    planta_id: int
+    nombre_planta: str
+    imagen_url: Optional[str] = None
+    cantidad_aprox: Optional[str] = None
+    ciudad: str
+    estado: str
+    fecha_creacion: datetime
+    class Config:
+        from_attributes = True
+
+class IntercambioCerrar(BaseModel):
+    usuario_id: str
+
+# --- CHAT DE INTERCAMBIOS ---
+
+class MensajeCreate(BaseModel):
+    destinatario_uid: str
+    remitente_nombre: str
+    texto: str
+
+class Mensaje(BaseModel):
+    id: int
+    intercambio_id: int
+    remitente_uid: str
+    remitente_nombre: str
+    destinatario_uid: str
+    texto: str
+    leido: bool
+    fecha: datetime
+    class Config:
+        from_attributes = True
+
+class ConversacionResumen(BaseModel):
+    intercambio_id: int
+    nombre_planta: str
+    otro_uid: str
+    otro_nombre: str
+    ultimo_mensaje: str
+    ultima_fecha: datetime
+    no_leidos: int
 
 # --- Nivel 1: ¿Qué puedo cocinar con mi huerto? ---
 

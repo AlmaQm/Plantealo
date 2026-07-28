@@ -29,15 +29,24 @@ export class PerfilComponent {
     initialValue: this.authService.getStoredUser()
   });
 
-  readonly totalPlantas = computed(() => this.plantasService.inventario().length);
+  // Una planta ya cosechada (f_cosecha marcado) deja de contar como activa en
+  // el huerto: sigue en el inventario (para el historial) pero no aquí.
+  private readonly plantasActivas = computed(() =>
+    this.plantasService.inventario().filter(p => !p.f_cosecha)
+  );
+
+  readonly totalPlantas = computed(() => this.plantasActivas().length);
 
   readonly plantasListas = computed(() =>
-    this.plantasService.inventario().filter(p => calcularEstado(p) === 'LISTA').length
+    this.plantasActivas().filter(p => calcularEstado(p) === 'LISTA').length
   );
 
   readonly plantasCreciendo = computed(() =>
-    this.plantasService.inventario().filter(p => calcularEstado(p) === 'CRECIENDO').length
+    this.plantasActivas().filter(p => calcularEstado(p) === 'CRECIENDO').length
   );
+
+  // El historial sí incluye las cosechadas: es el inventario completo, sin filtrar.
+  readonly totalHistorial = computed(() => this.plantasService.inventario().length);
 
   dietaLabel(tipo: string | undefined): string {
     return DIETA_LABEL[tipo ?? ''] ?? '';

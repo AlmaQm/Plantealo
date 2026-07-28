@@ -49,10 +49,10 @@ export class Register {
   readonly contrasenaVisible = signal(false);
   readonly confirmarContrasenaVisible = signal(false);
 
-  readonly dietaOpciones: { valor: TipoDieta; emoji: string; label: string }[] = [
-    { valor: 'OMNIVORA',    emoji: '🥩', label: 'Omnívora' },
-    { valor: 'VEGETARIANA', emoji: '🥗', label: 'Vegetariana' },
-    { valor: 'VEGANA',      emoji: '🌱', label: 'Vegana' },
+  readonly dietaOpciones: { valor: TipoDieta; label: string }[] = [
+    { valor: 'OMNIVORA',    label: 'Omnívora' },
+    { valor: 'VEGETARIANA', label: 'Vegetariana' },
+    { valor: 'VEGANA',      label: 'Vegana' },
   ];
 
   readonly form = new FormGroup<RegisterForm>(

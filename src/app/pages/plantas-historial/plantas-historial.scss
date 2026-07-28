@@ -86,5 +86,10 @@
       background: $md-danger-soft;
       color: $md-danger;
     }
+
+    &.estado--cosechada {
+      background: rgba($md-ink-muted, 0.15);
+      color: $md-ink-muted;
+    }
   }
 }

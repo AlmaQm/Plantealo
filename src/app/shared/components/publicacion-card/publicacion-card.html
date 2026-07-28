@@ -2,7 +2,11 @@
 
   <!-- Cabecera -->
   <div class="pub-card__header">
-    <div class="pub-card__avatar">{{ publicacion.avatar_inicial }}</div>
+    @if (publicacion.usuario_imagen_url && !imageFailed()) {
+      <img class="pub-card__avatar pub-card__avatar--img" [src]="publicacion.usuario_imagen_url" [alt]="publicacion.nombre_usuario" (error)="onAvatarError()" />
+    } @else {
+      <div class="pub-card__avatar">{{ publicacion.avatar_inicial }}</div>
+    }
     <div class="pub-card__user">
       <span class="pub-card__nombre">{{ publicacion.nombre_usuario }}</span>
       <span class="pub-card__username">{{ publicacion.username }}</span>
@@ -32,6 +36,29 @@
          [alt]="publicacion.descripcion"
          (error)="onImageError($event)">
     <span class="pub-card__badge categoria--{{ publicacion.categoria | lowercase }}">
+      <svg class="pub-card__badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        @switch (publicacion.categoria) {
+          @case ('HUERTO') {
+            <path d="M12 22V13"/>
+            <path d="M12 13C12 8 8 5 3 5c0 5 3 9 8 9Z"/>
+            <path d="M12 13c0-4 3-7 8-7 0 4-3 7-8 7Z"/>
+          }
+          @case ('RECETA') {
+            <path d="M18 2v7c0 1.1-.9 2-2 2h-1v11"/>
+            <path d="M6 2v7c0 1.1.9 2 2 2h1v11"/>
+            <path d="M8 2v7"/>
+          }
+          @case ('CONSEJO') {
+            <path d="M9 18h6"/>
+            <path d="M10 22h4"/>
+            <path d="M12 2a6 6 0 0 0-6 6c0 3 2 4.5 3 6.5.4.8.6 1.5.7 2.5h4.6c.1-1 .3-1.7.7-2.5 1-2 3-3.5 3-6.5a6 6 0 0 0-6-6Z"/>
+          }
+          @case ('COSECHA') {
+            <path d="M2 22 12 12"/>
+            <path d="M12 12c-3-3-3-7-1-9 2-2 6-2 9 1 3 3 3 7 1 9-2 2-6 2-9-1Z"/>
+          }
+        }
+      </svg>
       {{ getCategoriaLabel() }}
     </span>
   </div>

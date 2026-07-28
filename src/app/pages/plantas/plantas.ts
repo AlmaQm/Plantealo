@@ -36,7 +36,10 @@ export class PlantasComponent {
 
   plantasFiltradas = computed(() => {
     const filtro = this.filtroActivo();
-    const inventario = this.plantasService.inventario();
+    // Una vez cosechada (f_cosecha marcado desde el Home) la planta deja de estar
+    // activa en el huerto: desaparece de aquí pero sigue viéndose en el historial
+    // del perfil, que lee el mismo inventario sin este filtro.
+    const inventario = this.plantasService.inventario().filter(p => !p.f_cosecha);
     if (filtro === 'TODAS') return inventario;
     return inventario.filter(p =>
       p.tipo_planta === filtro ||
@@ -70,6 +73,7 @@ export class PlantasComponent {
       f_recogida.setDate(f_recogida.getDate() + diasHastaCosecha(planta.nombre_planta));
 
       this.plantasService.addPlanta({
+        id: 0,
         planta_id: planta.planta_id,
         usuario_id: 0,
         nombre_planta: planta.nombre_planta,

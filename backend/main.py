@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from groq import Groq
 import httpx
 import models, schemas, crud, database
+from ciudades import CIUDADES
+from firebase_auth import verificar_token
 import os
 import time
 import csv
@@ -115,6 +117,14 @@ def upload_catalogo_csv(file: UploadFile = File(...), db: Session = Depends(get_
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo CSV: {str(e)}")
 
 
+# --- CIUDADES (catálogo cerrado para registro e Intercambios) ---
+
+@app.get("/ciudades/", response_model=List[str])
+def get_ciudades():
+    """Lista cerrada de ciudades: única fuente de verdad para registro e Intercambios."""
+    return CIUDADES
+
+
 # --- SINCRONIZACIÓN FIREBASE ↔ AIVEN ---
 
 @app.post("/usuarios/sync", response_model=schemas.UsuarioOut)
@@ -139,6 +149,7 @@ def eliminar_usuario_endpoint(firebase_uid: str, db: Session = Depends(get_db)):
 @app.post("/usuarios/by-uid/{firebase_uid}/avatar")
 async def subir_avatar(
     firebase_uid: str,
+    request: Request,
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
@@ -150,12 +161,35 @@ async def subir_avatar(
     nombre_archivo = f"{firebase_uid}.{extension}"
     ruta = f"uploads/avatars/{nombre_archivo}"
 
+    # NOTA (almacenamiento efímero): en Render, sin disco persistente,
+    # todo lo que se escriba en uploads/avatars/ se borra en cada redeploy
+    # o reinicio del servicio. A medio plazo hay que mover los avatares a
+    # un storage externo (Firebase Storage, S3, Cloudinary, etc.) en vez
+    # de depender del filesystem local.
     with open(ruta, "wb") as f:
         contenido = await file.read()
         f.write(contenido)
 
-    # URL completa que el frontend pueda usar
-    url = f"{os.getenv('BACKEND_URL', 'http://localhost:8000')}/uploads/avatars/{nombre_archivo}"
+    # URL completa que el frontend pueda usar.
+    # No confiamos ciegamente en BACKEND_URL: si no está seteada (p.ej.
+    # porque en Render se olvidó configurarla o quedó copiada del .env
+    # local), en vez de caer en silencio a "http://localhost:8000" (que
+    # nunca resuelve desde el navegador de un usuario real), derivamos la
+    # base de la propia request entrante.
+    backend_url = os.getenv('BACKEND_URL', '').rstrip('/')
+    if backend_url:
+        base_url = backend_url
+    else:
+        base_url = str(request.base_url).rstrip('/')
+        # Render (y proxies similares) terminan TLS en el borde y reenvían
+        # HTTP en texto plano al contenedor, así que request.base_url
+        # reportará "http://" salvo que uvicorn confíe explícitamente en
+        # X-Forwarded-Proto (no configurado en este repo). Forzamos https
+        # salvo en desarrollo local, para no servir contenido mixto a una
+        # página cargada por https.
+        if base_url.startswith('http://') and request.url.hostname not in ('localhost', '127.0.0.1'):
+            base_url = 'https://' + base_url[len('http://'):]
+    url = f"{base_url}/uploads/avatars/{nombre_archivo}"
     usuario.imagen_url = url
     db.commit()
 
@@ -169,6 +203,7 @@ def get_plantas_by_uid(firebase_uid: str, db: Session = Depends(get_db)):
     filas = crud.get_plantas_usuario(db, usuario.usuario_id)
     return [
         schemas.PUsuarioDetall(
+            id=pu.id,
             planta_id=pu.planta_id,
             usuario_id=pu.usuario_id,
             f_siembra=pu.f_siembra,
@@ -193,21 +228,21 @@ def add_planta_by_uid(firebase_uid: str, planta: schemas.PUsuarioCreate, db: Ses
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return crud.crear_planta_usuario(db=db, planta=planta, usuario_id=usuario.usuario_id)
 
-@app.delete("/usuarios/by-uid/{firebase_uid}/plantas/{planta_id}")
+@app.delete("/usuarios/by-uid/{firebase_uid}/plantas/registro/{id}")
 def eliminar_planta_usuario(
     firebase_uid: str,
-    planta_id: int,
+    id: int,
     db: Session = Depends(get_db)
 ):
     usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    print(f"DELETE: firebase_uid={firebase_uid}, planta_id={planta_id}, usuario={usuario.usuario_id if usuario else None}")
+    print(f"DELETE: firebase_uid={firebase_uid}, id={id}, usuario={usuario.usuario_id if usuario else None}")
 
     planta = db.query(models.PUsuario).filter(
         models.PUsuario.usuario_id == usuario.usuario_id,
-        models.PUsuario.planta_id == planta_id
+        models.PUsuario.id == id
     ).first()
 
     if not planta:
@@ -217,22 +252,22 @@ def eliminar_planta_usuario(
     db.commit()
     return {"mensaje": "Planta eliminada correctamente"}
 
-@app.patch("/usuarios/by-uid/{firebase_uid}/plantas/{planta_id}/riego", response_model=schemas.PUsuario)
-def marcar_riego_by_uid(firebase_uid: str, planta_id: int, data: schemas.RiegoUpdate, db: Session = Depends(get_db)):
+@app.patch("/usuarios/by-uid/{firebase_uid}/plantas/registro/{id}/riego", response_model=schemas.PUsuario)
+def marcar_riego_by_uid(firebase_uid: str, id: int, data: schemas.RiegoUpdate, db: Session = Depends(get_db)):
     usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    planta = crud.marcar_riego(db, usuario.usuario_id, planta_id, data.regado)
+    planta = crud.marcar_riego(db, usuario.usuario_id, id, data.regado)
     if not planta:
         raise HTTPException(status_code=404, detail="Planta no encontrada")
     return planta
 
-@app.patch("/usuarios/by-uid/{firebase_uid}/plantas/{planta_id}/cosecha", response_model=schemas.PUsuario)
-def marcar_cosecha_by_uid(firebase_uid: str, planta_id: int, data: schemas.CosechaUpdate, db: Session = Depends(get_db)):
+@app.patch("/usuarios/by-uid/{firebase_uid}/plantas/registro/{id}/cosecha", response_model=schemas.PUsuario)
+def marcar_cosecha_by_uid(firebase_uid: str, id: int, data: schemas.CosechaUpdate, db: Session = Depends(get_db)):
     usuario = crud.get_usuario_by_firebase_uid(db, firebase_uid)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    planta = crud.marcar_cosecha(db, usuario.usuario_id, planta_id, data.cosechado)
+    planta = crud.marcar_cosecha(db, usuario.usuario_id, id, data.cosechado)
     if not planta:
         raise HTTPException(status_code=404, detail="Planta no encontrada")
     return planta
@@ -242,6 +277,7 @@ def get_plantas_de_usuario(usuario_id: int, db: Session = Depends(get_db)):
     filas = crud.get_plantas_usuario(db, usuario_id)
     return [
         schemas.PUsuarioDetall(
+            id=pu.id,
             planta_id=pu.planta_id,
             usuario_id=pu.usuario_id,
             f_siembra=pu.f_siembra,
@@ -510,3 +546,86 @@ def desguardar_receta_endpoint(usuario_id: int, id_receta: int, db: Session = De
 def listar_recetas_guardadas(usuario_id: int, db: Session = Depends(get_db)):
     """Devuelve las recetas que el usuario tiene guardadas."""
     return crud.get_recetas_guardadas(db=db, usuario_id=usuario_id)
+
+
+# --- INTERCAMBIOS ---
+
+@app.post("/intercambios/", response_model=schemas.Intercambio)
+def crear_intercambio_endpoint(data: schemas.IntercambioCreate, db: Session = Depends(get_db)):
+    return crud.crear_intercambio(db, data)
+
+
+@app.get("/intercambios/", response_model=List[schemas.Intercambio])
+def listar_intercambios_endpoint(
+    ciudad: Optional[str] = None,
+    planta_id: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    return crud.listar_intercambios(db, ciudad=ciudad, planta_id=planta_id)
+
+
+@app.patch("/intercambios/{intercambio_id}/cerrar", response_model=schemas.Intercambio)
+def cerrar_intercambio_endpoint(intercambio_id: int, body: schemas.IntercambioCerrar, db: Session = Depends(get_db)):
+    intercambio = crud.cerrar_intercambio(db, intercambio_id, body.usuario_id)
+    if not intercambio:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
+    return crud._serializar_intercambio(intercambio)
+
+
+@app.delete("/intercambios/{intercambio_id}")
+def eliminar_intercambio_endpoint(intercambio_id: int, usuario_id: str, db: Session = Depends(get_db)):
+    ok = crud.eliminar_intercambio(db, intercambio_id, usuario_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada o no eres el autor")
+    return {"status": "eliminada"}
+
+
+# --- CHAT DE INTERCAMBIOS ---
+# uid siempre viene del token de Firebase verificado (Depends(verificar_token)),
+# nunca del cliente: es la primera zona del backend con esa comprobación real.
+
+@app.get("/intercambios/{intercambio_id}/mensajes", response_model=List[schemas.Mensaje])
+def listar_mensajes_endpoint(
+    intercambio_id: int,
+    con: str,
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    return crud.listar_mensajes(db, intercambio_id, uid, con)
+
+
+@app.post("/intercambios/{intercambio_id}/mensajes", response_model=schemas.Mensaje)
+def enviar_mensaje_endpoint(
+    intercambio_id: int,
+    body: schemas.MensajeCreate,
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    return crud.enviar_mensaje(db, intercambio_id, uid, body.remitente_nombre, body.destinatario_uid, body.texto)
+
+
+@app.get("/mensajes/conversaciones", response_model=List[schemas.ConversacionResumen])
+def listar_conversaciones_endpoint(
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    return crud.listar_conversaciones(db, uid)
+
+
+@app.get("/mensajes/no-leidos", response_model=int)
+def contar_no_leidos_endpoint(
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    return crud.contar_no_leidos(db, uid)
+
+
+@app.delete("/intercambios/{intercambio_id}/mensajes")
+def eliminar_conversacion_endpoint(
+    intercambio_id: int,
+    con: str,
+    uid: str = Depends(verificar_token),
+    db: Session = Depends(get_db)
+):
+    crud.eliminar_conversacion(db, intercambio_id, uid, con)
+    return {"status": "eliminada"}

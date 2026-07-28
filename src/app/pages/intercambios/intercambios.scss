@@ -1,0 +1,399 @@
+@use 'styles/model-d-home' as *;
+@use 'styles/variables' as *;
+
+.intercambios-page {
+  min-height: 100vh;
+  padding: 0 16px 80px;
+  // Textura de corcho casi imperceptible: mismo espíritu que la sombra
+  // "casi invisible" del Modelo D, resuelta en el propio tono tierra.
+  background:
+    radial-gradient(circle at 1px 1px, rgba($md-earth, 0.16) 1px, transparent 0) 0 0/16px 16px,
+    $md-bg;
+
+  &__filtros {
+    display: flex;
+    gap: 10px;
+    padding: 4px 0 18px;
+  }
+
+  &__lista {
+    display: grid;
+    // 2 columnas por defecto (movil estrecho, 320-390px): con 3 las tarjetas
+    // quedan demasiado apretadas. A partir de ~400px hay sitio de sobra para 3.
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 10px;
+
+    @media (min-width: 400px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &__vacio {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 13px;
+    color: $green-5;
+    padding: 32px 16px;
+  }
+}
+
+.intercambios-page__mensajes {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 12px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: $md-radius-md;
+  background: $md-surface;
+  box-shadow: $md-shadow;
+  color: $green-6;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: $md-font;
+  cursor: pointer;
+
+  &:hover { background: $md-accent-soft; }
+}
+
+// Circulito rojo con el numero de mensajes sin leer.
+.badge-no-leidos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #e11d48;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  font-family: $md-font;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  animation: fadeIn 0.2s ease;
+}
+
+.conversaciones-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: $md-bg;
+  border-radius: $md-radius-xl;
+  box-shadow: $md-shadow;
+  z-index: 201;
+  width: calc(100% - 32px);
+  max-width: 380px;
+  max-height: 72vh;
+  overflow-y: auto;
+  animation: zoomIn 0.22s ease;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 16px 10px;
+    position: sticky;
+    top: 0;
+    background: $md-bg;
+  }
+
+  &__titulo {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: $green-7;
+    font-family: $md-font;
+  }
+
+  &__cerrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $green-5;
+    cursor: pointer;
+    padding: 4px;
+
+    .icon-x {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px 12px 16px;
+  }
+
+  &__vacio {
+    text-align: center;
+    font-size: 13px;
+    color: $green-5;
+    padding: 20px 0;
+    font-family: $md-font;
+  }
+}
+
+.conversacion-item {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  background: $md-surface;
+  border-radius: $md-radius-md;
+  box-shadow: $md-shadow;
+  font-family: $md-font;
+
+  &__cuerpo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+    border: none;
+    background: transparent;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-family: $md-font;
+
+    &:hover { background: $md-accent-soft; }
+  }
+
+  &__cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+  }
+  &__nombre {
+    font-size: 13px;
+    font-weight: 700;
+    color: $green-7;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &__planta {
+    font-size: 11px;
+    color: $green-6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  &__ultimo {
+    font-size: 11px;
+    color: $green-5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  &__eliminar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: $green-5;
+    padding: 0 12px;
+    cursor: pointer;
+
+    .icon-x {
+      width: 13px;
+      height: 13px;
+    }
+
+    &:hover { color: $md-danger; }
+  }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+// app-select-plantas (mismo componente reutilizable que "Añadir planta"):
+// en la fila de filtros necesita repartirse igual que antes hacia los selects
+// nativos que sustituye.
+.intercambios-page__filtros app-select-plantas {
+  flex: 1;
+  min-width: 0;
+}
+
+// Tarjeta "clavada": el pin es un marcador decorativo (no un control), por
+// eso puede ser un círculo perfecto sin romper la regla de radios contenidos
+// del Modelo D. Aquí sujeta literalmente la foto — la foto es lo que manda,
+// el texto es soporte debajo.
+.intercambio-card {
+  position: relative;
+  background: $md-surface;
+  border-radius: $md-radius-lg;
+  box-shadow: $md-shadow;
+  padding: 12px 10px 10px;
+  min-width: 0;
+
+  &__pin {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $md-accent;
+    box-shadow: $md-shadow, 0 1px 0 rgba(255, 255, 255, 0.25) inset;
+    z-index: 1;
+  }
+
+  &:nth-child(even) &__pin {
+    background: $md-earth;
+  }
+
+  &__imagen {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: $md-radius-md;
+    background: $md-surface-2;
+  }
+
+  &__top {
+    padding-top: 8px;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__planta {
+    font-size: 13px;
+    font-weight: 600;
+    color: $md-ink;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__autor {
+    font-size: 10px;
+    color: $md-ink-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  &__ciudad {
+    flex-shrink: 0;
+    font-size: 9px;
+    font-weight: 700;
+    color: $md-accent;
+    background: $md-accent-soft;
+    padding: 2px 7px;
+    border-radius: $md-radius-sm;
+    white-space: nowrap;
+  }
+
+  &:nth-child(even) &__ciudad {
+    color: $md-earth;
+    background: $md-earth-soft;
+  }
+
+  &__cantidad {
+    font-size: 10px;
+    font-style: italic;
+    color: $md-ink-muted;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__contactar {
+    display: block;
+    width: 100%;
+    margin: 8px 0 0;
+    text-align: center;
+    border: none;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: inherit;
+    color: $md-on-accent;
+    background: $md-accent;
+    padding: 6px 0;
+    border-radius: $md-radius-md;
+    cursor: pointer;
+
+    &:hover { background: $md-accent-hover; }
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px 6px;
+    font-size: 9px;
+    color: $md-ink-muted;
+    margin-top: 6px;
+    padding-top: 5px;
+    border-top: 1px dashed $md-earth-soft;
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &__acciones {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  &__cerrar,
+  &__eliminar {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: $md-ink-muted;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+
+    &:hover { color: $md-danger; }
+  }
+}

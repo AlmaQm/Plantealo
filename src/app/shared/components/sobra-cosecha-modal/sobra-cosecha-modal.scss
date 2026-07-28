@@ -1,0 +1,151 @@
+@use 'styles/variables' as *;
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #F5EFE6;
+  border-radius: 20px;
+  z-index: 201;
+  padding: 24px 20px 28px;
+  width: calc(100% - 32px);
+  max-width: 380px;
+  max-height: 88vh;
+  // 'visible' (no scroll propio): el contenido de esta mini card siempre es
+  // corto, y con overflow-y:auto el panel del selector de ciudad quedaba
+  // recortado por el borde del modal en vez de desplegarse por encima.
+  overflow: visible;
+  animation: zoomIn 0.22s ease;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  &__titulo {
+    font-size: 18px;
+    font-weight: 700;
+    color: $green-7;
+    margin: 0;
+  }
+
+  &__cerrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: $green-5;
+    cursor: pointer;
+    padding: 4px;
+
+    .icon-x {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__body { margin-bottom: 20px; }
+
+  &__footer { }
+}
+
+.sobra-cosecha {
+  &__pregunta {
+    font-size: 15px;
+    color: $green-7;
+    text-align: center;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  &__botones {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+}
+
+.btn-primario,
+.btn-secundario {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-secundario {
+  background: $green-1;
+  color: $green-6;
+}
+
+.btn-primario {
+  background: $green-6;
+  color: white;
+
+  &:hover { background: $green-7; }
+}
+
+.campo-label--mt { margin-top: 16px; }
+
+.campo-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: $green-6;
+  margin-bottom: 8px;
+}
+
+.campo-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 1.5px solid white;
+  border-radius: 12px;
+  font-size: 14px;
+  color: $green-7;
+  background: white;
+  font-family: inherit;
+
+  &:focus { outline: none; border-color: $green-4; }
+}
+
+.campo-error {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #c0392b;
+}
+
+.btn-publicar-full {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: $earth-9;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease;
+
+  &:disabled { background: $green-3; cursor: not-allowed; }
+  &:not(:disabled):hover { background: darken($earth-9, 6%); }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }

@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild, signal, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, signal, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { IonModal } from '@ionic/angular/standalone';
 import { switchMap } from 'rxjs';
 import { PlantasService, diasHastaCosecha, getTipoPlanta } from '../../services/plantas';
 import { AuthService } from '../../services/auth';
@@ -237,13 +236,22 @@ function normalizar(s: string): string {
 @Component({
   selector: 'app-diet-recommendations',
   standalone: true,
-  imports: [CommonModule, IonModal, LucideDynamicIcon, LucideSprout, LucideCheck, RecetaCardComponent, RecetaWindowComponent],
+  imports: [CommonModule, LucideDynamicIcon, LucideSprout, LucideCheck, RecetaCardComponent, RecetaWindowComponent],
   templateUrl: './diet-recommendations.html',
   styleUrls: ['./diet-recommendations.scss'],
 })
 export class DietRecommendationsComponent implements OnInit {
-  @ViewChild('calModal') calModal!: IonModal;
-  @ViewChild('detalleModal') detalleModal!: IonModal;
+  @ViewChild('calSheet') calSheetEl!: ElementRef<HTMLElement>;
+
+  // Sheet propio (sin ion-modal): position:fixed anclado de verdad al fondo
+  // real de la pantalla, con arrastre tactil para cerrar.
+  calAbierto = signal(false);
+  calArrastreOffset = signal(0);
+  calArrastrando = signal(false);
+  private calAlturaSheet = 0;
+  private calArrastreInicioY = 0;
+  private calMoveListener?: (e: PointerEvent) => void;
+  private calUpListener?: (e: PointerEvent) => void;
 
   plantas: Planta[] = [];
   temporadas: Temporada[] = [];
@@ -260,12 +268,15 @@ export class DietRecommendationsComponent implements OnInit {
   private errorTimer: any;
 
   verduraSeleccionada = signal<Planta | null>(null);
+  detalleAbierto = signal(false);
 
   // Recomanació de recepta amb el sistema de recetes de l'Alma (RecetaHuerto)
   private readonly authService = inject(AuthService);
   private readonly recetasService = inject(RecetasService);
   private readonly destroyRef = inject(DestroyRef);
-  recetaRecomendada: RecetaHuerto | null = null;
+  // Signal: esta app no usa zone.js, así que una propiedad plana mutada dentro
+  // de un .subscribe() async no dispara detección de cambios por sí sola.
+  recetaRecomendada = signal<RecetaHuerto | null>(null);
   usuarioId = 0;
   private dietaUsuario = 'OMNIVORA';
   mostrarRecetaModal = signal(false);
@@ -292,7 +303,7 @@ export class DietRecommendationsComponent implements OnInit {
         this.dietaUsuario = usuario.tipo_dieta || 'OMNIVORA';
         this.cargarRecetaRecomendada();
       } else {
-        this.recetaRecomendada = null;
+        this.recetaRecomendada.set(null);
       }
     });
   }
@@ -312,11 +323,11 @@ export class DietRecommendationsComponent implements OnInit {
       next: (recetas) => {
         const compatibles = recetas.filter(r => this.encajaConDieta(r.tipo_dieta));
         const [mejor] = [...compatibles].sort((a, b) => a.ingredientes_faltantes - b.ingredientes_faltantes);
-        this.recetaRecomendada = mejor ?? null;
+        this.recetaRecomendada.set(mejor ?? null);
       },
       error: (err) => {
         console.error('❌ [cargarRecetaRecomendada] Error al cargar la receta recomendada:', err);
-        this.recetaRecomendada = null;
+        this.recetaRecomendada.set(null);
       },
     });
   }
@@ -373,6 +384,7 @@ export class DietRecommendationsComponent implements OnInit {
     cosecha.setDate(cosecha.getDate() + diasHastaCosecha(t.nombre));
 
     const nueva: PlantaHuerto = {
+      id: 0,
       planta_id: planta.planta_id,
       usuario_id: 1,
       nombre_planta: t.nombre,
@@ -400,12 +412,56 @@ export class DietRecommendationsComponent implements OnInit {
   }
 
   abrirCalendario() {
-    this.calModal.present();
+    this.calArrastreOffset.set(0);
+    this.calAbierto.set(true);
+  }
+
+  cerrarCalendario() {
+    this.calAbierto.set(false);
+    this.calArrastreOffset.set(0);
+  }
+
+  // Arrastre tactil/raton del sheet: solo desde el handle/cabecera (el cuerpo
+  // con la lista de plantas sigue teniendo su propio scroll normal).
+  onCalArrastreInicio(event: PointerEvent): void {
+    if ((event.target as HTMLElement).closest('.cal-close')) return;
+    event.preventDefault();
+    this.calArrastrando.set(true);
+    this.calArrastreInicioY = event.clientY;
+    this.calAlturaSheet = this.calSheetEl.nativeElement.getBoundingClientRect().height;
+
+    this.calMoveListener = (e: PointerEvent) => {
+      const delta = Math.max(0, e.clientY - this.calArrastreInicioY);
+      this.calArrastreOffset.set(delta);
+    };
+    this.calUpListener = () => {
+      window.removeEventListener('pointermove', this.calMoveListener!);
+      window.removeEventListener('pointerup', this.calUpListener!);
+      window.removeEventListener('pointercancel', this.calUpListener!);
+      this.calArrastrando.set(false);
+
+      const umbral = this.calAlturaSheet * 0.3;
+      if (this.calArrastreOffset() > umbral) {
+        this.cerrarCalendario();
+      } else {
+        this.calArrastreOffset.set(0);
+      }
+    };
+    window.addEventListener('pointermove', this.calMoveListener);
+    window.addEventListener('pointerup', this.calUpListener);
+    window.addEventListener('pointercancel', this.calUpListener);
   }
 
   abrirDetalle(planta: Planta) {
+    // Centrado en pantalla por CSS (position:fixed + centrado clasico): al
+    // ser relativo al viewport actual, sale centrado estes donde estes con
+    // el scroll, sin depender de la posicion de la card pulsada.
     this.verduraSeleccionada.set(planta);
-    this.detalleModal.present();
+    this.detalleAbierto.set(true);
+  }
+
+  cerrarDetalle() {
+    this.detalleAbierto.set(false);
   }
 
   getDescripcion(nombre: string): string {

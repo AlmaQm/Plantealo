@@ -1,0 +1,123 @@
+<div class="intercambios-page">
+
+  <app-page-header
+    [titulo]="'Intercambios'"
+    [subtitulo]="'Descubre quién tiene excedente de cosecha cerca de ti'"
+    [bg]="'md-bg'">
+  </app-page-header>
+
+  <button class="intercambios-page__mensajes" (click)="abrirConversaciones()">
+    Mis conversaciones
+    @if (noLeidosTotal() > 0) {
+      <span class="badge-no-leidos">{{ noLeidosTotal() }}</span>
+    }
+  </button>
+
+  <div class="intercambios-page__filtros">
+    <app-select-plantas
+      [opciones]="opcionesCiudad()"
+      [value]="ciudadIndiceSeleccionado()"
+      [placeholder]="'Todas las ciudades'"
+      (valueChange)="onCiudadIndiceChange($event)" />
+
+    <app-select-plantas
+      [opciones]="opcionesVerdura()"
+      [value]="plantaSeleccionada()"
+      [placeholder]="'Todas las verduras'"
+      (valueChange)="onPlantaChange($event)" />
+  </div>
+
+  <div class="intercambios-page__lista">
+    @for (i of lista(); track i.id) {
+      <div class="intercambio-card">
+        <div class="intercambio-card__pin"></div>
+        <img class="intercambio-card__imagen"
+             [src]="i.imagen_url"
+             [alt]="i.nombre_planta"
+             (error)="$any($event.target).src='assets/images/placeholder-receta.jpg'">
+        <div class="intercambio-card__top">
+          <div class="intercambio-card__info">
+            <span class="intercambio-card__planta">{{ i.nombre_planta }}</span>
+            <span class="intercambio-card__autor">{{ i.nombre_usuario }}</span>
+          </div>
+        </div>
+        <div class="intercambio-card__tags">
+          <span class="intercambio-card__ciudad">{{ i.ciudad }}</span>
+          @if (i.cantidad_aprox) {
+            <span class="intercambio-card__cantidad">{{ i.cantidad_aprox }}</span>
+          }
+        </div>
+        @if (i.usuario_id !== miUid) {
+          <button class="intercambio-card__contactar" (click)="abrirChatDesdeTarjeta(i)">Contactar</button>
+        }
+        <div class="intercambio-card__meta">
+          <span>{{ formatFecha(i.fecha_creacion) }}</span>
+          @if (i.usuario_id === miUid) {
+            <div class="intercambio-card__acciones">
+              <button class="intercambio-card__cerrar" (click)="cerrar(i)">Ya no disponible</button>
+              <button class="intercambio-card__eliminar" (click)="eliminar(i)">Eliminar</button>
+            </div>
+          }
+        </div>
+      </div>
+    } @empty {
+      @if (cargando()) {
+        <p class="intercambios-page__vacio">Cargando...</p>
+      } @else {
+        <p class="intercambios-page__vacio">No hay excedentes publicados con estos filtros.</p>
+      }
+    }
+  </div>
+
+</div>
+
+@if (conversacionesAbierto()) {
+  <div class="modal-overlay" (click)="cerrarConversaciones()"></div>
+  <div class="conversaciones-dialog" (click)="$event.stopPropagation()">
+    <div class="conversaciones-dialog__header">
+      <h3 class="conversaciones-dialog__titulo">Mis conversaciones</h3>
+      <button class="conversaciones-dialog__cerrar" (click)="cerrarConversaciones()" aria-label="Cerrar">
+        <svg class="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"/><path d="M6 6 18 18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="conversaciones-dialog__lista">
+      @if (cargandoConversaciones()) {
+        <p class="conversaciones-dialog__vacio">Cargando...</p>
+      } @else if (conversaciones().length === 0) {
+        <p class="conversaciones-dialog__vacio">Aún no tienes conversaciones.</p>
+      } @else {
+        @for (c of conversaciones(); track c.intercambio_id + c.otro_uid) {
+          <div class="conversacion-item">
+            <button class="conversacion-item__cuerpo" (click)="abrirChatDesdeConversacion(c)">
+              <div class="conversacion-item__cabecera">
+                <span class="conversacion-item__nombre">{{ c.otro_nombre }}</span>
+                @if (c.no_leidos > 0) {
+                  <span class="badge-no-leidos">{{ c.no_leidos }}</span>
+                }
+              </div>
+              <span class="conversacion-item__planta">sobre {{ c.nombre_planta }}</span>
+              <span class="conversacion-item__ultimo">{{ c.ultimo_mensaje }}</span>
+            </button>
+            <button class="conversacion-item__eliminar" (click)="eliminarConversacion(c)" aria-label="Eliminar conversación">
+              <svg class="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6 6 18"/><path d="M6 6 18 18"/>
+              </svg>
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+}
+
+@if (chatActivo()) {
+  <app-chat-modal
+    [intercambioId]="chatActivo()!.intercambioId"
+    [otroUid]="chatActivo()!.otroUid"
+    [otroNombre]="chatActivo()!.otroNombre"
+    [nombrePlanta]="chatActivo()!.nombrePlanta"
+    (cerrar)="cerrarChat()">
+  </app-chat-modal>
+}

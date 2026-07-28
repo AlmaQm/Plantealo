@@ -29,6 +29,16 @@
     &--vacio {
       color: $green-5;
     }
+
+    // Texto truncado con puntos suspensivos: en filas estrechas (dos
+    // selects lado a lado en movil) una ciudad larga tipo "L'Hospitalet
+    // de Llobregat" desbordaba el botón en vez de recortarse.
+    span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
   &__icono {

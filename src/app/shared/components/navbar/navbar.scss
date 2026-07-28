@@ -18,7 +18,7 @@
   a {
     text-decoration: none;
     color: $green-6;
-    font-size: 12px;
+    font-size: 11px;
     cursor: pointer;
 
     .icon-wrap {
@@ -27,12 +27,12 @@
       align-items: center;
       gap: 4px;
       border-radius: 20px;
-      padding: 6px 16px;
+      padding: 6px 10px;
       background-color: transparent;
       transition: background-color 0.2s ease;
 
       ion-icon {
-        font-size: 22px;
+        font-size: 20px;
       }
     }
 

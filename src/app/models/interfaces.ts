@@ -1,7 +1,6 @@
 export interface GardenTask {
   id: number;
   tipo: 'RIEGO' | 'COSECHA' | 'ENFERMA';
-  icon: string;
   image: string;
   title: string;
   description: string;
@@ -15,6 +14,7 @@ export interface WeatherData {
 }
 
 export interface Planta {
+  id: number;
   planta_id: number;
   usuario_id: number;
   nombre_planta: string;
@@ -62,6 +62,7 @@ export interface Usuario {
   email: string;
   tipo_dieta: 'OMNIVORA' | 'VEGETARIANA' | 'VEGANA';
   imagen_url?: string;
+  ciudad?: string;
   fechaRegistro?: Date;
 }
 
@@ -70,6 +71,39 @@ export interface GardenPlant {
   name: string;
   quantity: number;
   unit: string;
+}
+
+export interface Intercambio {
+  id: number;
+  usuario_id: string;
+  nombre_usuario: string;
+  email: string | null;
+  planta_id: number;
+  nombre_planta: string;
+  imagen_url: string;
+  cantidad_aprox: string | null;
+  ciudad: string;
+  fecha_creacion: Date;
+}
+
+export interface MensajeChat {
+  id: number;
+  intercambio_id: number;
+  remitente_uid: string;
+  remitente_nombre: string;
+  destinatario_uid: string;
+  texto: string;
+  fecha: Date;
+}
+
+export interface ConversacionResumen {
+  intercambio_id: number;
+  nombre_planta: string;
+  otro_uid: string;
+  otro_nombre: string;
+  ultimo_mensaje: string;
+  ultima_fecha: Date;
+  no_leidos: number;
 }
 
 export interface Comentario {
@@ -87,6 +121,7 @@ export interface Publicacion {
   nombre_usuario: string;
   username: string;
   avatar_inicial: string;
+  usuario_imagen_url: string | null;
   imagen_url: string;
   categoria: 'HUERTO' | 'RECETA' | 'CONSEJO' | 'COSECHA';
   descripcion: string;
